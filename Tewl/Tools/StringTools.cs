@@ -479,7 +479,6 @@ namespace Tewl.Tools {
 
 		/// <summary>
 		/// An implementation of SoundEx roughly equivalent to SQL server's implementation. Returns the SoundEx code.
-		/// NOTE: Make this internal or private, as nobody should end up using it directly.
 		/// </summary>
 		public static string SoundEx( string word ) {
 			// The length of the returned code.

@@ -17,13 +17,6 @@ namespace Tewl.Tools {
 		}
 
 		/// <summary>
-		/// Returns null if the enumeration has no elements.
-		/// </summary>
-		public static T GetRandomElement<T>( this IEnumerable<T> enumeration ) {
-			return enumeration.ElementAtOrDefault( Randomness.GetRandomInt( 0, enumeration.Count() ) );
-		}
-
-		/// <summary>
 		/// Adds default(T) to the given list until the desired length is reached.
 		/// </summary>
 		public static List<T> Pad<T>( this IEnumerable<T> enumeration, int length ) {
@@ -38,20 +31,6 @@ namespace Tewl.Tools {
 			while( list.Count() < length )
 				list.Add( getNewPlaceholderItem() );
 			return list;
-		}
-
-		/// <summary>
-		/// Creates a shallow copy of the enumeration, scrambles and returns it.
-		/// </summary>
-		public static IEnumerable<T> Scramble<T>( this IEnumerable<T> items ) {
-			var itemsCopy = new List<T>( items );
-			for( var i = 0; i < itemsCopy.Count; i++ ) {
-				var randomIndex = Randomness.GetRandomInt( 0, itemsCopy.Count );
-				var temp = itemsCopy[ randomIndex ];
-				itemsCopy[ randomIndex ] = itemsCopy[ i ];
-				itemsCopy[ i ] = temp;
-			}
-			return itemsCopy;
 		}
 
 		/// <summary>

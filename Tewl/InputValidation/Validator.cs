@@ -91,7 +91,6 @@ namespace Tewl.InputValidation {
 			AddError( new Error( message, false ) );
 		}
 
-		// NOTE: The following method could replace both of the above methods.
 		/// <summary>
 		/// Sets the ErrorsOccurred flag and add the given error messages to this validator. Use this if you want to add your own error messages to the same collection
 		/// that the error handlers use.

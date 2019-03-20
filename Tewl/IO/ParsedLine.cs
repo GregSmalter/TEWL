@@ -27,7 +27,6 @@ namespace Tewl.IO {
 				if( lineNumber.HasValue )
 					return lineNumber.Value;
 				throw new ApplicationException( "Line number has not been initialized and has no meaning." );
-				// NOTE: We can get rid of this check when the Parse method in the parser becomes internal.
 			}
 			internal set { lineNumber = value; }
 		}
@@ -46,11 +45,6 @@ namespace Tewl.IO {
 		}
 
 		internal List<string> Fields { get { return fields; } }
-
-		/// <summary>
-		/// Returns the number of fields available in on this line.
-		/// </summary>
-		public int NumberOfFields { get { return fields.Count; } } // NOTE: Track down everyone who uses this.  Move it up to TabularDataParser if we still need this.
 
 		/// <summary>
 		/// Returns the value of the field with the given column index.

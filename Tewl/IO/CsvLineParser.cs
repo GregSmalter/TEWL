@@ -9,7 +9,7 @@ namespace Tewl.IO {
 	/// Parses a line of a Microsoft Excel CSV file using the definition of CSV at http://en.wikipedia.org/wiki/Comma-separated_values.
 	/// </summary>
 	public class CsvLineParser: Parser {
-		private readonly IDictionary columnHeadersToIndexes = new Hashtable(); // NOTE: This can be removed once the parse method is internal
+		private readonly IDictionary columnHeadersToIndexes = new Hashtable();
 
 		/// <summary>
 		/// Creates a line parser with no header row.  Fields will be access via indexes rather than by column name.
@@ -40,7 +40,7 @@ namespace Tewl.IO {
 					parseCommaSeparatedFields( tr, fields );
 			}
 			var parsedLine = new ParsedLine( fields );
-			parsedLine.ColumnHeadersToIndexes = columnHeadersToIndexes; // NOTE: This would be unnecessary if this method were internal
+			parsedLine.ColumnHeadersToIndexes = columnHeadersToIndexes;
 			return parsedLine;
 		}
 

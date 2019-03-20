@@ -30,7 +30,7 @@ namespace Tewl.InputValidation {
 		/// Creates an object that invokes code of your choice if an error occurs. The given custom handler will
 		/// only be invoked in the case of an error, and it will prevent the default error message from being
 		/// added to the validator's error collection.  Even if the handler does not add an error to the validator,
-		/// valdiator.HasErrors will return true because an error has still occurred.
+		/// validator.HasErrors will return true because an error has still occurred.
 		/// </summary>
 		public ValidationErrorHandler( CustomHandler customHandler ) {
 			this.customHandler = customHandler;

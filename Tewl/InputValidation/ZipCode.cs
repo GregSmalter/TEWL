@@ -19,7 +19,7 @@ namespace Tewl.InputValidation {
 		public string Zip { get { return zip; } }
 
 		/// <summary>
-		/// The optional 4-digit extension. NOTE: Who uses this?
+		/// The optional 4-digit extension.
 		/// </summary>
 		public string Plus4 { get { return plus4; } }
 
