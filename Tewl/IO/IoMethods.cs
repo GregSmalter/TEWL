@@ -194,12 +194,15 @@ namespace Tewl.IO {
 				method( stream );
 		}
 
+		/// <summary>
+		/// Automatically creates and cleans up a temporary folder for the given method to use. Passes the folder path to the given action.
+		/// There is a race condition here: another process could create a directory after we check if our folder path exists, but before we create the folder. See
+		/// http://stackoverflow.com/a/217198/35349. We believe this is unlikely and is an acceptable risk.
+		/// </summary>
 		public static void ExecuteWithTempFolder( Action<string> method ) {
-			// There is a race condition here: another process could create a directory after we check if our folder path exists, but before we create the folder. See
-			// http://stackoverflow.com/a/217198/35349. We believe this is unlikely and is an acceptable risk.
 			string folderPath;
 			do
-				folderPath = EwlStatics.CombinePaths( Path.GetTempPath(), Path.GetRandomFileName() );
+				folderPath = Path.Combine( Path.GetTempPath(), Path.GetRandomFileName() );
 			while( File.Exists( folderPath ) || Directory.Exists( folderPath ) );
 			Directory.CreateDirectory( folderPath );
 

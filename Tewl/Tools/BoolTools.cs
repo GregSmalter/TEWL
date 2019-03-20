@@ -20,5 +20,13 @@
 		public static string ToYesOrEmpty( this bool b ) {
 			return b ? "Yes" : "";
 		}
+
+		/// <summary>
+		/// Converts a boolean into a decimal for storage in Oracle.
+		/// </summary>
+		public static decimal BooleanToDecimal( this bool b ) {
+			return b ? 1 : 0;
+		}
+
 	}
 }

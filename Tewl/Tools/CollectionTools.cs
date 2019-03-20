@@ -70,5 +70,20 @@ namespace Tewl.Tools {
 		public static IReadOnlyCollection<T> Materialize<T>( this IEnumerable<T> items ) {
 			return items.ToImmutableArray();
 		}
+
+		/// <summary>
+		/// Creates a collection containing only this item.
+		/// </summary>
+		public static IReadOnlyCollection<T> ToCollection<T>( this T item ) {
+			return ImmutableArray.Create( item );
+		}
+
+		/// <summary>
+		/// Returns an enumerable of functions that return the given items.
+		/// </summary>
+		public static IEnumerable<Func<T>> ToFunctions<T>( this IEnumerable<T> items ) {
+			return items.Select<T, Func<T>>( i => () => i );
+		}
+
 	}
 }
