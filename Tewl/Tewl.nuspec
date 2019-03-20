@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>Tewl</id>
-    <version></version>
+    <version>0.0.0.0</version>
     <title>The Toolkit for the Enterprise Web Library</title>
     <authors>William Gross, Greg Smalter, Sam Rueby</authors>
     <owners>Greg Smalter, Sam Rueby</owners>
