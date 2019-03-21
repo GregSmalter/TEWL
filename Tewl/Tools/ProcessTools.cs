@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
-using System.IO;
+using System.Text;
+using Tewl.Exceptions;
 
 namespace Tewl.Tools {
 	/// <summary>
@@ -8,76 +9,104 @@ namespace Tewl.Tools {
 	/// </summary>
 	public static class ProcessTools {
 		/// <summary>
-		/// GMS NOTE: Sam has a better version of this.
-		/// Runs the specified program with the specified arguments and passes in the specified input. Optionally waits for the program to exit, and throws an
+		/// Runs the specified program with the specified arguments and passes in the specified input. Waits for the program to exit, and throws an
 		/// exception if this is specified and a nonzero exit code is returned. If the program is in a folder that is included in the Path environment variable,
-		/// specify its name only. Otherwise, specify a path to the program. In either case, you do NOT need ".exe" at the end. Specify the empty string for input
+		/// specify its name only. Otherwise, specify a path to the program. In either case, you do not need ".exe" at the end. Specify the empty string for input
 		/// if you do not wish to pass any input to the program.
-		/// Returns the output of the program if waitForExit is true.  Otherwise, returns the empty string.
+		/// Returns the output of the program.
 		/// </summary>
-		/// <param name="program"></param>
+		/// <param name="program">A command or exe.</param>
 		/// <param name="arguments">Do not pass null.</param>
 		/// <param name="input">Do not pass null.</param>
-		/// <param name="waitForExit"></param>
 		/// <param name="workingDirectory">Do not pass null. Pass the empty string for the current working directory.</param>
-		public static string RunProgram( string program, string arguments, string input, bool waitForExit, string workingDirectory = "" ) {
-			var outputResult = "";
-			using( var p = new Process() ) {
+		/// <param name="waitForExitTimeout">Waits for given duration for the program exists before throwing an exception.</param>
+		/// <exception cref="RunProgramException">When any error occurs.</exception>
+		/// <returns>The output of the program.</returns>
+		public static string RunProgram( string program, string arguments, string input = "", string workingDirectory = "", TimeSpan? waitForExitTimeout = null ) {
+			Process p = null;
+			var sbOutput = new StringBuilder();
+			var sbError = new StringBuilder();
+			try {
+				p = new Process();
 				p.StartInfo.FileName = program;
 				p.StartInfo.Arguments = arguments;
 				p.StartInfo.CreateNoWindow = true; // prevents command window from appearing
 				p.StartInfo.UseShellExecute = false; // necessary for redirecting output
 				p.StartInfo.WorkingDirectory = workingDirectory;
+
 				p.StartInfo.RedirectStandardInput = true;
-				if( waitForExit ) {
-					// Set up output recording.
-					p.StartInfo.RedirectStandardOutput = true;
-					p.StartInfo.RedirectStandardError = true;
-					var output = new StringWriter();
-					var errorOutput = new StringWriter();
-					p.OutputDataReceived += ( ( sender, e ) => output.WriteLine( e.Data ) );
-					p.ErrorDataReceived += ( ( sender, e ) => errorOutput.WriteLine( e.Data ) );
 
-					p.Start();
+				// Set up output recording.
+				p.StartInfo.RedirectStandardOutput = true;
+				p.StartInfo.RedirectStandardError = true;
 
-					// Begin recording output.
-					p.BeginOutputReadLine();
-					p.BeginErrorReadLine();
+				p.OutputDataReceived += ( o, args ) => getOutputHandler( args, sbOutput );
+				p.ErrorDataReceived += ( o, args ) => getOutputHandler( args, sbError );
 
-					// Pass input to the program.
-					if( input.Length > 0 ) {
-						p.StandardInput.Write( input );
-						p.StandardInput.Flush();
-					}
+				if( !p.Start() )
+					throw new ApplicationException( "Process failed to start." );
 
-					// Throw an exception after the program exits if the code is not zero. Include all recorded output.
-					p.WaitForExit();
-					outputResult = output.ToString();
-					if( p.ExitCode != 0 )
-						using( var sw = new StringWriter() ) {
-							sw.WriteLine( "Program exited with a nonzero code." );
-							sw.WriteLine();
-							sw.WriteLine( "Program: " + program );
-							sw.WriteLine( "Arguments: " + arguments );
-							sw.WriteLine();
-							sw.WriteLine( "Output:" );
-							sw.WriteLine( outputResult );
-							sw.WriteLine();
-							sw.WriteLine( "Error output:" );
-							sw.WriteLine( errorOutput.ToString() );
-							throw new ApplicationException( sw.ToString() );
-						}
-				}
-				else {
-					p.Start();
-					if( input.Length > 0 ) {
-						p.StandardInput.Write( input );
-						p.StandardInput.Flush();
-					}
+				// Begin recording output.
+				p.BeginOutputReadLine();
+				p.BeginErrorReadLine();
+
+				// Pass input to the program.
+				if( input.Length > 0 ) {
+					p.StandardInput.Write( input );
+					p.StandardInput.Flush();
 				}
 
-				return outputResult;
+				if( waitForExitTimeout != null && !p.WaitForExit( (int)waitForExitTimeout.Value.TotalMilliseconds ) )
+					throw new ApplicationException( $"Process did not exit within timeout '{waitForExitTimeout}'." );
+
+				/* When standard output has been redirected to asynchronous event handlers, it is possible that output processing will not
+				 * have completed when this method returns. To ensure that asynchronous event handling has been completed, call the WaitForExit()
+				 * overload that takes no parameter after receiving a true from this overload.
+				 * https://msdn.microsoft.com/en-us/library/ty0d8k56(v=vs.110)
+				 */
+				// This will wait infinitely.
+				p.WaitForExit();
+
+				var processExitCode = p.ExitCode;
+
+				// Throw an exception after the program exits if the code is not zero. Include all recorded output.
+				if( processExitCode != 0 )
+					throw new ApplicationException( $"Process exited with non-zero code '{processExitCode}'." );
+
+				return sbOutput.ToString();
 			}
+			catch( Exception ex ) {
+				string output = null, error = null;
+				try {
+					output = sbOutput.ToString();
+					error = sbError.ToString();
+				}
+				catch { }
+
+				throw new RunProgramException( null, $"An exception was thrown. {nameof(program)}: {program}. {nameof(arguments)}: {arguments}", output, error, ex );
+			}
+			finally {
+				ensureProcessExited( p );
+			}
+		}
+
+		/// <summary>
+		/// Appends the output as long as the data is not null.
+		/// </summary>
+		private static void getOutputHandler( DataReceivedEventArgs args, StringBuilder output ) {
+			if( args.Data == null )
+				return;
+			output.AppendLine( args.Data );
+		}
+
+		private static void ensureProcessExited( Process process ) {
+			if( !process?.HasExited ?? false )
+				try {
+					process.Kill();
+				}
+				catch { }
+
+			process?.Dispose();
 		}
 	}
 }
