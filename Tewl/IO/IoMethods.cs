@@ -143,15 +143,6 @@ namespace Tewl.IO {
 			return Directory.GetDirectories( folderPath ).Select( Path.GetFileName ).ToList();
 		}
 
-		[ Obsolete( "Guaranteed through 31 May 2016. Please use Stream.CopyTo instead." ) ]
-		public static void CopyStream( Stream sourceStream, Stream destinationStream, int bufferSize = 65536 ) {
-			var buffer = new byte[ bufferSize ];
-
-			int bytesRead;
-			while( ( bytesRead = sourceStream.Read( buffer, 0, buffer.Length ) ) > 0 )
-				destinationStream.Write( buffer, 0, bytesRead );
-		}
-
 		/// <summary>
 		/// Gets the sum size, in bytes, of everything in the folder at the given path (recursive).
 		/// </summary>
