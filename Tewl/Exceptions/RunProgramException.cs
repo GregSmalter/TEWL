@@ -17,8 +17,10 @@ namespace Tewl.Exceptions {
 				sb.AppendLine( message );
 				if( errorCode != null )
 					sb.AppendLine( "Error code: " + errorCode );
-				sb.AppendLine( "Process Output: " + processOutput );
-				sb.AppendLine( "Process Error Output: " + processError );
+				if( processOutput != null )
+					sb.AppendLine( "Process Output: " + processOutput );
+				if( processError != null )
+					sb.AppendLine( "Process Error Output: " + processError );
 
 				return sb.ToString();
 			}
