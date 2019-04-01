@@ -6,10 +6,18 @@
     <title>The Toolkit for the Enterprise Web Library</title>
     <authors>William Gross, Greg Smalter, Sam Rueby</authors>
     <owners>Greg Smalter, Sam Rueby</owners>
-    <licenseUrl>https://opensource.org/licenses/MIT</licenseUrl>
+	  <license type="expression">MIT</license>
     <projectUrl>https://github.com/GregSmalter/TEWL</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>The Toolkit for the Enterprise Web Library. This can be used to conveniently gain validation, IO, and string manipulation functions without subscribing to the whole library lifecycle. </description>
     <tags>EWL, ASP.NET, Validation, CSV, IO, string manipulation</tags>
   </metadata>
+	<files>
+		<file src="bin\$configuration$\net461\Tewl.dll" target="lib\net461\Tewl.dll" />
+		<file src="bin\$configuration$\net461\Tewl.pdb" target="lib\net461\Tewl.pdb" />
+		<file src="bin\$configuration$\net461\Tewl.xml" target="lib\net461\Tewl.xml" />
+		<file src="bin\$configuration$\netstandard2.0\Tewl.dll" target="lib\netstandard2.0\Tewl.dll" />
+		<file src="bin\$configuration$\netstandard2.0\Tewl.pdb" target="lib\netstandard2.0\Tewl.pdb" />
+		<file src="bin\$configuration$\netstandard2.0\Tewl.xml" target="lib\netstandard2.0\Tewl.xml" />
+	</files>
 </package>
