@@ -205,6 +205,10 @@ namespace Tewl.IO {
 			}
 		}
 
+		/// <summary>
+		/// Given a list of possible paths, returns the first one that exists, or throws an ApplicationException if none exist.
+		/// This method is useful when you know one of many possible SDK or tool paths exist but you aren't sure which one.
+		/// </summary>
 		public static string GetFirstExistingFolderPath( IReadOnlyCollection<string> folderPaths, string folderAdjective ) {
 			var first = folderPaths.FirstOrDefault( Directory.Exists );
 			if( first == null )

@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 
 namespace Tewl.Tools {
+	/// <summary>
+	/// Extension methods and other static tools pertaining to Enum types.
+	/// </summary>
 	public static class EnumTools {
 		/// <summary>
 		/// Gets the values of the specified enumeration type.
