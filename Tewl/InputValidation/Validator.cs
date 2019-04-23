@@ -245,6 +245,31 @@ namespace Tewl.InputValidation {
 				() => validateGenericIntegerType<int>( errorHandler, intAsString, min, max ) );
 		}
 
+        /// <summary>
+        /// Returns the validated long type from the given string and validation package.
+        /// Passing an empty string or null will result in ErrorCondition.Empty.
+        /// <paramref name="min"/> and <paramref name="max"/> are inclusive.
+        /// </summary>
+        public long GetLong( ValidationErrorHandler errorHandler, string longAsString,  long min = long.MinValue, long max = long.MaxValue ) {
+            return executeValidationMethodAndHandleEmptyAndReturnDefaultIfInvalid(
+                errorHandler,
+                longAsString,
+                false,
+                delegate { return validateGenericIntegerType<long>( errorHandler, longAsString, min, max ); } );
+        }
+
+        /// <summary>
+        /// Returns the validated long type from the given string and validation package.
+        /// If allowEmpty is true and the given string is empty, null will be returned.
+        /// </summary>
+        public long? GetNullableLong( ValidationErrorHandler errorHandler, string longAsString, bool allowEmpty, long min = long.MinValue, long max = long.MaxValue ) {
+            return executeValidationMethodAndHandleEmptyAndReturnDefaultIfInvalid<long?>(
+                errorHandler,
+                longAsString,
+                allowEmpty,
+                () => validateGenericIntegerType<long>( errorHandler, longAsString, min, max ) );
+        }
+
 		private static T validateGenericIntegerType<T>( ValidationErrorHandler errorHandler, string valueAsString, long minValue, long maxValue ) {
 			long intResult = 0;
 
