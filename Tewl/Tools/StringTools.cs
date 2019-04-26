@@ -245,11 +245,22 @@ namespace Tewl.Tools {
 		/// Concatenates two strings together with a space between them. If either string is empty or if both strings are empty, there will be no space added.
 		/// Null strings are treated as empty strings.
 		/// Whitespace is trimmed from the given strings before concatenation.
-		/// 
 		/// </summary>
-		public static string ConcatenateWithSpace( this string s1, string s2 ) {
-			return ConcatenateWithDelimiter( " ", s1, s2 );
-		}
+		public static string ConcatenateWithSpace( this string s1, string s2 ) => ConcatenateWithSpace( new[] { s1, s2 } );
+		
+		/// <summary>
+		/// Concatenates two strings together with a space between them. If either string is empty or if both strings are empty, there will be no space added.
+		/// Null strings are treated as empty strings.
+		/// Whitespace is trimmed from the given strings before concatenation.
+		/// </summary>
+		public static string ConcatenateWithSpace( params string[] strings) => ConcatenateWithSpace( (IEnumerable<string>)strings );
+		
+		/// <summary>
+		/// Concatenates two strings together with a space between them. If either string is empty or if both strings are empty, there will be no space added.
+		/// Null strings are treated as empty strings.
+		/// Whitespace is trimmed from the given strings before concatenation.
+		/// </summary>
+		public static string ConcatenateWithSpace( IEnumerable<string> strings) => ConcatenateWithDelimiter( " ", strings );
 
 		/// <summary>
 		/// Given a collection, returns a comma-delimited list of the ToStrings of the elements. Null objects are converted to empty strings.
@@ -257,7 +268,7 @@ namespace Tewl.Tools {
 		/// Whitespace is trimmed from the given strings before concatenation.
 		/// </summary>
 		public static string GetCommaDelimitedStringFromCollection<T>( this IEnumerable<T> collection ) {
-			return ConcatenateWithDelimiter( ", ", collection.Select( o => o.ObjectToString( true ) ).ToArray() );
+			return ConcatenateWithDelimiter( ", ", collection.Select( o => o.ObjectToString( true ) ) );
 		}
 
 		/// <summary>
@@ -266,7 +277,7 @@ namespace Tewl.Tools {
 		/// Whitespace is trimmed from the given strings before concatenation.
 		/// Null strings are treated as empty strings.
 		/// </summary>
-		public static string ConcatenateWithDelimiter( string delimiter, params string[] strings ) {
+		public static string ConcatenateWithDelimiter( string delimiter, IEnumerable<string> strings ) {
 			var tokens = strings.Select( i => ( i ?? "" ).Trim() ).Where( i => i.Length > 0 ).ToList();
 			if( !tokens.Any() )
 				return "";
@@ -275,6 +286,14 @@ namespace Tewl.Tools {
 				result.Append( delimiter + token );
 			return result.ToString();
 		}
+		/// <summary>
+		/// Creates a single string consisting of each string in the given list, delimited by the given delimiter.  Empty strings
+		/// are handled intelligently in that you will not get two delimiters in a row, or a delimiter at the end of the string.
+		/// Whitespace is trimmed from the given strings before concatenation.
+		/// Null strings are treated as empty strings.
+		/// </summary>
+		public static string ConcatenateWithDelimiter( string delimiter, params string[] strings ) =>
+			ConcatenateWithDelimiter( delimiter, (IEnumerable<string>)strings );
 
 		/// <summary>
 		/// Performs ConcatenateWithDelimiter with characters instead of strings.
