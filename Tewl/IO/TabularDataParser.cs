@@ -51,19 +51,14 @@ namespace Tewl.IO {
 		/// </summary>
 		public int RowsWithValidationErrors { get { return RowsContainingData - RowsWithoutValidationErrors; } }
 
-		private TabularDataParser() {}
+		private TabularDataParser() { }
 
 		/// <summary>
 		/// Creates a parser designed to parse a file with fixed data column widths. Specify the starting position of each column (using one-based column index).
 		/// Characters that take up more than 1 unit of width, such as tabs, can cause problems here.
 		/// </summary>
 		public static TabularDataParser CreateForFixedWidthFile( string filePath, int headerRowsToSkip, params int[] columnStartPositions ) {
-			return new TabularDataParser
-				{
-					fileReader = new FileReader( filePath ),
-					headerRowsToSkip = headerRowsToSkip,
-					parser = new FixedWidthParser( columnStartPositions )
-				};
+			return new TabularDataParser { fileReader = new FileReader( filePath ), headerRowsToSkip = headerRowsToSkip, parser = new FixedWidthParser( columnStartPositions ) };
 		}
 
 		/// <summary>
@@ -84,37 +79,48 @@ namespace Tewl.IO {
 
 		/// <summary>
 		/// For every line (after headerRowsToSkip) in the file with the given path, calls the line handling method you pass.
+		/// Each line handler method will be given a fresh validator to do its work with.
+		/// </summary>
+		public void ParseAndProcessAllLines( LineProcessingMethod lineHandler ) {
+			ParseAndProcessAllLines( lineHandler, null );
+		}
+
+		/// <summary>
+		/// For every line (after headerRowsToSkip) in the file with the given path, calls the line handling method you pass.
 		/// The validationErrors collection will hold all validation errors encountered during the processing of all lines.
+		/// When processing extremely large data sets, accumulating validationErrors in one collection may result in high memory usage. To avoid
+		/// this, use the overload without this collection.
 		/// Each line handler method will be given a fresh validator to do its work with.
 		/// </summary>
 		public void ParseAndProcessAllLines( LineProcessingMethod lineHandler, ICollection<ValidationError> validationErrors ) {
-			fileReader.ExecuteInStreamReader( delegate( StreamReader reader ) {
-				IDictionary columnHeadersToIndexes = null;
-				if( hasHeaderRow )
-					columnHeadersToIndexes = buildColumnHeadersToIndexesDictionary( reader.ReadLine() );
+			fileReader.ExecuteInStreamReader(
+				delegate( StreamReader reader ) {
+					IDictionary columnHeadersToIndexes = null;
+					if( hasHeaderRow )
+						columnHeadersToIndexes = buildColumnHeadersToIndexesDictionary( reader.ReadLine() );
 
-				for( var i = 0; i < headerRowsToSkip; i++ )
-					reader.ReadLine();
+					for( var i = 0; i < headerRowsToSkip; i++ )
+						reader.ReadLine();
 
-				string line;
-				for( var lineNumber = HeaderRows + 1; ( line = reader.ReadLine() ) != null; lineNumber++ ) {
-					NonHeaderRows++;
-					var parsedLine = parser.Parse( line );
-					if( parsedLine.ContainsData ) {
-						RowsContainingData++;
-						parsedLine.LineNumber = lineNumber;
-						parsedLine.ColumnHeadersToIndexes = columnHeadersToIndexes;
-						var validator = new Validator();
-						lineHandler( validator, parsedLine );
-						if( validator.ErrorsOccurred ) {
-							foreach( var error in validator.Errors )
-								validationErrors.Add( new ValidationError( "Line " + lineNumber, error.UnusableValueReturned, error.Message ) );
+					string line;
+					for( var lineNumber = HeaderRows + 1; ( line = reader.ReadLine() ) != null; lineNumber++ ) {
+						NonHeaderRows++;
+						var parsedLine = parser.Parse( line );
+						if( parsedLine.ContainsData ) {
+							RowsContainingData++;
+							parsedLine.LineNumber = lineNumber;
+							parsedLine.ColumnHeadersToIndexes = columnHeadersToIndexes;
+							var validator = new Validator();
+							lineHandler( validator, parsedLine );
+							if( validator.ErrorsOccurred && validationErrors != null ) {
+								foreach( var error in validator.Errors )
+									validationErrors.Add( new ValidationError( "Line " + lineNumber, error.UnusableValueReturned, error.Message ) );
+							}
+							else
+								RowsWithoutValidationErrors++;
 						}
-						else
-							RowsWithoutValidationErrors++;
 					}
-				}
-			} );
+				} );
 		}
 
 		private IDictionary buildColumnHeadersToIndexesDictionary( string headerLine ) {
@@ -124,6 +130,7 @@ namespace Tewl.IO {
 				columnHeadersToIndexes[ columnHeader.ToLower() ] = index;
 				index++;
 			}
+
 			return columnHeadersToIndexes;
 		}
 
