@@ -58,7 +58,10 @@ namespace Tewl.IO {
 		/// Characters that take up more than 1 unit of width, such as tabs, can cause problems here.
 		/// </summary>
 		public static TabularDataParser CreateForFixedWidthFile( string filePath, int headerRowsToSkip, params int[] columnStartPositions ) {
-			return new TabularDataParser { fileReader = new FileReader( filePath ), headerRowsToSkip = headerRowsToSkip, parser = new FixedWidthParser( columnStartPositions ) };
+			return new TabularDataParser
+				{
+					fileReader = new FileReader( filePath ), headerRowsToSkip = headerRowsToSkip, parser = new FixedWidthParser( columnStartPositions )
+				};
 		}
 
 		/// <summary>
@@ -112,9 +115,10 @@ namespace Tewl.IO {
 							parsedLine.ColumnHeadersToIndexes = columnHeadersToIndexes;
 							var validator = new Validator();
 							lineHandler( validator, parsedLine );
-							if( validator.ErrorsOccurred && validationErrors != null ) {
-								foreach( var error in validator.Errors )
-									validationErrors.Add( new ValidationError( "Line " + lineNumber, error.UnusableValueReturned, error.Message ) );
+							if( validator.ErrorsOccurred ) {
+								if( validationErrors != null )
+									foreach( var error in validator.Errors )
+										validationErrors.Add( new ValidationError( "Line " + lineNumber, error.UnusableValueReturned, error.Message ) );
 							}
 							else
 								RowsWithoutValidationErrors++;
