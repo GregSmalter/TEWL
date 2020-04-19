@@ -5,6 +5,7 @@
 
 	<PropertyGroup>
 		<GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <LangVersion>latest</LangVersion>
 	</PropertyGroup>
 
   <ItemGroup>
