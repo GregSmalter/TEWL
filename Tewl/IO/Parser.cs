@@ -1,5 +1,5 @@
 namespace Tewl.IO {
 	internal interface Parser {
-		ParsedLine Parse( string line );
+		ParsedLine Parse( object line );
 	}
 }

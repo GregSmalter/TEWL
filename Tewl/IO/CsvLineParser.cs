@@ -33,7 +33,8 @@ namespace Tewl.IO {
 		/// Internal use only.
 		/// Use ParseAndProcessAllLines instead.
 		/// </summary>
-		public ParsedLine Parse( string line ) {
+		public ParsedLine Parse( object stringLineAsObject ) {
+			var line = stringLineAsObject.ToString();
 			var fields = new List<string>();
 			if( !line.IsNullOrWhiteSpace() ) {
 				using( TextReader tr = new StringReader( line ) )

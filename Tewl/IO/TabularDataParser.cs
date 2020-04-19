@@ -85,6 +85,13 @@ namespace Tewl.IO {
 		}
 
 		/// <summary>
+		/// Assumes header row. Fields will always be accessible by name.
+		/// </summary>
+		public static TabularDataParser CreateForExcelFile( Stream stream ) {
+			return new TabularDataParser { fileReader = new FileReader( stream ), hasHeaderRow = true, parser = new ExcelParser() };
+		}
+
+		/// <summary>
 		/// For every line (after headerRowsToSkip) in the file with the given path, calls the line handling method you pass.
 		/// Each line handler method will be given a fresh validator to do its work with.
 		/// </summary>

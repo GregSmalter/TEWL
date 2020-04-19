@@ -33,7 +33,9 @@ namespace Tewl.IO {
 			// We don't know how wide the last column is, but we don't need to since we will just read to the end of the line
 		}
 
-		public ParsedLine Parse( string line ) {
+		public ParsedLine Parse( object stringLineAsObject ) {
+			var line = stringLineAsObject.ToString();
+
 			var fields = new List<string>();
 			if( !line.IsNullOrWhiteSpace() ) {
 				using( TextReader tr = new StringReader( line ) ) {
