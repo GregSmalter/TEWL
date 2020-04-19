@@ -22,6 +22,7 @@ namespace Tewl.IO {
 		/// <summary>
 		/// The number of rows in the file, not including the header rows that were skipped with headerRowsToSkip or hasHeaderRows = true.
 		/// This is the number of rows in the file that were parsed.
+		/// This properly only has meaning after ParseAndProcessAllLines has been called. 
 		/// </summary>
 		public int NonHeaderRows { get; private set; }
 
@@ -31,23 +32,26 @@ namespace Tewl.IO {
 		public int HeaderRows { get { return hasHeaderRow ? 1 : headerRowsToSkip; } }
 
 		/// <summary>
-		/// The total number of rows in the file, including any header rows.
+		/// The total number of rows in the file, including any header rows. This properly only has meaning after ParseAndProcessAllLines has been called. 
 		/// </summary>
 		public int TotalRows { get { return HeaderRows + NonHeaderRows; } }
 
 		/// <summary>
 		/// The number of rows in the file with at least one non-blank field.
+		/// This properly only has meaning after ParseAndProcessAllLines has been called. 
 		/// This is the number of rows in that file that were processed (the lineHandler callback was performed).
 		/// </summary>
 		public int RowsContainingData { get; private set; }
 
 		/// <summary>
 		/// The number of rows in the file that were processed without encountering any validation errors.
+		/// This properly only has meaning after ParseAndProcessAllLines has been called. 
 		/// </summary>
 		public int RowsWithoutValidationErrors { get; private set; }
 
 		/// <summary>
 		/// The number of rows in the file that did encounter validation errors when processed.
+		/// This properly only has meaning after ParseAndProcessAllLines has been called. 
 		/// </summary>
 		public int RowsWithValidationErrors { get { return RowsContainingData - RowsWithoutValidationErrors; } }
 
@@ -137,15 +141,5 @@ namespace Tewl.IO {
 
 			return columnHeadersToIndexes;
 		}
-
-		//internal static void Test() {
-		//  var localPath = EwlStatics.CombinePaths( Environment.GetFolderPath( Environment.SpecialFolder.DesktopDirectory ), "Salesforce.csv" );
-		//  var csvParser = CreateForCsvFile( localPath, true );
-		//  var validationErrors = new List<ValidationError>();
-		//  // GMS: Can't actually test this because MiniProfiler blows up with a blank database connection.
-		//  AppTools.ExecuteInDbConnection( cn => csvParser.ParseAndProcessAllLines( cn, importLine, validationErrors ) );
-		//}
-
-		//private static void importLine( DBConnection cn, Validator validator, ParsedLine line ) {}
 	}
 }
