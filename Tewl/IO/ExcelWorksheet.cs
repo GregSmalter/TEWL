@@ -6,7 +6,7 @@ using Tewl.Tools;
 
 namespace Tewl.IO {
 	/// <summary>
-	/// Respresents a worksheet inside an Excel workbook (file).
+	/// Represents a worksheet inside an Excel workbook (file).
 	/// </summary>
 	public class ExcelWorksheet {
 		private readonly IXLWorksheet worksheet;
