@@ -10,14 +10,14 @@ namespace Tewl.IO {
 	/// are accessible through the indexers of this object.
 	/// </summary>
 	public class ParsedLine {
-		private IDictionary columnHeadersToIndexes;
+		private IDictionary<string,int> columnHeadersToIndexes;
 		private readonly List<string> fields;
 		private int? lineNumber;
 
 		/// <summary>
 		/// Returns true if any field on this line has a non-empty, non-whitespace value.
 		/// </summary>
-		public bool ContainsData { get; private set; }
+		public bool ContainsData { get; }
 
 		/// <summary>
 		/// Returns the line number from the source document that this parsed line was created from.
@@ -28,10 +28,10 @@ namespace Tewl.IO {
 					return lineNumber.Value;
 				throw new ApplicationException( "Line number has not been initialized and has no meaning." );
 			}
-			internal set { lineNumber = value; }
+			internal set => lineNumber = value;
 		}
 
-		internal IDictionary ColumnHeadersToIndexes { set { columnHeadersToIndexes = value ?? new ListDictionary(); } }
+		internal IDictionary<string,int> ColumnHeadersToIndexes { set => columnHeadersToIndexes = value ?? new Dictionary<string,int>(); }
 
 		internal ParsedLine( List<string> fields ) {
 			this.fields = fields;
@@ -44,7 +44,7 @@ namespace Tewl.IO {
 			}
 		}
 
-		internal List<string> Fields { get { return fields; } }
+		internal List<string> Fields => fields;
 
 		/// <summary>
 		/// Returns the value of the field with the given column index.
@@ -69,8 +69,7 @@ namespace Tewl.IO {
 				if( columnName == null )
 					throw new ArgumentException( "Column name cannot be null." );
 
-				var index = columnHeadersToIndexes[ columnName.ToLower() ];
-				if( index == null ) {
+				if( !columnHeadersToIndexes.TryGetValue( columnName.ToLower(), out var index ) ) {
 					var keys = "";
 					foreach( string key in columnHeadersToIndexes.Keys )
 						keys += key + ", ";
@@ -95,7 +94,7 @@ namespace Tewl.IO {
 		/// Returns true if the line contains the given field.
 		/// </summary>
 		public bool ContainsField( string fieldName ) {
-			return new ArrayList( columnHeadersToIndexes.Keys ).Contains( fieldName.ToLower() );
+			return columnHeadersToIndexes.Keys.Contains( fieldName.ToLower() );
 		}
 	}
 }

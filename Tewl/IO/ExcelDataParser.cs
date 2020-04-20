@@ -61,7 +61,7 @@ namespace Tewl.IO {
 			var rows = worksheet.RangeUsed().RowsUsed().ToList();
 
 			var headerRow = rows.First();
-			var columnHeadersToIndexes = headerRow.CellsUsed().ToDictionary( c => c.WorksheetColumn().ColumnNumber(), c => c.Value );
+			var columnHeadersToIndexes = headerRow.CellsUsed().ToDictionary( c => c.Value.ToString(), c => c.WorksheetColumn().ColumnNumber() );
 
 			foreach( var row in rows.Skip( 1 ) ) {
 				var parsedLine = new ParsedLine( row.CellsUsed().Select( c => c.Value.ToString() ).ToList() );

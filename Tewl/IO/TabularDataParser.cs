@@ -102,7 +102,7 @@ namespace Tewl.IO {
 		public void ParseAndProcessAllLines( LineProcessingMethod lineHandler, ICollection<ValidationError> validationErrors ) {
 			fileReader.ExecuteInStreamReader(
 				delegate( StreamReader reader ) {
-					IDictionary columnHeadersToIndexes = null;
+					Dictionary<string,int> columnHeadersToIndexes = null;
 					if( hasHeaderRow )
 						columnHeadersToIndexes = buildColumnHeadersToIndexesDictionary( reader.ReadLine() );
 
@@ -131,8 +131,8 @@ namespace Tewl.IO {
 				} );
 		}
 
-		private IDictionary buildColumnHeadersToIndexesDictionary( string headerLine ) {
-			IDictionary columnHeadersToIndexes = new ListDictionary();
+		private Dictionary<string,int> buildColumnHeadersToIndexesDictionary( string headerLine ) {
+			var columnHeadersToIndexes = new Dictionary<string,int>();
 			var index = 0;
 			foreach( var columnHeader in parser.Parse( headerLine ).Fields ) {
 				columnHeadersToIndexes[ columnHeader.ToLower() ] = index;
