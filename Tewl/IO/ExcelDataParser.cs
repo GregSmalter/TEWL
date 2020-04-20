@@ -37,10 +37,8 @@ namespace Tewl.IO {
 
 		public ExcelDataParser( Stream fileStream ) => this.fileStream = fileStream;
 
-
 		// GMS NOTE: Not sure if we should take stream in constructor or in this method. Not sure stream openness requirements we should have, or who should clean it up.
 		// Change comments to reflect parse and process all lines vs process all lines. 
-
 
 		/// <summary>
 		/// Specify a worksheetName or leave as the default value of null to process the first worksheet in the workbook.
@@ -80,17 +78,6 @@ namespace Tewl.IO {
 						RowsWithoutValidationErrors++;
 				}
 			}
-
-			//var surveyYearColumn = getColumnIndexFromHeaderValue( headerRow, "SurveyYear" );
-			//var residentCorrectionStartingColumnNumber = row.Cell( residentCorrectionsStartingColumn ).WorksheetColumn().ColumnNumber();
-			//row.Cell( matchFieldColumn ).Value.ToString();
 		}
-
-		//private static int getColumnIndexFromHeaderValue( IXLRangeRow headerRow, string header ) {
-		//	var cell = headerRow.Cells( c => c.Value.ToString() == header ).SingleOrDefault();
-		//	if( cell == null )
-		//		throw new ApplicationException( $"Expected a {header} column and could not find one." );
-		//	return cell.WorksheetColumn().ColumnNumber();
-		//}
 	}
 }
