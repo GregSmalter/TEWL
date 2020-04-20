@@ -18,7 +18,9 @@ namespace TewlTester {
 
 		private static void importThing( Validator validator, ParsedLine line ) {
 			Console.WriteLine( line.LineNumber );
-			Console.WriteLine( line["Name"] );
+			Console.WriteLine( line[ "ID" ] );
+			Console.WriteLine( line[ "Name" ] );
+			Console.WriteLine( line[ "Date" ] );
 		}
 	}
 }

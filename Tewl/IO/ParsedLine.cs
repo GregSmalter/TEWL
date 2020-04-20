@@ -76,7 +76,7 @@ namespace Tewl.IO {
 					throw new ArgumentException( "Column '" + columnName + "' does not exist.  The columns are: " + keys );
 				}
 
-				return this[ (int)index ];
+				return this[ index ];
 			}
 		}
 
