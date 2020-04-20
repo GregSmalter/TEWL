@@ -9,4 +9,14 @@
     <ProjectReference Include="..\Tewl\Tewl.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="TestFiles\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="TestFiles\TewlTestBook.xlsx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>
