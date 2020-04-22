@@ -1,9 +1,11 @@
 ﻿using System;
+using JetBrains.Annotations;
 
 namespace Tewl.Tools {
 	/// <summary>
 	/// Extension methods for integers.
 	/// </summary>
+	[ PublicAPI ]
 	public static class IntTools {
 		/// <summary>
 		/// Executes action n times.

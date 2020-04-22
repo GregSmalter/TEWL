@@ -1,9 +1,11 @@
 ﻿using System;
+using JetBrains.Annotations;
 
 namespace Tewl.Tools {
 	/// <summary>
 	/// Extension methods for doubles.
 	/// </summary>
+	[ PublicAPI ]
 	public static class DoubleTools {
 		/// <summary>
 		/// Rounds double value to nearest hundred integer.

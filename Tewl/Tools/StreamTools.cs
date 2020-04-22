@@ -1,9 +1,11 @@
 ﻿using System.IO;
+using JetBrains.Annotations;
 
 namespace Tewl.Tools {
 	/// <summary>
 	/// A collection of Stream-related static methods.
 	/// </summary>
+	[ PublicAPI ]
 	public static class StreamTools {
 		/// <summary>
 		/// Returns the position to the beginning.

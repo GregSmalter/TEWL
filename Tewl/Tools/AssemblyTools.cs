@@ -2,11 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using JetBrains.Annotations;
 
 namespace Tewl.Tools {
 	/// <summary>
 	/// Helpful System.Reflection.Assembly methods.
 	/// </summary>
+	[ PublicAPI ]
 	public static class AssemblyTools {
 		/// <summary>
 		/// Creates an instance of each type in the assembly that implements the specified interface.

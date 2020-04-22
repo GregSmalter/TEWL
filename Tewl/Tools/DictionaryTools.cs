@@ -1,11 +1,13 @@
 ﻿#nullable enable
 
 using System.Collections.Generic;
+using JetBrains.Annotations;
 
 namespace Tewl.Tools {
 	/// <summary>
 	/// Dictionary extensions.
 	/// </summary>
+	[ PublicAPI ]
 	public static class DictionaryTools {
 		/// <summary>
 		/// Tries to get dictionary value. Returns null if the <paramref name="key" /> was not found.

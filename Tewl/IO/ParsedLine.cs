@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using JetBrains.Annotations;
 using Tewl.Tools;
 
 namespace Tewl.IO {
@@ -9,6 +10,7 @@ namespace Tewl.IO {
 	/// Represents a line of text from a CSV file that has been parsed into fields that
 	/// are accessible through the indexers of this object.
 	/// </summary>
+	[ PublicAPI ]
 	public class ParsedLine {
 		private IDictionary<string,int> columnHeadersToIndexes;
 		private readonly List<string> fields;

@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using JetBrains.Annotations;
 
 namespace Tewl.Tools {
 	/// <summary>
 	/// Extension methods and other static tools pertaining to Enum types.
 	/// </summary>
+	[ PublicAPI ]
 	public static class EnumTools {
 		/// <summary>
 		/// Converts this string to a given Enum value. Case sensitive.

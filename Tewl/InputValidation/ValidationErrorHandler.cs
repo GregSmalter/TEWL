@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using JetBrains.Annotations;
 using Tewl.Tools;
 
 namespace Tewl.InputValidation {
@@ -7,6 +8,7 @@ namespace Tewl.InputValidation {
 	/// This class allows you to control what happens when a validation method generates an error. Every validation method takes a ValidationErrorHandler object
 	/// as the first parameter. Currently you can't re-use these objects for more than one validation call since most validation methods don't reset LastResult.
 	/// </summary>
+	[ PublicAPI ]
 	public class ValidationErrorHandler {
 		/// <summary>
 		/// Method that handles errors instead of the default handling mechanism.

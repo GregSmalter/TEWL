@@ -2,12 +2,14 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.IO;
+using JetBrains.Annotations;
 using Tewl.InputValidation;
 
 namespace Tewl.IO {
 	/// <summary>
 	/// Use this to process several lines of any type of tabular data, such as CSVs or fixed-width data files.
 	/// </summary>
+	[ PublicAPI ]
 	public class TabularDataParser {
 		/// <summary>
 		/// Method that knows how to process a line from a particular file.  The validator is new for each row and has no errors, initially.

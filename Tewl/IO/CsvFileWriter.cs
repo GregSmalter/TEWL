@@ -1,9 +1,11 @@
 using System.IO;
+using JetBrains.Annotations;
 
 namespace Tewl.IO {
 	/// <summary>
 	/// Helps in writing data to a file in CSV format.
 	/// </summary>
+	[ PublicAPI ]
 	public class CsvFileWriter: TabularDataFileWriter {
 		private string line = "";
 

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using ClosedXML.Excel;
+using JetBrains.Annotations;
 using Tewl.InputValidation;
 using Tewl.Tools;
 
@@ -8,6 +9,7 @@ namespace Tewl.IO {
 	/// <summary>
 	/// Represents a worksheet inside an Excel workbook (file).
 	/// </summary>
+	[ PublicAPI ]
 	public class ExcelWorksheet {
 		private readonly IXLWorksheet worksheet;
 		private int rowIndex = 1;

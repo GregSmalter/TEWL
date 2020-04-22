@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using Humanizer;
+using JetBrains.Annotations;
 
 namespace Tewl.Tools {
 	/// <summary>
 	/// Tools for collections.
 	/// </summary>
+	[ PublicAPI ]
 	public static class CollectionTools {
 		/// <summary>
 		/// Sorts the list alphabetically (ascending) based on the ToString value of each element.

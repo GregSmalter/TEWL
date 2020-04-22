@@ -1,12 +1,14 @@
 using System;
 using System.IO;
 using Humanizer;
+using JetBrains.Annotations;
 using Tewl.Tools;
 
 namespace Tewl.IO {
 	/// <summary>
 	/// Helps communicate with standard out, standard error, and files.
 	/// </summary>
+	[ PublicAPI ]
 	public class Output {
 		/// <summary>
 		/// Permanently redirects standard output and error to file, with autoflushing enabled.

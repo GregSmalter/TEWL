@@ -1,10 +1,12 @@
 ﻿using System;
 using Humanizer;
+using JetBrains.Annotations;
 
 namespace Tewl.Tools {
 	/// <summary>
 	/// Provides helpful TimeSpan methods.
 	/// </summary>
+	[ PublicAPI ]
 	public static class TimeSpanTools {
 		/// <summary>
 		/// Returns the given timespan in the form "3:24" for three hours and twenty-four minutes.

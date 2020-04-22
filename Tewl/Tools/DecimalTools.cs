@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Numerics;
+using JetBrains.Annotations;
 
 namespace Tewl.Tools {
 	/// <summary>
 	/// Extension methods for decimals.
 	/// </summary>
+	[ PublicAPI ]
 	public static class DecimalTools {
 		// Avoiding implicit conversions just for clarity.
 		private static readonly BigInteger ten = new BigInteger( 10 );

@@ -1,10 +1,12 @@
 using System.IO;
 using System.Text;
+using JetBrains.Annotations;
 
 namespace Tewl.IO {
 	/// <summary>
 	/// Used to transparently read from a file given its path, stream, etc.
 	/// </summary>
+	[ PublicAPI ]
 	public class FileReader {
 		/// <summary>
 		/// Method that requires the use of an open StreamReader object.

@@ -2,11 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using JetBrains.Annotations;
 
 namespace Tewl.Tools {
 	/// <summary>
 	/// Tools for the <see cref="Random" /> class. Not like, a random set of tools.
 	/// </summary>
+	[ PublicAPI ]
 	public static class RandomTools {
 		/// <summary>
 		/// Returns a random string with the given min and max lengths (both inclusive). The default minLength is 0 (empty string

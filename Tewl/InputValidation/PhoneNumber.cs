@@ -1,10 +1,12 @@
 using System;
+using JetBrains.Annotations;
 
 namespace Tewl.InputValidation {
 	/// <summary>
 	/// Represents a phone number consiting of area code, number, and optional extension.
 	/// Also supports international numbers.  If IsInternational is true, area code, number, and extension are irrelevant.
 	/// </summary>
+	[ PublicAPI ]
 	public class PhoneNumber {
 		private string areaCode = "";
 		private string number = "";

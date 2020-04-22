@@ -1,11 +1,13 @@
 using System;
 using System.Text.RegularExpressions;
+using JetBrains.Annotations;
 using Tewl.Tools;
 
 namespace Tewl.InputValidation {
 	/// <summary>
 	/// A zip code.
 	/// </summary>
+	[ PublicAPI ]
 	public class ZipCode {
 		private const string usPattern = @"(?<zip>^\d{5})(-?(?<plus4>\d{4}))?$";
 		private const string canadianPattern = @"(?<caZip>^[ABCEGHJKLMNPRSTVXY]{1}\d{1}[A-Z]{1} *\d{1}[A-Z]{1}\d{1}$)";

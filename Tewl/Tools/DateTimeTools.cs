@@ -2,11 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using Humanizer;
+using JetBrains.Annotations;
 
 namespace Tewl.Tools {
 	/// <summary>
 	/// Provides helpful DateTime methods.
 	/// </summary>
+	[ PublicAPI ]
 	public static class DateTimeTools {
 		internal static readonly string[] DayMonthYearFormats = { dayMonthYearFormatLz, dayMonthYearFormat };
 		internal static readonly string[] MonthDayYearFormats = { monthDayYearFormat, "MM/dd/yy" };
