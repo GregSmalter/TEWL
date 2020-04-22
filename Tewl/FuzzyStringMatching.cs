@@ -1,6 +1,12 @@
 ﻿using System;
+using JetBrains.Annotations;
 
 namespace Tewl {
+
+	/// <summary>
+	/// Tools for fuzzy string matching.
+	/// </summary>
+	[ PublicAPI ]
 	public static class FuzzyStringMatching {
 		/// <summary>
 		/// Calculates the Levenshtein Distance between two strings.
@@ -10,7 +16,7 @@ namespace Tewl {
 		/// <param name="firstString">First string to calculate the distance</param>
 		/// <param name="secondString">Second string to calculate the distance</param>
 		/// <param name="ignoreCase">Specifies whether to ignore case in comparison</param>
-		/// <returns>int represending the Levenshtein Distance</returns>
+		/// <returns>int representing the Levenshtein Distance</returns>
 		public static int LevenshteinDistance( string firstString, string secondString, bool ignoreCase ) {
 			var strF = ignoreCase ? firstString.ToLower() : firstString;
 			var strS = ignoreCase ? secondString.ToLower() : secondString;

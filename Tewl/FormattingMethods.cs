@@ -1,4 +1,5 @@
 using System;
+using JetBrains.Annotations;
 using Tewl.InputValidation;
 using Tewl.Tools;
 
@@ -6,6 +7,7 @@ namespace Tewl {
 	/// <summary>
 	/// Contains methods that prepare data for display. Data is assumed to be valid.
 	/// </summary>
+	[ PublicAPI ]
 	public static class FormattingMethods {
 		/// <summary>
 		/// Formats the specified phone number in the 555-555-5555 x1234 style. Does not accept null.

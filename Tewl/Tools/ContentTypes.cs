@@ -1,10 +1,12 @@
 ﻿using System.Linq;
 using System.Net.Mime;
+using JetBrains.Annotations;
 
 namespace Tewl.Tools {
 	/// <summary>
 	/// String constants for the content types for common file types.
 	/// </summary>
+	[ PublicAPI ]
 	public static class ContentTypes {
 		/// <summary>
 		/// Content type to be used for Android application packages.

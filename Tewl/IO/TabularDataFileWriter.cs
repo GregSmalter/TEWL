@@ -1,9 +1,11 @@
 ﻿using System.IO;
+using JetBrains.Annotations;
 
 namespace Tewl.IO {
 	/// <summary>
 	/// Provides a way to write tabular data to files.
 	/// </summary>
+	[ PublicAPI ]
 	public interface TabularDataFileWriter {
 		/// <summary>
 		/// Clears the current line.  This does not affect the file at all, it simply undoes any

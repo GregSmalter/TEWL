@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
+using JetBrains.Annotations;
 using Tewl.Tools;
 
 namespace Tewl.InputValidation {
@@ -11,6 +12,7 @@ namespace Tewl.InputValidation {
 	/// ValidationErrorHandler.LastResult is anything other than ErrorCondition.NoError. This property or the ErrorsOccurred property on this class should be
 	/// checked before using returned values.
 	/// </summary>
+	[ PublicAPI ]
 	public class Validator {
 		// NOTE: There is already something called this.  Also, put it in its own file.
 		private delegate T ValidationMethod<T>();

@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Text;
+using JetBrains.Annotations;
 using Tewl.Exceptions;
 
 namespace Tewl.Tools {
 	/// <summary>
 	/// Convenience methods for invoking external Processes.
 	/// </summary>
+	[ PublicAPI ]
 	public static class ProcessTools {
 		/// <summary>
 		/// Runs the specified program with the specified arguments and passes in the specified input. If the program is in a folder that is included in the Path environment variable,

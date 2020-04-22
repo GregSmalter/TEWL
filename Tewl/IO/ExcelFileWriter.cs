@@ -3,12 +3,14 @@ using System.IO;
 using System.Linq;
 using ClosedXML.Excel;
 using Humanizer;
+using JetBrains.Annotations;
 using Tewl.Tools;
 
 namespace Tewl.IO {
 	/// <summary>
 	/// Represents an Excel workbook (file).
 	/// </summary>
+	[ PublicAPI ] 
 	public class ExcelFileWriter {
 		/// <summary>
 		/// Gets a safe file name (using ToSafeFileName) using the appropriate extension.

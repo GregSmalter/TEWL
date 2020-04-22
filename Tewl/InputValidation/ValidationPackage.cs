@@ -1,9 +1,11 @@
 using System.Collections;
+using JetBrains.Annotations;
 
 namespace Tewl.InputValidation {
 	/// <summary>
 	/// Common data required to validate and build an error message for a piece of data.
 	/// </summary>
+	[ PublicAPI ]
 	public class ValidationPackage {
 		private readonly string subject;
 		private readonly IDictionary customMessages;

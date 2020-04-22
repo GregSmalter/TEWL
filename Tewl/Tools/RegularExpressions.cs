@@ -1,9 +1,11 @@
 ﻿using System.Text.RegularExpressions;
+using JetBrains.Annotations;
 
 namespace Tewl.Tools {
 	/// <summary>
 	/// Contains common regular expression strings.
 	/// </summary>
+	[ PublicAPI ]
 	public class RegularExpressions {
 		/// <summary>
 		/// This regex will match anything inside and including &lt;&gt; brackets. %lt;/?\w+((\s+\w+(\s*=\s*(?:".*?"|'.*?'|[^'"&gt;\s]+))?)+\s*|\s*)/?&gt;

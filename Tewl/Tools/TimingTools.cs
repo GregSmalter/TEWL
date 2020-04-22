@@ -4,6 +4,10 @@ using System.Threading.Tasks;
 using JetBrains.Annotations;
 
 namespace Tewl.Tools {
+	/// <summary>
+	/// Tools for timing the duration of an execution.
+	/// </summary>
+	[ PublicAPI ]
 	public static class TimingTools {
 		/// <summary>
 		/// Times the execution of the given function. Returns the duration.

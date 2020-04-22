@@ -5,11 +5,13 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using JetBrains.Annotations;
 
 namespace Tewl.Tools {
 	/// <summary>
 	/// Provides helpful string methods.
 	/// </summary>
+	[ PublicAPI ]
 	public static class StringTools {
 		/// <summary>
 		/// Returns a two-element string array containing

@@ -2,12 +2,14 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using JetBrains.Annotations;
 using Tewl.Tools;
 
 namespace Tewl.IO {
 	/// <summary>
 	/// Parses a line of a Microsoft Excel CSV file using the definition of CSV at http://en.wikipedia.org/wiki/Comma-separated_values.
 	/// </summary>
+	[ PublicAPI ]
 	public class CsvLineParser: Parser {
 		private readonly Dictionary<string,int> columnHeadersToIndexes = new Dictionary<string, int>();
 

@@ -1,7 +1,10 @@
+using JetBrains.Annotations;
+
 namespace Tewl.InputValidation {
 	/// <summary>
 	/// Represents a validation error.
 	/// </summary>
+	[ PublicAPI ]
 	public class Error {
 		private readonly string message;
 		private readonly bool unusableValueReturned;

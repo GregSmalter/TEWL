@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Text;
+using JetBrains.Annotations;
 
 namespace Tewl.Exceptions {
 	/// <inheritdoc />
 	/// <summary>
 	/// Thrown when there is an error running a program.
 	/// </summary>
+	[ PublicAPI ]
 	public class RunProgramException: Exception {
 		private readonly string message;
 		private readonly int? errorCode;

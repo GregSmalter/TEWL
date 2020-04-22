@@ -5,12 +5,14 @@ using System.Linq;
 using System.Net;
 using System.Threading;
 using Humanizer;
+using JetBrains.Annotations;
 using Tewl.Tools;
 
 namespace Tewl.IO {
 	/// <summary>
 	/// A collection of IO-related static methods.
 	/// </summary>
+	[ PublicAPI ]
 	public static class IoMethods {
 		/// <summary>
 		/// Creates the destination path if it does not exist, and downloads the file to that destination path.

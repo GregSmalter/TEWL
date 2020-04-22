@@ -2,11 +2,13 @@
 using System.IO;
 using System.Text;
 using System.Xml.Serialization;
+using JetBrains.Annotations;
 
 namespace Tewl.Tools {
 	/// <summary>
 	/// XML Tools.
 	/// </summary>
+	[ PublicAPI ]
 	public static class XmlTools {
 		/// <summary>
 		/// Serializes the given type to XML.
@@ -23,6 +25,9 @@ namespace Tewl.Tools {
 		/// </summary>
 		public static T Deserialize<T>( string s ) => (T)Deserialize( typeof( T ), s );
 
+		/// <summary>
+		/// Deserializes the given string to the given type.
+		/// </summary>
 		public static object Deserialize( Type t, string s ) => new XmlSerializer( t ).Deserialize( new StringReader( s ) );
 
 		/// <summary>

@@ -1,7 +1,10 @@
+using JetBrains.Annotations;
+
 namespace Tewl.InputValidation {
 	/// <summary>
 	/// The list of possible error types.
 	/// </summary>
+	[ PublicAPI ]
 	public enum ErrorCondition {
 		/// <summary>
 		/// NoError

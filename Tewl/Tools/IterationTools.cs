@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using JetBrains.Annotations;
 
 namespace Tewl.Tools {
 	/// <summary>
 	/// Helpful functions based-on iteration.
 	/// </summary>
+	[ PublicAPI ]
 	public static class IterationTools {
 		/// <summary>
 		/// Passes <paramref name="rowsAtaTime" /> items from <paramref name="rows" /> to <paramref name="someRowsAction" /> at a

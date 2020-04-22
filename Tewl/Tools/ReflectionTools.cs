@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Linq;
 using System.Linq.Expressions;
+using JetBrains.Annotations;
 
 namespace Tewl.Tools {
 	/// <summary>
 	/// Reflection-based utilities.
 	/// </summary>
+	[ PublicAPI ]
 	public static class ReflectionTools {
 		/// <summary>
 		/// Returns the name of the property in the provided expression.

@@ -5,11 +5,13 @@ using System.Runtime.Serialization;
 using System.Xml;
 using System.Xml.Schema;
 using System.Xml.Serialization;
+using JetBrains.Annotations;
 
 namespace Tewl.IO {
 	/// <summary>
 	/// Contains methods that serialize objects to and deserialize objects from XML. Object types should be auto-generated using SvcUtil or Xsd.
 	/// </summary>
+	[ PublicAPI ]
 	public static class XmlOps {
 		/// <summary>
 		/// Serializes an instance of the specified main element type into an XML string.

@@ -1,11 +1,13 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using JetBrains.Annotations;
 
 namespace Tewl.IO {
 	/// <summary>
 	/// Helps in writing data to a file in tab-separated values format.
 	/// </summary>
+	[ PublicAPI ]
 	public class TabDelimitedFileWriter: TabularDataFileWriter {
 		private const char delimiter = '\t';
 		private string line = "";
