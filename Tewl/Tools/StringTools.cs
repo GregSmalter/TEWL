@@ -600,5 +600,82 @@ namespace Tewl.Tools {
 		private static string removeDiacritics( this string s ) =>
 			new string( s.Normalize( NormalizationForm.FormD ).Where( c => CharUnicodeInfo.GetUnicodeCategory( c ) != UnicodeCategory.NonSpacingMark ).ToArray() ).Normalize(
 				NormalizationForm.FormC );
+
+		/// <summary>
+		/// Returns the index of <paramref name="numWords" /> before <paramref name="matchIndex" /> in string
+		/// <paramref name="str" />, or the beginning of the string.
+		/// </summary>
+		/// <param name="str">The string to search.</param>
+		/// <param name="numWords">The number of words</param>
+		/// <param name="matchIndex">The index of this string to begin counting words.</param>
+		public static int IndexOfNumWordsBeforeMatch( this string str, int numWords, int matchIndex ) {
+			var startIndex = matchIndex;
+			var i = startIndex;
+			var foundWordCharAfterWhitespace = false;
+			do {
+				startIndex = i;
+				if( --i < 0 )
+					break;
+
+				if( char.IsWhiteSpace( str[ i ] ) ) {
+					if( !foundWordCharAfterWhitespace ) {
+						--numWords;
+						foundWordCharAfterWhitespace = true;
+					}
+				}
+				else
+					foundWordCharAfterWhitespace = false;
+			}
+			while( 0 <= numWords );
+
+			return startIndex;
+		}
+
+		/// <summary>
+		/// Returns the index of <paramref name="numWords" /> after <paramref name="matchIndex" /> in string
+		/// <paramref name="str" />, or the end of the string.
+		/// </summary>
+		/// <param name="str">The string to search.</param>
+		/// <param name="numWords">The number of words</param>
+		/// <param name="matchIndex">The index of this string to begin counting words.</param>
+		public static int IndexOfNumWordsAfterMatch( this string str, int numWords, int matchIndex ) {
+			var endIndex = matchIndex;
+			var i = endIndex;
+			var foundWordCharAfterWhitespace = false;
+			do {
+				endIndex = i;
+				if( str.Length - 1 < ++i )
+					break;
+
+				if( char.IsWhiteSpace( str[ i ] ) ) {
+					if( !foundWordCharAfterWhitespace ) {
+						--numWords;
+						foundWordCharAfterWhitespace = true;
+					}
+				}
+				else
+					foundWordCharAfterWhitespace = false;
+			}
+			while( 0 <= numWords );
+
+			return endIndex;
+		}
+
+		/// <summary>
+		/// Returns this byte array as a Base64 string.
+		/// </summary>
+		public static string ToBase64( this byte[] b ) => Convert.ToBase64String( b );
+
+		/// <summary>
+		/// Returns a string in the format of "a, b, c" for the provided collection.
+		/// </summary>
+		public static string GetCommaDelimitedString( this IEnumerable<string> strs ) => ConcatenateWithDelimiter( ", ", strs );
+
+		/// <summary>
+		/// Extension method for <see cref="string.IsNullOrEmpty" />
+		/// </summary>
+		/// <param name="s"></param>
+		/// <returns></returns>
+		public static bool IsNullOrEmpty( this string s ) => string.IsNullOrEmpty( s );
 	}
 }
