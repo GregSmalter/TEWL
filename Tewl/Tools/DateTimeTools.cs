@@ -252,5 +252,22 @@ namespace Tewl.Tools {
 				return ( date.Day - DateTime.DaysInMonth( date.Year, date.Month ) ) / 7 - 1;
 			return ( date.Day - 1 ) / 7;
 		}
+
+		/// <summary>
+		/// Returns the given UTC <see cref="DateTime" /> to local time.
+		/// Doesn't matter if <see cref="DateTime.Kind" /> is correctly set.
+		/// Null values return null.
+		/// </summary>
+		/// <param name="d"></param>
+		/// <returns></returns>
+		public static DateTime? UtcToLocal( this DateTime? d ) => d != null ? TimeZoneInfo.ConvertTimeFromUtc( d.Value, TimeZoneInfo.Local ) : (DateTime?)null;
+
+		/// <summary>
+		/// Returns the given UTC <see cref="DateTime" /> to local time.
+		/// Doesn't matter if <see cref="DateTime.Kind" /> is correctly set.
+		/// </summary>
+		/// <param name="d"></param>
+		/// <returns></returns>
+		public static DateTime UtcToLocal( this DateTime d ) => UtcToLocal( (DateTime?)d ).Value;
 	}
 }
