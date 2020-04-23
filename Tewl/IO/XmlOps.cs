@@ -9,7 +9,8 @@ using JetBrains.Annotations;
 
 namespace Tewl.IO {
 	/// <summary>
-	/// Contains methods that serialize objects to and deserialize objects from XML. Object types should be auto-generated using SvcUtil or Xsd.
+	/// Contains methods that serialize objects to and deserialize objects from XML. Object types should be auto-generated
+	/// using SvcUtil or Xsd.
 	/// </summary>
 	[ PublicAPI ]
 	public static class XmlOps {
@@ -73,8 +74,9 @@ namespace Tewl.IO {
 				settings.ValidationFlags |= XmlSchemaValidationFlags.ProcessSchemaLocation;
 				settings.ValidationFlags |= XmlSchemaValidationFlags.ReportValidationWarnings;
 			}
+
 			var validationErrors = new List<string>();
-			settings.ValidationEventHandler += ( ( sender, e ) => validationErrors.Add( e.Message ) );
+			settings.ValidationEventHandler += ( sender, e ) => validationErrors.Add( e.Message );
 
 			// Deserialize the XML file.
 			TMainElement mainElement;
@@ -107,8 +109,6 @@ namespace Tewl.IO {
 				return DeserializeFromStream<TMainElement>( stream, performSchemaValidation );
 		}
 
-		private static bool isDataContract<TMainElement>() {
-			return typeof( TMainElement ).GetCustomAttributes( typeof( DataContractAttribute ), false ).Length > 0;
-		}
+		private static bool isDataContract<TMainElement>() => typeof( TMainElement ).GetCustomAttributes( typeof( DataContractAttribute ), false ).Length > 0;
 	}
 }

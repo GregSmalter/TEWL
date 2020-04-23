@@ -1,6 +1,4 @@
-using System.Collections;
 using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.IO;
 using JetBrains.Annotations;
 using Tewl.InputValidation;
@@ -12,7 +10,8 @@ namespace Tewl.IO {
 	[ PublicAPI ]
 	public class TabularDataParser {
 		/// <summary>
-		/// Method that knows how to process a line from a particular file.  The validator is new for each row and has no errors, initially.
+		/// Method that knows how to process a line from a particular file.  The validator is new for each row and has no errors,
+		/// initially.
 		/// </summary>
 		public delegate void LineProcessingMethod( Validator validator, ParsedLine line );
 
@@ -22,89 +21,90 @@ namespace Tewl.IO {
 		private bool hasHeaderRow;
 
 		/// <summary>
-		/// The number of rows in the file, not including the header rows that were skipped with headerRowsToSkip or hasHeaderRows = true.
+		/// The number of rows in the file, not including the header rows that were skipped with headerRowsToSkip or hasHeaderRows
+		/// = true.
 		/// This is the number of rows in the file that were parsed.
-		/// This properly only has meaning after ParseAndProcessAllLines has been called. 
+		/// This properly only has meaning after ParseAndProcessAllLines has been called.
 		/// </summary>
 		public int NonHeaderRows { get; private set; }
 
 		/// <summary>
-		/// The number of header rows in the file. This is equal to 1 if hasHeaderRow was passed as true, or equal to headerRowsToSkip otherwise.
+		/// The number of header rows in the file. This is equal to 1 if hasHeaderRow was passed as true, or equal to
+		/// headerRowsToSkip otherwise.
 		/// </summary>
-		public int HeaderRows { get { return hasHeaderRow ? 1 : headerRowsToSkip; } }
+		public int HeaderRows => hasHeaderRow ? 1 : headerRowsToSkip;
 
 		/// <summary>
-		/// The total number of rows in the file, including any header rows. This properly only has meaning after ParseAndProcessAllLines has been called. 
+		/// The total number of rows in the file, including any header rows. This properly only has meaning after
+		/// ParseAndProcessAllLines has been called.
 		/// </summary>
-		public int TotalRows { get { return HeaderRows + NonHeaderRows; } }
+		public int TotalRows => HeaderRows + NonHeaderRows;
 
 		/// <summary>
 		/// The number of rows in the file with at least one non-blank field.
-		/// This properly only has meaning after ParseAndProcessAllLines has been called. 
+		/// This properly only has meaning after ParseAndProcessAllLines has been called.
 		/// This is the number of rows in that file that were processed (the lineHandler callback was performed).
 		/// </summary>
 		public int RowsContainingData { get; private set; }
 
 		/// <summary>
 		/// The number of rows in the file that were processed without encountering any validation errors.
-		/// This properly only has meaning after ParseAndProcessAllLines has been called. 
+		/// This properly only has meaning after ParseAndProcessAllLines has been called.
 		/// </summary>
 		public int RowsWithoutValidationErrors { get; private set; }
 
 		/// <summary>
 		/// The number of rows in the file that did encounter validation errors when processed.
-		/// This properly only has meaning after ParseAndProcessAllLines has been called. 
+		/// This properly only has meaning after ParseAndProcessAllLines has been called.
 		/// </summary>
-		public int RowsWithValidationErrors { get { return RowsContainingData - RowsWithoutValidationErrors; } }
+		public int RowsWithValidationErrors => RowsContainingData - RowsWithoutValidationErrors;
 
 		private TabularDataParser() { }
 
 		/// <summary>
-		/// Creates a parser designed to parse a file with fixed data column widths. Specify the starting position of each column (using one-based column index).
+		/// Creates a parser designed to parse a file with fixed data column widths. Specify the starting position of each column
+		/// (using one-based column index).
 		/// Characters that take up more than 1 unit of width, such as tabs, can cause problems here.
 		/// </summary>
-		public static TabularDataParser CreateForFixedWidthFile( string filePath, int headerRowsToSkip, params int[] columnStartPositions ) {
-			return new TabularDataParser
-				{
-					fileReader = new FileReader( filePath ), headerRowsToSkip = headerRowsToSkip, parser = new FixedWidthParser( columnStartPositions )
-				};
-		}
+		public static TabularDataParser CreateForFixedWidthFile( string filePath, int headerRowsToSkip, params int[] columnStartPositions ) =>
+			new TabularDataParser { fileReader = new FileReader( filePath ), headerRowsToSkip = headerRowsToSkip, parser = new FixedWidthParser( columnStartPositions ) };
 
 		/// <summary>
-		/// Creates a parser designed to parse a CSV file.  Passing true for hasHeaderRow will result in the first row being used to map
-		/// header names to column indices.  This will allow you to access fields using the header name in addition to the column index.
+		/// Creates a parser designed to parse a CSV file.  Passing true for hasHeaderRow will result in the first row being used
+		/// to map
+		/// header names to column indices.  This will allow you to access fields using the header name in addition to the column
+		/// index.
 		/// </summary>
-		public static TabularDataParser CreateForCsvFile( string filePath, bool hasHeaderRow ) {
-			return new TabularDataParser { fileReader = new FileReader( filePath ), hasHeaderRow = hasHeaderRow, parser = new CsvLineParser() };
-		}
+		public static TabularDataParser CreateForCsvFile( string filePath, bool hasHeaderRow ) =>
+			new TabularDataParser { fileReader = new FileReader( filePath ), hasHeaderRow = hasHeaderRow, parser = new CsvLineParser() };
 
 		/// <summary>
-		/// Creates a parser designed to parse a CSV file.  Passing true for hasHeaderRow will result in the first row being used to map
-		/// header names to column indices.  This will allow you to access fields using the header name in addition to the column index.
+		/// Creates a parser designed to parse a CSV file.  Passing true for hasHeaderRow will result in the first row being used
+		/// to map
+		/// header names to column indices.  This will allow you to access fields using the header name in addition to the column
+		/// index.
 		/// </summary>
-		public static TabularDataParser CreateForCsvFile( Stream stream, bool hasHeaderRow ) {
-			return new TabularDataParser { fileReader = new FileReader( stream ), hasHeaderRow = hasHeaderRow, parser = new CsvLineParser() };
-		}
+		public static TabularDataParser CreateForCsvFile( Stream stream, bool hasHeaderRow ) =>
+			new TabularDataParser { fileReader = new FileReader( stream ), hasHeaderRow = hasHeaderRow, parser = new CsvLineParser() };
 
 		/// <summary>
 		/// For every line (after headerRowsToSkip) in the file with the given path, calls the line handling method you pass.
 		/// Each line handler method will be given a fresh validator to do its work with.
 		/// </summary>
-		public void ParseAndProcessAllLines( LineProcessingMethod lineHandler ) {
-			ParseAndProcessAllLines( lineHandler, null );
-		}
+		public void ParseAndProcessAllLines( LineProcessingMethod lineHandler ) => ParseAndProcessAllLines( lineHandler, null );
 
 		/// <summary>
 		/// For every line (after headerRowsToSkip) in the file with the given path, calls the line handling method you pass.
 		/// The validationErrors collection will hold all validation errors encountered during the processing of all lines.
-		/// When processing extremely large data sets, accumulating validationErrors in one collection may result in high memory usage. To avoid
+		/// When processing extremely large data sets, accumulating validationErrors in one collection may result in high memory
+		/// usage. To avoid
 		/// this, use the overload without this collection.
 		/// Each line handler method will be given a fresh validator to do its work with.
 		/// </summary>
 		public void ParseAndProcessAllLines( LineProcessingMethod lineHandler, ICollection<ValidationError> validationErrors ) {
 			fileReader.ExecuteInStreamReader(
 				delegate( StreamReader reader ) {
-					Dictionary<string,int> columnHeadersToIndexes = null;
+					Dictionary<string, int> columnHeadersToIndexes = null;
 					if( hasHeaderRow )
 						columnHeadersToIndexes = buildColumnHeadersToIndexesDictionary( reader.ReadLine() );
 
@@ -122,9 +122,10 @@ namespace Tewl.IO {
 							var validator = new Validator();
 							lineHandler( validator, parsedLine );
 							if( validator.ErrorsOccurred ) {
-								if( validationErrors != null )
+								if( validationErrors != null ) {
 									foreach( var error in validator.Errors )
 										validationErrors.Add( new ValidationError( "Line " + lineNumber, error.UnusableValueReturned, error.Message ) );
+								}
 							}
 							else
 								RowsWithoutValidationErrors++;
@@ -133,8 +134,8 @@ namespace Tewl.IO {
 				} );
 		}
 
-		private Dictionary<string,int> buildColumnHeadersToIndexesDictionary( string headerLine ) {
-			var columnHeadersToIndexes = new Dictionary<string,int>();
+		private Dictionary<string, int> buildColumnHeadersToIndexesDictionary( string headerLine ) {
+			var columnHeadersToIndexes = new Dictionary<string, int>();
 			var index = 0;
 			foreach( var columnHeader in parser.Parse( headerLine ).Fields ) {
 				columnHeadersToIndexes[ columnHeader.ToLower() ] = index;

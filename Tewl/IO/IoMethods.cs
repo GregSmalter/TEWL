@@ -4,7 +4,6 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Threading;
-using Humanizer;
 using JetBrains.Annotations;
 using Tewl.Tools;
 
@@ -30,7 +29,8 @@ namespace Tewl.IO {
 		}
 
 		/// <summary>
-		/// Recursively copies the contents of the specified source directory to the specified destination directory. Creates the destination directory if it
+		/// Recursively copies the contents of the specified source directory to the specified destination directory. Creates the
+		/// destination directory if it
 		/// doesn't already exist.  Does not overwrite anything in the destination folder if it already exists.
 		/// </summary>
 		public static void CopyFolder( string src, string dest, bool overwriteExistingFiles ) {
@@ -39,15 +39,16 @@ namespace Tewl.IO {
 
 			foreach( var fsi in di.GetFileSystemInfos() ) {
 				var destName = Path.Combine( dest, fsi.Name );
-				if( fsi.GetType() == typeof( FileInfo ) )
+				if( fsi is FileInfo )
 					File.Copy( fsi.FullName, destName, overwriteExistingFiles );
-				else if( fsi.GetType() == typeof( DirectoryInfo ) )
+				else if( fsi is DirectoryInfo )
 					CopyFolder( fsi.FullName, destName, overwriteExistingFiles );
 			}
 		}
 
 		/// <summary>
-		/// Deletes the specified directory and its contents, if the directory exists. Supports deletion of partially or fully read-only directories.
+		/// Deletes the specified directory and its contents, if the directory exists. Supports deletion of partially or fully
+		/// read-only directories.
 		/// </summary>
 		public static void DeleteFolder( string path ) {
 			var numberOfFailures = 0;
@@ -66,7 +67,8 @@ namespace Tewl.IO {
 		}
 
 		/// <summary>
-		/// Deletes the file at the given path, or does nothing if it does not exist. Supports deletion of partially or fully read-only files.
+		/// Deletes the file at the given path, or does nothing if it does not exist. Supports deletion of partially or fully
+		/// read-only files.
 		/// </summary>
 		public static void DeleteFile( string path ) {
 			var numberOfFailures = 0;
@@ -114,25 +116,26 @@ namespace Tewl.IO {
 			var attributes = File.GetAttributes( path );
 			if( ( attributes & FileAttributes.ReadOnly ) == FileAttributes.ReadOnly )
 				File.SetAttributes( path, attributes & ~FileAttributes.ReadOnly );
-			if( Directory.Exists( path ) )
+			if( Directory.Exists( path ) ) {
 				foreach( var childPath in Directory.GetFileSystemEntries( path ) )
 					RecursivelyRemoveReadOnlyAttributeFromItem( childPath );
+			}
 		}
 
 		/// <summary>
-		/// Gets a list of file names (not including path) in the specified folder, ordered by modified date descending, that match the specified search pattern.
+		/// Gets a list of file names (not including path) in the specified folder, ordered by modified date descending, that match
+		/// the specified search pattern.
 		/// Does not include files in subfolders. If the folder does not exist, returns an empty collection.
 		/// </summary>
-		public static IEnumerable<string> GetFileNamesInFolder( string folderPath, string searchPattern = "*" ) {
-			return GetFilePathsInFolder( folderPath, searchPattern ).Select( Path.GetFileName );
-		}
+		public static IEnumerable<string> GetFileNamesInFolder( string folderPath, string searchPattern = "*" ) =>
+			GetFilePathsInFolder( folderPath, searchPattern ).Select( Path.GetFileName );
 
 		/// <summary>
-		/// Gets a list of file paths in the specified folder, ordered by last modified date descending, that match the specified search pattern. The default search
+		/// Gets a list of file paths in the specified folder, ordered by last modified date descending, that match the specified
+		/// search pattern. The default search
 		/// option is to not include files in subfolders. If the folder does not exist, returns an empty collection.
 		/// </summary>
-		public static IEnumerable<string> GetFilePathsInFolder(
-			string folderPath, string searchPattern = "*", SearchOption searchOption = SearchOption.TopDirectoryOnly ) {
+		public static IEnumerable<string> GetFilePathsInFolder( string folderPath, string searchPattern = "*", SearchOption searchOption = SearchOption.TopDirectoryOnly ) {
 			if( !Directory.Exists( folderPath ) )
 				return Enumerable.Empty<string>();
 			return new DirectoryInfo( folderPath ).EnumerateFiles( searchPattern, searchOption ).OrderByDescending( f => f.LastWriteTime ).Select( f => f.FullName );
@@ -141,16 +144,13 @@ namespace Tewl.IO {
 		/// <summary>
 		/// Gets a list of folder names in the specified folder.
 		/// </summary>
-		public static List<string> GetFolderNamesInFolder( string folderPath ) {
-			return Directory.GetDirectories( folderPath ).Select( Path.GetFileName ).ToList();
-		}
+		public static List<string> GetFolderNamesInFolder( string folderPath ) => Directory.GetDirectories( folderPath ).Select( Path.GetFileName ).ToList();
 
 		/// <summary>
 		/// Gets the sum size, in bytes, of everything in the folder at the given path (recursive).
 		/// </summary>
-		public static long GetFolderSize( string path ) {
-			return File.Exists( path ) ? new FileInfo( path ).Length : Directory.GetFileSystemEntries( path ).Sum( filePath => GetFolderSize( filePath ) );
-		}
+		public static long GetFolderSize( string path ) =>
+			File.Exists( path ) ? new FileInfo( path ).Length : Directory.GetFileSystemEntries( path ).Sum( filePath => GetFolderSize( filePath ) );
 
 		/// <summary>
 		/// Returns a text writer for writing a new file or overwriting an existing file.
@@ -159,9 +159,7 @@ namespace Tewl.IO {
 		/// is used as the root path.
 		/// Caller is responsible for properly disposing the stream.
 		/// </summary>
-		public static TextWriter GetTextWriterForWrite( string filePath ) {
-			return new StreamWriter( GetFileStreamForWrite( filePath ) );
-		}
+		public static TextWriter GetTextWriterForWrite( string filePath ) => new StreamWriter( GetFileStreamForWrite( filePath ) );
 
 		/// <summary>
 		/// Returns a file stream for writing a new file or overwriting an existing file.
@@ -183,13 +181,21 @@ namespace Tewl.IO {
 
 			// Instead of deleting the file in a finally block, we pass FileOptions.DeleteOnClose because it will ensure that the file gets deleted even if our
 			// process terminates unexpectedly.
-			using( var stream = new FileStream( Path.GetTempFileName(), FileMode.Open, FileAccess.ReadWrite, FileShare.None, bufferSize, FileOptions.DeleteOnClose ) )
+			using( var stream = new FileStream(
+				Path.GetTempFileName(),
+				FileMode.Open,
+				FileAccess.ReadWrite,
+				FileShare.None,
+				bufferSize,
+				FileOptions.DeleteOnClose ) )
 				method( stream );
 		}
 
 		/// <summary>
-		/// Automatically creates and cleans up a temporary folder for the given method to use. Passes the folder path to the given action.
-		/// There is a race condition here: another process could create a directory after we check if our folder path exists, but before we create the folder. See
+		/// Automatically creates and cleans up a temporary folder for the given method to use. Passes the folder path to the given
+		/// action.
+		/// There is a race condition here: another process could create a directory after we check if our folder path exists, but
+		/// before we create the folder. See
 		/// http://stackoverflow.com/a/217198/35349. We believe this is unlikely and is an acceptable risk.
 		/// </summary>
 		public static void ExecuteWithTempFolder( Action<string> method ) {
@@ -213,11 +219,11 @@ namespace Tewl.IO {
 		/// </summary>
 		public static string GetFirstExistingFolderPath( IReadOnlyCollection<string> folderPaths, string folderAdjective ) {
 			var first = folderPaths.FirstOrDefault( Directory.Exists );
-			if( first == null )
+			if( first == null ) {
 				throw new ApplicationException(
-					"Unable to find a {0} folder. The following paths do not exist or are inaccessible: {1}".FormatWith(
-						folderAdjective,
-						folderPaths.GetCommaDelimitedStringFromCollection() ) );
+					$"Unable to find a {folderAdjective} folder. The following paths do not exist or are inaccessible: {folderPaths.GetCommaDelimitedStringFromCollection()}" );
+			}
+
 			return first;
 		}
 	}

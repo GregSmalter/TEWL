@@ -108,8 +108,7 @@ namespace Tewl.Tools {
 			assertDateTimeHasNoTime( onOrAfterDate, "on or after date" );
 			assertDateTimeHasNoTime( onOrBeforeDate, "on or before date" );
 
-			if( onOrBeforeDate.HasValue )
-				onOrBeforeDate = onOrBeforeDate.Value.AddDays( 1 );
+			onOrBeforeDate = onOrBeforeDate?.AddDays( 1 );
 			return IsBetweenDateTimes( dateTime, onOrAfterDate, onOrBeforeDate );
 		}
 
@@ -209,7 +208,7 @@ namespace Tewl.Tools {
 			var age = endDate.Year - beginDate.Year;
 
 			// ...then check for the 1-year offset
-			if( endDate.Month < beginDate.Month || ( endDate.Month == beginDate.Month && endDate.Day < beginDate.Day ) )
+			if( endDate.Month < beginDate.Month || endDate.Month == beginDate.Month && endDate.Day < beginDate.Day )
 				age -= 1;
 
 			return age;

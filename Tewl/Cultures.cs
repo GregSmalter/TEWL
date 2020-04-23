@@ -10,11 +10,11 @@ namespace Tewl {
 		/// <summary>
 		/// English (United States)
 		/// </summary>
-		public static CultureInfo EnglishUnitedStates { get { return CultureInfo.GetCultureInfo( "en-US" ); } }
+		public static CultureInfo EnglishUnitedStates => CultureInfo.GetCultureInfo( "en-US" );
 
 		/// <summary>
 		/// Spanish (Spain)
 		/// </summary>
-		public static CultureInfo SpanishSpain { get { return CultureInfo.GetCultureInfo( "es-ES" ); } }
+		public static CultureInfo SpanishSpain => CultureInfo.GetCultureInfo( "es-ES" );
 	}
 }

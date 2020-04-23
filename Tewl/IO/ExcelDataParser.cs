@@ -2,9 +2,15 @@
 using System.IO;
 using System.Linq;
 using ClosedXML.Excel;
+using JetBrains.Annotations;
 using Tewl.InputValidation;
 
 namespace Tewl.IO {
+
+	/// <summary>
+	/// Parses Excel files.
+	/// </summary>
+	[ PublicAPI ]
 	public class ExcelDataParser {
 		private readonly Stream fileStream;
 
@@ -35,6 +41,9 @@ namespace Tewl.IO {
 		/// </summary>
 		public int RowsWithValidationErrors => RowsContainingData - RowsWithoutValidationErrors;
 
+		/// <summary>
+		/// Creates a <see cref="ExcelDataParser"/>.
+		/// </summary>
 		public ExcelDataParser( Stream fileStream ) => this.fileStream = fileStream;
 
 		// GMS NOTE: Not sure if we should take stream in constructor or in this method. Not sure stream openness requirements we should have, or who should clean it up.

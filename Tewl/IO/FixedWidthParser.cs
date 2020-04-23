@@ -9,9 +9,7 @@ namespace Tewl.IO {
 		private int charactersToSkip;
 		private int[] columnWidths; // Maps column indices to column widths
 
-		public FixedWidthParser( int[] columnStartPositions ) {
-			buildColumnWidths( columnStartPositions );
-		}
+		public FixedWidthParser( int[] columnStartPositions ) => buildColumnWidths( columnStartPositions );
 
 		private void buildColumnWidths( int[] columnStartPositions ) {
 			if( columnStartPositions.Length == 0 )
@@ -21,7 +19,7 @@ namespace Tewl.IO {
 			if( charactersToSkip < 0 )
 				throw new ArgumentException( "The first column position must be positive.  Column positions are 1-based." );
 
-			columnWidths = new int[columnStartPositions.Length];
+			columnWidths = new int[ columnStartPositions.Length ];
 			for( var i = 1; i < columnStartPositions.Length; i++ ) {
 				var width = columnStartPositions[ i ] - columnStartPositions[ i - 1 ];
 				if( width < 1 )
@@ -44,6 +42,7 @@ namespace Tewl.IO {
 						fields.Add( parseFixedWidthField( tr, columnWidths[ i ] ).Trim() );
 				}
 			}
+
 			return new ParsedLine( fields );
 		}
 

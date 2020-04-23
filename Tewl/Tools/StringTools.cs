@@ -81,24 +81,24 @@ namespace Tewl.Tools {
 		/// </summary>
 		public static string RemoveNonAlphanumericCharacters( this string text, bool preserveWhiteSpace = false ) =>
 			// See http://stackoverflow.com/a/8779277/35349.
-			Regex.Replace( text, preserveWhiteSpace ? @"[^A-Za-z0-9\s]+" : @"[^A-Za-z0-9]+", "" );
+			Regex.Replace( text, preserveWhiteSpace ? @"[^A-Za-z0-9\s]+" : "[^A-Za-z0-9]+", "" );
 
 		/// <summary>
 		/// Removes all of the non-alpha characters, including white space, from this string.
 		/// </summary>
 		public static string RemoveNonAlphaCharacters( this string text ) =>
 			// See http://stackoverflow.com/a/8779277/35349.
-			Regex.Replace( text, @"[^A-Za-z]+", "" );
+			Regex.Replace( text, "[^A-Za-z]+", "" );
 
 		/// <summary>
 		/// Replaces each of the non-alphanumeric characters in this string with a space.
 		/// </summary>
-		public static string ReplaceNonAlphanumericCharactersWithWhiteSpace( this string text ) => Regex.Replace( text, @"[^A-Za-z0-9]", " " );
+		public static string ReplaceNonAlphanumericCharactersWithWhiteSpace( this string text ) => Regex.Replace( text, "[^A-Za-z0-9]", " " );
 
 		/// <summary>
 		/// Replaces each of the non-alpha characters in this string with a space.
 		/// </summary>
-		public static string ReplaceNonAlphaCharactersWithWhiteSpace( this string text ) => Regex.Replace( text, @"[^A-Za-z]", " " );
+		public static string ReplaceNonAlphaCharactersWithWhiteSpace( this string text ) => Regex.Replace( text, "[^A-Za-z]", " " );
 
 		/// <summary>
 		/// Removes all instances of all given characters from the
@@ -397,7 +397,7 @@ namespace Tewl.Tools {
 		/// will match.
 		/// </param>
 		public static bool IsLike( this string s, string pattern, bool ignoreSurroundingWhitespace = true, bool allowPartialMatches = true ) {
-			s = s ?? "";
+			s ??= "";
 			if( ignoreSurroundingWhitespace ) {
 				s = s.Trim();
 				pattern = pattern.Trim();
@@ -460,9 +460,7 @@ namespace Tewl.Tools {
 		/// <summary>
 		/// Returns a single word comprised of the first character of each word in this non null string.
 		/// </summary>
-		public static string ToAcronym( this string s ) {
-			return new string( s.Separate().Select( i => i.First() ).ToArray() );
-		}
+		public static string ToAcronym( this string s ) => new string( s.Separate().Select( i => i.First() ).ToArray() );
 
 		/// <summary>
 		/// An implementation of SoundEx roughly equivalent to SQL server's implementation. Returns the SoundEx code.

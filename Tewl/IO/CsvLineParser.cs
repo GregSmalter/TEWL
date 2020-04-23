@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
@@ -7,16 +6,17 @@ using Tewl.Tools;
 
 namespace Tewl.IO {
 	/// <summary>
-	/// Parses a line of a Microsoft Excel CSV file using the definition of CSV at http://en.wikipedia.org/wiki/Comma-separated_values.
+	/// Parses a line of a Microsoft Excel CSV file using the definition of CSV at
+	/// http://en.wikipedia.org/wiki/Comma-separated_values.
 	/// </summary>
 	[ PublicAPI ]
 	public class CsvLineParser: Parser {
-		private readonly Dictionary<string,int> columnHeadersToIndexes = new Dictionary<string, int>();
+		private readonly Dictionary<string, int> columnHeadersToIndexes = new Dictionary<string, int>();
 
 		/// <summary>
 		/// Creates a line parser with no header row.  Fields will be access via indexes rather than by column name.
 		/// </summary>
-		public CsvLineParser() {}
+		public CsvLineParser() { }
 
 		/// <summary>
 		/// Creates a line parser with a header row.  The column names are extracted from the header row, and
@@ -41,6 +41,7 @@ namespace Tewl.IO {
 				using( TextReader tr = new StringReader( line ) )
 					parseCommaSeparatedFields( tr, fields );
 			}
+
 			var parsedLine = new ParsedLine( fields );
 			parsedLine.ColumnHeadersToIndexes = columnHeadersToIndexes;
 			return parsedLine;

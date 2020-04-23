@@ -16,9 +16,7 @@ namespace Tewl.IO {
 		/// Clears the current line.  This does not affect the file at all, it simply undoes any
 		/// calls to AddValueToLine made since the last WriteCurrentLineToFile call.
 		/// </summary>
-		public void ClearLine() {
-			line = "";
-		}
+		public void ClearLine() => line = "";
 
 		/// <summary>
 		/// Adds the given value as a column on the current line.  Value may be null.  If
