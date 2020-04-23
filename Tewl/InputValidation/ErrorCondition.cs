@@ -50,5 +50,5 @@ namespace Tewl.InputValidation {
 		/// TooLate
 		/// </summary>
 		TooLate
-	} ;
+	}
 }

@@ -14,11 +14,17 @@ namespace Tewl.Exceptions {
 		internal string ProcessOutput;
 		internal string ProcessError;
 
-		public RunProgramException( string message, int? errorCode, Exception innerException = null ):base(null, innerException) {
+		/// <summary>
+		/// Constructs <see cref="RunProgramException"/>
+		/// </summary>
+		public RunProgramException( string message, int? errorCode, Exception innerException = null ): base( null, innerException ) {
 			this.message = message;
 			this.errorCode = errorCode;
 		}
 
+		/// <summary>
+		/// Exception informational message.
+		/// </summary>
 		public override string Message {
 			get {
 				try {

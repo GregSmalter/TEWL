@@ -15,8 +15,6 @@ namespace Tewl.Tools {
 		/// <summary>
 		/// Returns the given source string without /**/ comments.
 		/// </summary>
-		public static string RemoveMultiLineCStyleComments( string source ) {
-			return Regex.Replace( source, @"/\*.*?\*/", "", RegexOptions.Singleline );
-		}
+		public static string RemoveMultiLineCStyleComments( string source ) => Regex.Replace( source, @"/\*.*?\*/", "", RegexOptions.Singleline );
 	}
 }

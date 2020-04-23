@@ -1,5 +1,4 @@
-﻿using System;
-using JetBrains.Annotations;
+﻿using JetBrains.Annotations;
 
 namespace Tewl.Tools {
 	/// <summary>
@@ -14,7 +13,7 @@ namespace Tewl.Tools {
 		public static string ObjectToString( this object o, bool nullToEmptyString ) {
 			if( o != null )
 				return o.ToString();
-			return nullToEmptyString ? String.Empty : null;
+			return nullToEmptyString ? string.Empty : null;
 		}
 	}
 }

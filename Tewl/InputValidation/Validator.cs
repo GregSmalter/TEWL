@@ -8,8 +8,10 @@ using Tewl.Tools;
 
 namespace Tewl.InputValidation {
 	/// <summary>
-	/// Contains high-level validation methods. Each validation method returns an object that is the value of the validated result. This value is meaningless if
-	/// ValidationErrorHandler.LastResult is anything other than ErrorCondition.NoError. This property or the ErrorsOccurred property on this class should be
+	/// Contains high-level validation methods. Each validation method returns an object that is the value of the validated
+	/// result. This value is meaningless if
+	/// ValidationErrorHandler.LastResult is anything other than ErrorCondition.NoError. This property or the ErrorsOccurred
+	/// property on this class should be
 	/// checked before using returned values.
 	/// </summary>
 	[ PublicAPI ]
@@ -21,30 +23,35 @@ namespace Tewl.InputValidation {
 		internal static readonly DateTime SqlSmallDateTimeMaxValue = new DateTime( 2079, 6, 6 );
 
 		/// <summary>
-		/// Most of our SQL Server decimal columns are specified as (9,2). This is the minimum value that will fit in such a column.
+		/// Most of our SQL Server decimal columns are specified as (9,2). This is the minimum value that will fit in such a
+		/// column.
 		/// </summary>
 		public const decimal SqlDecimalDefaultMin = -9999999.99m;
 
 		/// <summary>
-		/// Most of our SQL Server decimal columns are specified as (9,2). This is the maximum value that will fit in such a column.
+		/// Most of our SQL Server decimal columns are specified as (9,2). This is the maximum value that will fit in such a
+		/// column.
 		/// </summary>
 		public const decimal SqlDecimalDefaultMax = 9999999.99m;
 
 		private readonly List<Error> errors = new List<Error>();
 
 		/// <summary>
-		/// The maximum length for a URL as dictated by the limitations of Internet Explorer. This is safely the maximum size for a URL.
+		/// The maximum length for a URL as dictated by the limitations of Internet Explorer. This is safely the maximum size for a
+		/// URL.
 		/// </summary>
 		public const int MaxUrlLength = 2048;
 
 		/// <summary>
-		/// Returns true if any errors have been encountered during validation so far.  This can be true even while ErrorMessages.Count == 0
+		/// Returns true if any errors have been encountered during validation so far.  This can be true even while
+		/// ErrorMessages.Count == 0
 		/// and Errors.Count == 0, since NoteError may have been called.
 		/// </summary>
 		public bool ErrorsOccurred { get; private set; }
 
 		/// <summary>
-		/// Returns true if at least one unusable value has been returned since this Validator was created.  An unusable value return
+		/// Returns true if at least one unusable value has been returned since this Validator was created.  An unusable value
+		/// return
 		/// is defined as any time a Get... fails validation and the Validator is forced to return something other than
 		/// a good default value.  An example of an unusable value would be a call to GetInt that fails validation.  An
 		/// example of a usable value is a call to GetNullableInt, with allowEmpty = true, that fails validation.
@@ -55,12 +62,14 @@ namespace Tewl.InputValidation {
 					if( error.UnusableValueReturned )
 						return true;
 				}
+
 				return false;
 			}
 		}
 
 		/// <summary>
-		/// Returns a deep copy of the list of error messages associated with the validation performed by this validator so far. It's possible for ErrorsOccurred to
+		/// Returns a deep copy of the list of error messages associated with the validation performed by this validator so far.
+		/// It's possible for ErrorsOccurred to
 		/// be true while ErrorsMessages.Count == 0, since NoteError may have been called.
 		/// </summary>
 		public List<string> ErrorMessages {
@@ -73,28 +82,27 @@ namespace Tewl.InputValidation {
 		}
 
 		/// <summary>
-		/// Returns a deep copy of the list of errors associated with the validation performed by this validator so far. It's possible for ErrorsOccurred to
+		/// Returns a deep copy of the list of errors associated with the validation performed by this validator so far. It's
+		/// possible for ErrorsOccurred to
 		/// be true while Errors.Count == 0, since NoteError may have been called.
 		/// </summary>
-		public List<Error> Errors { get { return new List<Error>( errors ); } }
+		public List<Error> Errors => new List<Error>( errors );
 
 		/// <summary>
 		/// Sets the ErrorsOccurred flag.
 		/// </summary>
-		public void NoteError() {
-			ErrorsOccurred = true;
-		}
+		public void NoteError() => ErrorsOccurred = true;
 
 		/// <summary>
-		/// Sets the ErrorsOccurred flag and adds an error message to this validator. Use this if you want to add your own error message to the same collection
+		/// Sets the ErrorsOccurred flag and adds an error message to this validator. Use this if you want to add your own error
+		/// message to the same collection
 		/// that the error handlers use.
 		/// </summary>
-		public void NoteErrorAndAddMessage( string message ) {
-			AddError( new Error( message, false ) );
-		}
+		public void NoteErrorAndAddMessage( string message ) => AddError( new Error( message, false ) );
 
 		/// <summary>
-		/// Sets the ErrorsOccurred flag and add the given error messages to this validator. Use this if you want to add your own error messages to the same collection
+		/// Sets the ErrorsOccurred flag and add the given error messages to this validator. Use this if you want to add your own
+		/// error messages to the same collection
 		/// that the error handlers use.
 		/// </summary>
 		public void NoteErrorAndAddMessages( params string[] messages ) {
@@ -112,26 +120,16 @@ namespace Tewl.InputValidation {
 		/// Returns the validated boolean type from the given string and validation package.
 		/// Passing an empty string or null will result in ErrorCondition.Empty.
 		/// </summary>
-		public bool GetBoolean( ValidationErrorHandler errorHandler, string booleanAsString ) {
-			return executeValidationMethodAndHandleEmptyAndReturnDefaultIfInvalid<bool>(
-				errorHandler,
-				booleanAsString,
-				false,
-				delegate { return validateBoolean( booleanAsString, errorHandler ); } );
-		}
+		public bool GetBoolean( ValidationErrorHandler errorHandler, string booleanAsString ) =>
+			executeValidationMethodAndHandleEmptyAndReturnDefaultIfInvalid( errorHandler, booleanAsString, false, delegate { return validateBoolean( booleanAsString, errorHandler ); } );
 
 		/// <summary>
 		/// Accepts either true/false (case-sensitive) or 1/0.
 		/// Returns the validated boolean type from the given string and validation package.
 		/// If allowEmpty is true and the given string is empty, null will be returned.
 		/// </summary>
-		public bool? GetNullableBoolean( ValidationErrorHandler errorHandler, string booleanAsString, bool allowEmpty ) {
-			return executeValidationMethodAndHandleEmptyAndReturnDefaultIfInvalid<bool?>(
-				errorHandler,
-				booleanAsString,
-				allowEmpty,
-				delegate { return validateBoolean( booleanAsString, errorHandler ); } );
-		}
+		public bool? GetNullableBoolean( ValidationErrorHandler errorHandler, string booleanAsString, bool allowEmpty ) =>
+			executeValidationMethodAndHandleEmptyAndReturnDefaultIfInvalid<bool?>( errorHandler, booleanAsString, allowEmpty, () => validateBoolean( booleanAsString, errorHandler ) );
 
 		private static bool validateBoolean( string booleanAsString, ValidationErrorHandler errorHandler ) {
 			if( booleanAsString.IsNullOrWhiteSpace() )
@@ -146,138 +144,123 @@ namespace Tewl.InputValidation {
 		/// Returns the validated byte type from the given string and validation package.
 		/// Passing an empty string or null will result in ErrorCondition.Empty.
 		/// </summary>
-		public byte GetByte( ValidationErrorHandler errorHandler, string byteAsString ) {
-			return GetByte( errorHandler, byteAsString, byte.MinValue, byte.MaxValue );
-		}
+		public byte GetByte( ValidationErrorHandler errorHandler, string byteAsString ) => GetByte( errorHandler, byteAsString, byte.MinValue, byte.MaxValue );
 
 		/// <summary>
 		/// Returns the validated byte type from the given string and validation package.
 		/// Passing an empty string or null will result in ErrorCondition.Empty.
 		/// </summary>
-		public byte GetByte( ValidationErrorHandler errorHandler, string byteAsString, byte min, byte max ) {
-			return executeValidationMethodAndHandleEmptyAndReturnDefaultIfInvalid<byte>(
+		public byte GetByte( ValidationErrorHandler errorHandler, string byteAsString, byte min, byte max ) =>
+			executeValidationMethodAndHandleEmptyAndReturnDefaultIfInvalid(
 				errorHandler,
 				byteAsString,
 				false,
 				delegate { return validateGenericIntegerType<byte>( errorHandler, byteAsString, min, max ); } );
-		}
 
 		/// <summary>
 		/// Returns the validated byte type from the given string and validation package.
 		/// If allowEmpty is true and the given string is empty, null will be returned.
 		/// </summary>
-		public byte? GetNullableByte( ValidationErrorHandler errorHandler, string byteAsString, bool allowEmpty ) {
-			return executeValidationMethodAndHandleEmptyAndReturnDefaultIfInvalid<byte?>(
+		public byte? GetNullableByte( ValidationErrorHandler errorHandler, string byteAsString, bool allowEmpty ) =>
+			executeValidationMethodAndHandleEmptyAndReturnDefaultIfInvalid<byte?>(
 				errorHandler,
 				byteAsString,
 				allowEmpty,
-				delegate { return validateGenericIntegerType<byte>( errorHandler, byteAsString, byte.MinValue, byte.MaxValue ); } );
-		}
+				() => validateGenericIntegerType<byte>( errorHandler, byteAsString, byte.MinValue, byte.MaxValue ) );
 
 		/// <summary>
 		/// Returns the validated short type from the given string and validation package.
 		/// Passing an empty string or null will result in ErrorCondition.Empty.
 		/// </summary>
-		public short GetShort( ValidationErrorHandler errorHandler, string shortAsString ) {
-			return GetShort( errorHandler, shortAsString, short.MinValue, short.MaxValue );
-		}
+		public short GetShort( ValidationErrorHandler errorHandler, string shortAsString ) => GetShort( errorHandler, shortAsString, short.MinValue, short.MaxValue );
 
 		/// <summary>
 		/// Returns the validated short type from the given string and validation package.
 		/// Passing an empty string or null will result in ErrorCondition.Empty.
 		/// </summary>
-		public short GetShort( ValidationErrorHandler errorHandler, string shortAsString, short min, short max ) {
-			return executeValidationMethodAndHandleEmptyAndReturnDefaultIfInvalid<short>(
+		public short GetShort( ValidationErrorHandler errorHandler, string shortAsString, short min, short max ) =>
+			executeValidationMethodAndHandleEmptyAndReturnDefaultIfInvalid(
 				errorHandler,
 				shortAsString,
 				false,
-				delegate { return validateGenericIntegerType<short>( errorHandler, shortAsString, min, max ); } );
-		}
+				() => validateGenericIntegerType<short>( errorHandler, shortAsString, min, max ) );
 
 		/// <summary>
 		/// Returns the validated short type from the given string and validation package.
 		/// If allowEmpty is true and the given string is empty, null will be returned.
 		/// </summary>
-		public short? GetNullableShort( ValidationErrorHandler errorHandler, string shortAsString, bool allowEmpty ) {
-			return GetNullableShort( errorHandler, shortAsString, allowEmpty, short.MinValue, short.MaxValue );
-		}
+		public short? GetNullableShort( ValidationErrorHandler errorHandler, string shortAsString, bool allowEmpty ) =>
+			GetNullableShort( errorHandler, shortAsString, allowEmpty, short.MinValue, short.MaxValue );
 
 		/// <summary>
 		/// Returns the validated short type from the given string and validation package.
 		/// If allowEmpty is true and the given string is empty, null will be returned.
 		/// </summary>
-		public short? GetNullableShort( ValidationErrorHandler errorHandler, string shortAsString, bool allowEmpty, short min, short max ) {
-			return executeValidationMethodAndHandleEmptyAndReturnDefaultIfInvalid<short?>(
+		public short? GetNullableShort( ValidationErrorHandler errorHandler, string shortAsString, bool allowEmpty, short min, short max ) =>
+			executeValidationMethodAndHandleEmptyAndReturnDefaultIfInvalid<short?>(
 				errorHandler,
 				shortAsString,
 				allowEmpty,
-				delegate { return validateGenericIntegerType<short>( errorHandler, shortAsString, min, max ); } );
-		}
+				() => validateGenericIntegerType<short>( errorHandler, shortAsString, min, max ) );
 
 		/// <summary>
 		/// Returns the validated int type from the given string and validation package.
 		/// Passing an empty string or null will result in ErrorCondition.Empty.
 		/// </summary>
-		public int GetInt( ValidationErrorHandler errorHandler, string intAsString ) {
-			return GetInt( errorHandler, intAsString, int.MinValue, int.MaxValue );
-		}
+		public int GetInt( ValidationErrorHandler errorHandler, string intAsString ) => GetInt( errorHandler, intAsString, int.MinValue, int.MaxValue );
 
 		/// <summary>
 		/// Returns the validated int type from the given string and validation package.
 		/// Passing an empty string or null will result in ErrorCondition.Empty.
-		/// <paramref name="min"/> and <paramref name="max"/> are inclusive.
+		/// <paramref name="min" /> and <paramref name="max" /> are inclusive.
 		/// </summary>
-		public int GetInt( ValidationErrorHandler errorHandler, string intAsString, int min, int max ) {
-			return executeValidationMethodAndHandleEmptyAndReturnDefaultIfInvalid<int>(
+		public int GetInt( ValidationErrorHandler errorHandler, string intAsString, int min, int max ) =>
+			executeValidationMethodAndHandleEmptyAndReturnDefaultIfInvalid(
 				errorHandler,
 				intAsString,
 				false,
-				delegate { return validateGenericIntegerType<int>( errorHandler, intAsString, min, max ); } );
-		}
+				() => validateGenericIntegerType<int>( errorHandler, intAsString, min, max ) );
 
 		/// <summary>
 		/// Returns the validated int type from the given string and validation package.
 		/// If allowEmpty is true and the given string is empty, null will be returned.
 		/// </summary>
-		public int? GetNullableInt( ValidationErrorHandler errorHandler, string intAsString, bool allowEmpty, int min = int.MinValue, int max = int.MaxValue ) {
-			return executeValidationMethodAndHandleEmptyAndReturnDefaultIfInvalid<int?>(
+		public int? GetNullableInt( ValidationErrorHandler errorHandler, string intAsString, bool allowEmpty, int min = int.MinValue, int max = int.MaxValue ) =>
+			executeValidationMethodAndHandleEmptyAndReturnDefaultIfInvalid<int?>(
 				errorHandler,
 				intAsString,
 				allowEmpty,
 				() => validateGenericIntegerType<int>( errorHandler, intAsString, min, max ) );
-		}
 
-        /// <summary>
-        /// Returns the validated long type from the given string and validation package.
-        /// Passing an empty string or null will result in ErrorCondition.Empty.
-        /// <paramref name="min"/> and <paramref name="max"/> are inclusive.
-        /// </summary>
-        public long GetLong( ValidationErrorHandler errorHandler, string longAsString,  long min = long.MinValue, long max = long.MaxValue ) {
-            return executeValidationMethodAndHandleEmptyAndReturnDefaultIfInvalid(
-                errorHandler,
-                longAsString,
-                false,
-                delegate { return validateGenericIntegerType<long>( errorHandler, longAsString, min, max ); } );
-        }
+		/// <summary>
+		/// Returns the validated long type from the given string and validation package.
+		/// Passing an empty string or null will result in ErrorCondition.Empty.
+		/// <paramref name="min" /> and <paramref name="max" /> are inclusive.
+		/// </summary>
+		public long GetLong( ValidationErrorHandler errorHandler, string longAsString, long min = long.MinValue, long max = long.MaxValue ) =>
+			executeValidationMethodAndHandleEmptyAndReturnDefaultIfInvalid(
+				errorHandler,
+				longAsString,
+				false,
+				() => validateGenericIntegerType<long>( errorHandler, longAsString, min, max ) );
 
-        /// <summary>
-        /// Returns the validated long type from the given string and validation package.
-        /// If allowEmpty is true and the given string is empty, null will be returned.
-        /// </summary>
-        public long? GetNullableLong( ValidationErrorHandler errorHandler, string longAsString, bool allowEmpty, long min = long.MinValue, long max = long.MaxValue ) {
-            return executeValidationMethodAndHandleEmptyAndReturnDefaultIfInvalid<long?>(
-                errorHandler,
-                longAsString,
-                allowEmpty,
-                () => validateGenericIntegerType<long>( errorHandler, longAsString, min, max ) );
-        }
+		/// <summary>
+		/// Returns the validated long type from the given string and validation package.
+		/// If allowEmpty is true and the given string is empty, null will be returned.
+		/// </summary>
+		public long? GetNullableLong( ValidationErrorHandler errorHandler, string longAsString, bool allowEmpty, long min = long.MinValue, long max = long.MaxValue ) =>
+			executeValidationMethodAndHandleEmptyAndReturnDefaultIfInvalid<long?>(
+				errorHandler,
+				longAsString,
+				allowEmpty,
+				() => validateGenericIntegerType<long>( errorHandler, longAsString, min, max ) );
 
 		private static T validateGenericIntegerType<T>( ValidationErrorHandler errorHandler, string valueAsString, long minValue, long maxValue ) {
 			long intResult = 0;
 
 			if( valueAsString.IsNullOrWhiteSpace() )
 				errorHandler.SetValidationResult( ValidationResult.Empty() );
-			else
+			else {
 				try {
 					intResult = Convert.ToInt64( valueAsString );
 
@@ -292,9 +275,10 @@ namespace Tewl.InputValidation {
 				catch( OverflowException ) {
 					errorHandler.SetValidationResult( ValidationResult.Invalid() );
 				}
+			}
 
 			if( errorHandler.LastResult != ErrorCondition.NoError )
-				return default( T );
+				return default;
 			return (T)Convert.ChangeType( intResult, typeof( T ) );
 		}
 
@@ -302,25 +286,19 @@ namespace Tewl.InputValidation {
 		/// Returns a validated float type from the given string, validation package, and min/max restrictions.
 		/// Passing an empty string or null will result in ErrorCondition.Empty.
 		/// </summary>
-		public float GetFloat( ValidationErrorHandler errorHandler, string floatAsString, float min, float max ) {
-			return executeValidationMethodAndHandleEmptyAndReturnDefaultIfInvalid<float>(
-				errorHandler,
-				floatAsString,
-				false,
-				delegate { return validateFloat( floatAsString, errorHandler, min, max ); } );
-		}
+		public float GetFloat( ValidationErrorHandler errorHandler, string floatAsString, float min, float max ) =>
+			executeValidationMethodAndHandleEmptyAndReturnDefaultIfInvalid( errorHandler, floatAsString, false, () => validateFloat( floatAsString, errorHandler, min, max ) );
 
 		/// <summary>
 		/// Returns a validated float type from the given string, validation package, and min/max restrictions.
 		/// If allowEmpty is true and the given string is empty, null will be returned.
 		/// </summary>
-		public float? GetNullableFloat( ValidationErrorHandler errorHandler, string floatAsString, bool allowEmpty, float min, float max ) {
-			return executeValidationMethodAndHandleEmptyAndReturnDefaultIfInvalid<float?>(
+		public float? GetNullableFloat( ValidationErrorHandler errorHandler, string floatAsString, bool allowEmpty, float min, float max ) =>
+			executeValidationMethodAndHandleEmptyAndReturnDefaultIfInvalid<float?>(
 				errorHandler,
 				floatAsString,
 				allowEmpty,
-				delegate { return validateFloat( floatAsString, errorHandler, min, max ); } );
-		}
+				() => validateFloat( floatAsString, errorHandler, min, max ) );
 
 		private static float validateFloat( string floatAsString, ValidationErrorHandler errorHandler, float min, float max ) {
 			float floatValue = 0;
@@ -350,41 +328,32 @@ namespace Tewl.InputValidation {
 		/// Returns a validated decimal type from the given string and validation package.
 		/// Passing an empty string or null will result in ErrorCondition.Empty.
 		/// </summary>
-		public Decimal GetDecimal( ValidationErrorHandler errorHandler, string decimalAsString ) {
-			return GetDecimal( errorHandler, decimalAsString, decimal.MinValue, decimal.MaxValue );
-		}
+		public decimal GetDecimal( ValidationErrorHandler errorHandler, string decimalAsString ) => GetDecimal( errorHandler, decimalAsString, decimal.MinValue, decimal.MaxValue );
 
 		/// <summary>
 		/// Returns a validated decimal type from the given string, validation package, and min/max restrictions.
 		/// Passing an empty string or null will result in ErrorCondition.Empty.
 		/// </summary>
-		public Decimal GetDecimal( ValidationErrorHandler errorHandler, string decimalAsString, Decimal min, Decimal max ) {
-			return executeValidationMethodAndHandleEmptyAndReturnDefaultIfInvalid<decimal>(
-				errorHandler,
-				decimalAsString,
-				false,
-				delegate { return validateDecimal( decimalAsString, errorHandler, min, max ); } );
-		}
+		public decimal GetDecimal( ValidationErrorHandler errorHandler, string decimalAsString, decimal min, decimal max ) =>
+			executeValidationMethodAndHandleEmptyAndReturnDefaultIfInvalid( errorHandler, decimalAsString, false, () => validateDecimal( decimalAsString, errorHandler, min, max ) );
 
 		/// <summary>
 		/// Returns a validated decimal type from the given string and validation package.
 		/// If allowEmpty is true and the given string is empty, null will be returned.
 		/// </summary>
-		public Decimal? GetNullableDecimal( ValidationErrorHandler errorHandler, string decimalAsString, bool allowEmpty ) {
-			return GetNullableDecimal( errorHandler, decimalAsString, allowEmpty, decimal.MinValue, decimal.MaxValue );
-		}
+		public decimal? GetNullableDecimal( ValidationErrorHandler errorHandler, string decimalAsString, bool allowEmpty ) =>
+			GetNullableDecimal( errorHandler, decimalAsString, allowEmpty, decimal.MinValue, decimal.MaxValue );
 
 		/// <summary>
 		/// Returns a validated decimal type from the given string, validation package, and min/max restrictions.
 		/// If allowEmpty is true and the given string is empty, null will be returned.
 		/// </summary>
-		public Decimal? GetNullableDecimal( ValidationErrorHandler errorHandler, string decimalAsString, bool allowEmpty, Decimal min, Decimal max ) {
-			return executeValidationMethodAndHandleEmptyAndReturnDefaultIfInvalid<decimal?>(
+		public decimal? GetNullableDecimal( ValidationErrorHandler errorHandler, string decimalAsString, bool allowEmpty, decimal min, decimal max ) =>
+			executeValidationMethodAndHandleEmptyAndReturnDefaultIfInvalid<decimal?>(
 				errorHandler,
 				decimalAsString,
 				allowEmpty,
-				delegate { return validateDecimal( decimalAsString, errorHandler, min, max ); } );
-		}
+				() => validateDecimal( decimalAsString, errorHandler, min, max ) );
 
 		private static decimal validateDecimal( string decimalAsString, ValidationErrorHandler errorHandler, decimal min, decimal max ) {
 			if( decimalAsString.IsNullOrWhiteSpace() ) {
@@ -392,7 +361,7 @@ namespace Tewl.InputValidation {
 				return 0;
 			}
 
-			Decimal decimalVal = 0;
+			decimal decimalVal = 0;
 			try {
 				decimalVal = decimal.Parse( decimalAsString );
 				if( decimalVal < min )
@@ -412,30 +381,26 @@ namespace Tewl.InputValidation {
 		/// If allowEmpty true and an empty string or null is given, the empty string is returned.
 		/// Automatically trims whitespace from edges of returned string.
 		/// </summary>
-		public string GetString( ValidationErrorHandler errorHandler, string text, bool allowEmpty ) {
-			return GetString( errorHandler, text, allowEmpty, int.MaxValue );
-		}
+		public string GetString( ValidationErrorHandler errorHandler, string text, bool allowEmpty ) => GetString( errorHandler, text, allowEmpty, int.MaxValue );
 
 		/// <summary>
 		/// Returns a validated string from the given string and restrictions.
 		/// If allowEmpty true and an empty string or null is given, the empty string is returned.
 		/// Automatically trims whitespace from edges of returned string.
 		/// </summary>
-		public string GetString( ValidationErrorHandler errorHandler, string text, bool allowEmpty, int maxLength ) {
-			return GetString( errorHandler, text, allowEmpty, 0, maxLength );
-		}
+		public string GetString( ValidationErrorHandler errorHandler, string text, bool allowEmpty, int maxLength ) => GetString( errorHandler, text, allowEmpty, 0, maxLength );
 
 		/// <summary>
 		/// Returns a validated string from the given string and restrictions.
 		/// If allowEmpty true and an empty string or null is given, the empty string is returned.
 		/// Automatically trims whitespace from edges of returned string.
 		/// </summary>
-		public string GetString( ValidationErrorHandler errorHandler, string text, bool allowEmpty, int minLength, int maxLength ) {
-			return handleEmptyAndReturnEmptyStringIfInvalid(
+		public string GetString( ValidationErrorHandler errorHandler, string text, bool allowEmpty, int minLength, int maxLength ) =>
+			handleEmptyAndReturnEmptyStringIfInvalid(
 				errorHandler,
 				text,
 				allowEmpty,
-				delegate {
+				() => {
 					var errorMessage = "The length of the " + errorHandler.Subject + " must be between " + minLength + " and " + maxLength + " characters.";
 					if( text.Length > maxLength )
 						errorHandler.SetValidationResult( ValidationResult.Custom( ErrorCondition.TooLong, errorMessage ) );
@@ -444,7 +409,6 @@ namespace Tewl.InputValidation {
 
 					return text.Trim();
 				} );
-		}
 
 		/// <summary>
 		/// Returns a validated email address from the given string and restrictions.
@@ -453,12 +417,12 @@ namespace Tewl.InputValidation {
 		/// The maxLength defaults to 254 per this source: http://en.wikipedia.org/wiki/E-mail_address#Syntax
 		/// If you pass a different value for maxLength, you'd better have a good reason.
 		/// </summary>
-		public string GetEmailAddress( ValidationErrorHandler errorHandler, string emailAddress, bool allowEmpty, int maxLength = 254 ) {
-			return handleEmptyAndReturnEmptyStringIfInvalid(
+		public string GetEmailAddress( ValidationErrorHandler errorHandler, string emailAddress, bool allowEmpty, int maxLength = 254 ) =>
+			handleEmptyAndReturnEmptyStringIfInvalid(
 				errorHandler,
 				emailAddress,
 				allowEmpty,
-				delegate {
+				() => {
 					// Validate as a string with same restrictions - if it fails on that, return
 					emailAddress = GetString( errorHandler, emailAddress, allowEmpty, maxLength );
 					if( errorHandler.LastResult == ErrorCondition.NoError ) {
@@ -467,41 +431,37 @@ namespace Tewl.InputValidation {
 						// Allows anything.anything123-anything@anything.anything123.anything
 						const string localPartUnconditionallyPermittedCharacters = @"[a-z0-9!#\$%&'\*\+\-/=\?\^_`\{\|}~]";
 						const string localPart = "(" + localPartUnconditionallyPermittedCharacters + @"+\.?)*" + localPartUnconditionallyPermittedCharacters + "+";
-						const string domainUnconditionallyPermittedCharacters = @"[a-z0-9-]";
+						const string domainUnconditionallyPermittedCharacters = "[a-z0-9-]";
 						const string domain = "(" + domainUnconditionallyPermittedCharacters + @"+\.)+" + domainUnconditionallyPermittedCharacters + "+";
 						// The first two conditions are for performance only.
-						if( !emailAddress.Contains( "@" ) || !emailAddress.Contains( "." ) ||
-						    !Regex.IsMatch( emailAddress, "^" + localPart + "@" + domain + "$", RegexOptions.IgnoreCase ) )
+						if( !emailAddress.Contains( "@" ) || !emailAddress.Contains( "." ) || !Regex.IsMatch( emailAddress, "^" + localPart + "@" + domain + "$", RegexOptions.IgnoreCase ) )
 							errorHandler.SetValidationResult( ValidationResult.Invalid() );
 						// Max length is already checked by the string validation
 						// NOTE: We should really enforce the max length of the domain portion and the local portion individually as well.
 					}
+
 					return emailAddress;
 				} );
-		}
 
 		/// <summary>
 		/// Returns a validated URL.
 		/// </summary>
-		public string GetUrl( ValidationErrorHandler errorHandler, string url, bool allowEmpty ) {
-			return GetUrl( errorHandler, url, allowEmpty, MaxUrlLength );
-		}
+		public string GetUrl( ValidationErrorHandler errorHandler, string url, bool allowEmpty ) => GetUrl( errorHandler, url, allowEmpty, MaxUrlLength );
 
 		private static readonly string[] validSchemes = { "http", "https", "ftp" };
 
 		/// <summary>
-		/// Returns a validated URL. Note that you may run into problems with certain browsers if you pass a length longer than 2048.
+		/// Returns a validated URL. Note that you may run into problems with certain browsers if you pass a length longer than
+		/// 2048.
 		/// </summary>
-		public string GetUrl( ValidationErrorHandler errorHandler, string url, bool allowEmpty, int maxUrlLength ) {
-			return handleEmptyAndReturnEmptyStringIfInvalid(
+		public string GetUrl( ValidationErrorHandler errorHandler, string url, bool allowEmpty, int maxUrlLength ) =>
+			handleEmptyAndReturnEmptyStringIfInvalid(
 				errorHandler,
 				url,
 				allowEmpty,
-				delegate {
+				() => {
 					/* If the string is just a number, reject it right out. */
-					int numberTesting;
-					double doubleTesting;
-					if( int.TryParse( url, out numberTesting ) || double.TryParse( url, out doubleTesting ) ) {
+					if( int.TryParse( url, out _ ) || double.TryParse( url, out _ ) ) {
 						errorHandler.SetValidationResult( ValidationResult.Invalid() );
 						return url;
 					}
@@ -518,7 +478,7 @@ namespace Tewl.InputValidation {
 					url = GetString( errorHandler, validSchemes.Any( s => url.StartsWithIgnoreCase( s ) ) ? url : "http://" + url, true, maxUrlLength );
 
 					/* If the getstring didn't fail, keep on keepin keepin on. */
-					if( errorHandler.LastResult == ErrorCondition.NoError )
+					if( errorHandler.LastResult == ErrorCondition.NoError ) {
 						try {
 							if( !Uri.IsWellFormedUriString( url, UriKind.Absolute ) )
 								throw new UriFormatException();
@@ -536,9 +496,10 @@ namespace Tewl.InputValidation {
 						catch( UriFormatException ) {
 							errorHandler.SetValidationResult( ValidationResult.Invalid() );
 						}
+					}
+
 					return url;
 				} );
-		}
 
 		/// <summary>
 		/// The same as GetPhoneNumber, except the given default area code will be prepended on the phone number if necessary.
@@ -565,22 +526,34 @@ namespace Tewl.InputValidation {
 		/// <summary>
 		/// Returns a validated phone number as a standard phone number string given the complete phone number with optional
 		/// extension as a string. If allow empty is true and an empty string or null is given, the empty string is returned.
-		/// Pass true for allow surrounding garbage if you want to allow "The phone number is 585-455-6476yadayada." to be parsed into 585-455-6476
+		/// Pass true for allow surrounding garbage if you want to allow "The phone number is 585-455-6476yadayada." to be parsed
+		/// into 585-455-6476
 		/// and count as a valid phone number.
 		/// </summary>
-		public string GetPhoneNumber(
-			ValidationErrorHandler errorHandler, string completePhoneNumber, bool allowExtension, bool allowEmpty, bool allowSurroundingGarbage ) {
-			return GetPhoneWithLastFiveMapping( errorHandler, completePhoneNumber, allowExtension, allowEmpty, allowSurroundingGarbage, null );
-		}
+		public string GetPhoneNumber( ValidationErrorHandler errorHandler, string completePhoneNumber, bool allowExtension, bool allowEmpty, bool allowSurroundingGarbage ) =>
+			GetPhoneWithLastFiveMapping(
+				errorHandler,
+				completePhoneNumber,
+				allowExtension,
+				allowEmpty,
+				allowSurroundingGarbage,
+				null );
 
 		/// <summary>
-		/// Returns a validated phone number as a standard phone number string given the complete phone number with optional extension or the last five digits of the number and a dictionary of single
-		/// digits to five-digit groups that become the first five digits of the full number.  If allow empty is true and an empty string or null is given, the empty string is returned.
+		/// Returns a validated phone number as a standard phone number string given the complete phone number with optional
+		/// extension or the last five digits of the number and a dictionary of single
+		/// digits to five-digit groups that become the first five digits of the full number.  If allow empty is true and an empty
+		/// string or null is given, the empty string is returned.
 		/// </summary>
 		public string GetPhoneWithLastFiveMapping(
-			ValidationErrorHandler errorHandler, string input, bool allowExtension, bool allowEmpty, bool allowSurroundingGarbage, Dictionary<string, string> firstFives ) {
-			return GetPhoneNumberAsObject( errorHandler, input, allowExtension, allowEmpty, allowSurroundingGarbage, firstFives ).StandardPhoneString;
-		}
+			ValidationErrorHandler errorHandler, string input, bool allowExtension, bool allowEmpty, bool allowSurroundingGarbage, Dictionary<string, string> firstFives ) =>
+			GetPhoneNumberAsObject(
+				errorHandler,
+				input,
+				allowExtension,
+				allowEmpty,
+				allowSurroundingGarbage,
+				firstFives ).StandardPhoneString;
 
 		internal PhoneNumber GetPhoneNumberAsObject(
 			ValidationErrorHandler errorHandler, string input, bool allowExtension, bool allowEmpty, bool allowSurroundingGarbage, Dictionary<string, string> firstFives ) {
@@ -588,10 +561,10 @@ namespace Tewl.InputValidation {
 				errorHandler,
 				input,
 				allowEmpty,
-				delegate {
+				() => {
 					var invalidPrefix = "The " + errorHandler.Subject + " (" + input + ") is invalid.";
 					// Remove all of the valid delimiter characters so we can just deal with numbers and whitespace
-					input = input.RemoveCharacters( new[] { '-', '(', ')', '.' } ).Trim();
+					input = input.RemoveCharacters( '-', '(', ')', '.' ).Trim();
 
 					var invalidMessage = invalidPrefix +
 					                     " Phone numbers may be entered in any format, such as or xxx-xxx-xxxx, with an optional extension up to 5 digits long.  International numbers should begin with a '+' sign.";
@@ -601,9 +574,8 @@ namespace Tewl.InputValidation {
 
 					// First-five shortcut (intra-org phone numbers)
 					if( firstFives != null && Regex.IsMatch( input, @"^\d{5}$" ) ) {
-						string firstFive;
 						if( firstFives.ContainsKey( input.Substring( 0, 1 ) ) ) {
-							firstFive = firstFives[ input.Substring( 0, 1 ) ];
+							var firstFive = firstFives[ input.Substring( 0, 1 ) ];
 							phoneNumber = PhoneNumber.CreateFromParts( firstFive.Substring( 0, 3 ), firstFive.Substring( 3 ) + input, "" );
 						}
 						else
@@ -628,13 +600,15 @@ namespace Tewl.InputValidation {
 							var number = match.Groups[ "num1" ].Value + match.Groups[ "num2" ].Value;
 							var extension = match.Groups[ "ext" ].Value;
 							phoneNumber = PhoneNumber.CreateFromParts( areaCode, number, extension );
-							if( !allowExtension && phoneNumber.Extension.Length > 0 )
+							if( !allowExtension && phoneNumber.Extension.Length > 0 ) {
 								errorHandler.SetValidationResult(
 									ValidationResult.Custom( ErrorCondition.Invalid, invalidPrefix + " Extensions are not permitted in this field. Use the separate extension field." ) );
+							}
 						}
 						else
 							errorHandler.SetValidationResult( ValidationResult.Custom( ErrorCondition.Invalid, invalidMessage ) );
 					}
+
 					return phoneNumber;
 				},
 				PhoneNumber.CreateFromParts( "", "", "" ) );
@@ -644,34 +618,32 @@ namespace Tewl.InputValidation {
 		/// Returns a validated phone number extension as a string.
 		/// If allow empty is true and the empty string or null is given, the empty string is returned.
 		/// </summary>
-		public string GetPhoneNumberExtension( ValidationErrorHandler errorHandler, string extension, bool allowEmpty ) {
-			return handleEmptyAndReturnEmptyStringIfInvalid(
+		public string GetPhoneNumberExtension( ValidationErrorHandler errorHandler, string extension, bool allowEmpty ) =>
+			handleEmptyAndReturnEmptyStringIfInvalid(
 				errorHandler,
 				extension,
 				allowEmpty,
-				delegate {
+				() => {
 					extension = extension.Trim();
 					if( !Regex.IsMatch( extension, @"^ *(?<ext>\d{1,5}) *$" ) )
 						errorHandler.SetValidationResult( ValidationResult.Invalid() );
 
 					return extension;
 				} );
-		}
 
 		/// <summary>
 		/// Returns a validated social security number from the given string and restrictions.
 		/// If allowEmpty true and an empty string or null is given, the empty string is returned.
 		/// </summary>
-		public string GetSocialSecurityNumber( ValidationErrorHandler errorHandler, string ssn, bool allowEmpty ) {
-			return GetNumber( errorHandler, ssn, 9, allowEmpty, "-" );
-		}
+		public string GetSocialSecurityNumber( ValidationErrorHandler errorHandler, string ssn, bool allowEmpty ) => GetNumber( errorHandler, ssn, 9, allowEmpty, "-" );
 
 		/// <summary>
-		/// Gets a string of the given length whose characters are only numeric values, after throwing out all acceptable garbage characters.
+		/// Gets a string of the given length whose characters are only numeric values, after throwing out all acceptable garbage
+		/// characters.
 		/// Example: A social security number (987-65-4321) would be GetNumber( errorHandler, ssn, 9, true, "-" ).
 		/// </summary>
-		public string GetNumber( ValidationErrorHandler errorHandler, string text, int numberOfDigits, bool allowEmpty, params string[] acceptableGarbageStrings ) {
-			return handleEmptyAndReturnEmptyStringIfInvalid(
+		public string GetNumber( ValidationErrorHandler errorHandler, string text, int numberOfDigits, bool allowEmpty, params string[] acceptableGarbageStrings ) =>
+			handleEmptyAndReturnEmptyStringIfInvalid(
 				errorHandler,
 				text,
 				allowEmpty,
@@ -683,57 +655,47 @@ namespace Tewl.InputValidation {
 						errorHandler.SetValidationResult( ValidationResult.Invalid() );
 					return text;
 				} );
-		}
 
 		/// <summary>
 		/// Gets a validated United States zip code object given the complete zip code with optional +4 digits.
 		/// </summary>
-		public ZipCode GetZipCode( ValidationErrorHandler errorHandler, string zipCode, bool allowEmpty ) {
-			return executeValidationMethodAndHandleEmptyAndReturnDefaultIfInvalid(
-				errorHandler,
-				zipCode,
-				allowEmpty,
-				delegate { return ZipCode.CreateUsZipCode( errorHandler, zipCode ); },
-				new ZipCode() );
-		}
+		public ZipCode GetZipCode( ValidationErrorHandler errorHandler, string zipCode, bool allowEmpty ) =>
+			executeValidationMethodAndHandleEmptyAndReturnDefaultIfInvalid( errorHandler, zipCode, allowEmpty, () => ZipCode.CreateUsZipCode( errorHandler, zipCode ), new ZipCode() );
 
 		/// <summary>
 		/// Gets a validated US or Canadian zip code.
 		/// </summary>
-		public ZipCode GetUsOrCanadianZipCode( ValidationErrorHandler errorHandler, string zipCode, bool allowEmpty ) {
-			return executeValidationMethodAndHandleEmptyAndReturnDefaultIfInvalid(
+		public ZipCode GetUsOrCanadianZipCode( ValidationErrorHandler errorHandler, string zipCode, bool allowEmpty ) =>
+			executeValidationMethodAndHandleEmptyAndReturnDefaultIfInvalid(
 				errorHandler,
 				zipCode,
 				allowEmpty,
-				delegate { return ZipCode.CreateUsOrCanadianZipCode( errorHandler, zipCode ); },
+				() => ZipCode.CreateUsOrCanadianZipCode( errorHandler, zipCode ),
 				new ZipCode() );
-		}
 
 		/// <summary>
 		/// Returns the validated DateTime type from the given string and validation package.
 		/// It is restricted to the Sql SmallDateTime range of 1/1/1900 up to 6/6/2079.
 		/// Passing an empty string or null will result in ErrorCondition.Empty.
 		/// </summary>
-		public DateTime GetSqlSmallDateTime( ValidationErrorHandler errorHandler, string dateAsString ) {
-			return executeValidationMethodAndHandleEmptyAndReturnDefaultIfInvalid<DateTime>(
+		public DateTime GetSqlSmallDateTime( ValidationErrorHandler errorHandler, string dateAsString ) =>
+			executeValidationMethodAndHandleEmptyAndReturnDefaultIfInvalid(
 				errorHandler,
 				dateAsString,
 				false,
 				delegate { return validateDateTime( errorHandler, dateAsString, null, SqlSmallDateTimeMinValue, SqlSmallDateTimeMaxValue ); } );
-		}
 
 		/// <summary>
 		/// Returns the validated DateTime type from the given string and validation package.
 		/// It is restricted to the Sql SmallDateTime range of 1/1/1900 up to 6/6/2079.
 		/// If allowEmpty is true and the given string is empty, null will be returned.
 		/// </summary>
-		public DateTime? GetNullableSqlSmallDateTime( ValidationErrorHandler errorHandler, string dateAsString, bool allowEmpty ) {
-			return executeValidationMethodAndHandleEmptyAndReturnDefaultIfInvalid<DateTime?>(
+		public DateTime? GetNullableSqlSmallDateTime( ValidationErrorHandler errorHandler, string dateAsString, bool allowEmpty ) =>
+			executeValidationMethodAndHandleEmptyAndReturnDefaultIfInvalid<DateTime?>(
 				errorHandler,
 				dateAsString,
 				allowEmpty,
-				delegate { return validateDateTime( errorHandler, dateAsString, null, SqlSmallDateTimeMinValue, SqlSmallDateTimeMaxValue ); } );
-		}
+				() => validateDateTime( errorHandler, dateAsString, null, SqlSmallDateTimeMinValue, SqlSmallDateTimeMaxValue ) );
 
 		/// <summary>
 		/// Returns the validated DateTime type from the given date part strings and validation package.
@@ -741,9 +703,8 @@ namespace Tewl.InputValidation {
 		/// Passing an empty string or null for each date part will result in ErrorCondition.Empty.
 		/// Passing an empty string or null for only some date parts will result in ErrorCondition.Invalid.
 		/// </summary>
-		public DateTime GetSqlSmallDateTimeFromParts( ValidationErrorHandler errorHandler, string month, string day, string year ) {
-			return GetSqlSmallDateTime( errorHandler, makeDateFromParts( month, day, year ) );
-		}
+		public DateTime GetSqlSmallDateTimeFromParts( ValidationErrorHandler errorHandler, string month, string day, string year ) =>
+			GetSqlSmallDateTime( errorHandler, makeDateFromParts( month, day, year ) );
 
 		/// <summary>
 		/// Returns the validated DateTime type from the given date part strings and validation package.
@@ -751,9 +712,8 @@ namespace Tewl.InputValidation {
 		/// If allowEmpty is true and each date part string is empty, null will be returned.
 		/// Passing an empty string or null for only some date parts will result in ErrorCondition.Invalid.
 		/// </summary>
-		public DateTime? GetNullableSqlSmallDateTimeFromParts( ValidationErrorHandler errorHandler, string month, string day, string year, bool allowEmpty ) {
-			return GetNullableSqlSmallDateTime( errorHandler, makeDateFromParts( month, day, year ), allowEmpty );
-		}
+		public DateTime? GetNullableSqlSmallDateTimeFromParts( ValidationErrorHandler errorHandler, string month, string day, string year, bool allowEmpty ) =>
+			GetNullableSqlSmallDateTime( errorHandler, makeDateFromParts( month, day, year ), allowEmpty );
 
 		private static string makeDateFromParts( string month, string day, string year ) {
 			var date = month + '/' + day + '/' + year;
@@ -766,29 +726,26 @@ namespace Tewl.InputValidation {
 		/// Returns the validated DateTime type from a date string and an exact match pattern.'
 		/// Pattern specifies the date format, such as "MM/dd/yyyy".
 		/// </summary>
-		public DateTime GetSqlSmallDateTimeExact( ValidationErrorHandler errorHandler, string dateAsString, string pattern ) {
-			return executeValidationMethodAndHandleEmptyAndReturnDefaultIfInvalid<DateTime>(
+		public DateTime GetSqlSmallDateTimeExact( ValidationErrorHandler errorHandler, string dateAsString, string pattern ) =>
+			executeValidationMethodAndHandleEmptyAndReturnDefaultIfInvalid(
 				errorHandler,
 				dateAsString,
 				false,
-				delegate { return validateSqlSmallDateTimeExact( errorHandler, dateAsString, pattern ); } );
-		}
+				() => validateSqlSmallDateTimeExact( errorHandler, dateAsString, pattern ) );
 
 		/// <summary>
 		/// Returns the validated DateTime type from a date string and an exact match pattern.'
 		/// Pattern specifies the date format, such as "MM/dd/yyyy".
 		/// </summary>
-		public DateTime? GetNullableSqlSmallDateTimeExact( ValidationErrorHandler errorHandler, string dateAsString, string pattern, bool allowEmpty ) {
-			return executeValidationMethodAndHandleEmptyAndReturnDefaultIfInvalid<DateTime?>(
+		public DateTime? GetNullableSqlSmallDateTimeExact( ValidationErrorHandler errorHandler, string dateAsString, string pattern, bool allowEmpty ) =>
+			executeValidationMethodAndHandleEmptyAndReturnDefaultIfInvalid<DateTime?>(
 				errorHandler,
 				dateAsString,
 				allowEmpty,
 				delegate { return validateSqlSmallDateTimeExact( errorHandler, dateAsString, pattern ); } );
-		}
 
 		private static DateTime validateSqlSmallDateTimeExact( ValidationErrorHandler errorHandler, string dateAsString, string pattern ) {
-			DateTime date;
-			if( !DateTime.TryParseExact( dateAsString, pattern, Cultures.EnglishUnitedStates, DateTimeStyles.None, out date ) )
+			if( !DateTime.TryParseExact( dateAsString, pattern, Cultures.EnglishUnitedStates, DateTimeStyles.None, out var date ) )
 				errorHandler.SetValidationResult( ValidationResult.Invalid() );
 			else
 				validateNativeDateTime( errorHandler, date, false, SqlSmallDateTimeMinValue, SqlSmallDateTimeMaxValue );
@@ -799,9 +756,7 @@ namespace Tewl.InputValidation {
 		private static DateTime validateDateTime( ValidationErrorHandler errorHandler, string dateAsString, string[] formats, DateTime min, DateTime max ) {
 			var date = DateTime.Now;
 			try {
-				date = formats != null
-					       ? DateTime.ParseExact( dateAsString, formats, null, DateTimeStyles.None )
-					       : DateTime.Parse( dateAsString, Cultures.EnglishUnitedStates );
+				date = formats != null ? DateTime.ParseExact( dateAsString, formats, null, DateTimeStyles.None ) : DateTime.Parse( dateAsString, Cultures.EnglishUnitedStates );
 				validateNativeDateTime( errorHandler, date, false, min, max );
 			}
 			catch( FormatException ) {
@@ -833,68 +788,53 @@ namespace Tewl.InputValidation {
 		/// <summary>
 		/// Validates the date using given allowEmpty, min, and max constraints.
 		/// </summary>
-		public DateTime? GetNullableDateTime(
-			ValidationErrorHandler handler, string dateAsString, string[] formats, bool allowEmpty, DateTime minDate, DateTime maxDate ) {
-			return executeValidationMethodAndHandleEmptyAndReturnDefaultIfInvalid<DateTime?>(
+		public DateTime? GetNullableDateTime( ValidationErrorHandler handler, string dateAsString, string[] formats, bool allowEmpty, DateTime minDate, DateTime maxDate ) =>
+			executeValidationMethodAndHandleEmptyAndReturnDefaultIfInvalid<DateTime?>(
 				handler,
 				dateAsString,
 				allowEmpty,
 				() => validateDateTime( handler, dateAsString, formats, minDate, maxDate ) );
-		}
 
 		/// <summary>
 		/// Validates the date using given min and max constraints.
 		/// </summary>
-		public DateTime GetDateTime( ValidationErrorHandler handler, string dateAsString, string[] formats, DateTime minDate, DateTime maxDate ) {
-			return executeValidationMethodAndHandleEmptyAndReturnDefaultIfInvalid<DateTime>(
-				handler,
-				dateAsString,
-				false,
-				() => validateDateTime( handler, dateAsString, formats, minDate, maxDate ) );
-		}
+		public DateTime GetDateTime( ValidationErrorHandler handler, string dateAsString, string[] formats, DateTime minDate, DateTime maxDate ) =>
+			executeValidationMethodAndHandleEmptyAndReturnDefaultIfInvalid( handler, dateAsString, false, () => validateDateTime( handler, dateAsString, formats, minDate, maxDate ) );
 
 		/// <summary>
 		/// Validates the given time span.
 		/// </summary>
-		public TimeSpan? GetNullableTimeSpan( ValidationErrorHandler handler, TimeSpan? timeSpan, bool allowEmpty ) {
-			return executeValidationMethodAndHandleEmptyAndReturnDefaultIfInvalid<TimeSpan?>( handler, timeSpan, allowEmpty, delegate { return timeSpan; } );
-		}
+		public TimeSpan? GetNullableTimeSpan( ValidationErrorHandler handler, TimeSpan? timeSpan, bool allowEmpty ) =>
+			executeValidationMethodAndHandleEmptyAndReturnDefaultIfInvalid( handler, timeSpan, allowEmpty, () => timeSpan );
 
 		/// <summary>
 		/// Validates the given time span.
 		/// </summary>
-		public TimeSpan GetTimeSpan( ValidationErrorHandler handler, TimeSpan? timeSpan ) {
-			return executeValidationMethodAndHandleEmptyAndReturnDefaultIfInvalid<TimeSpan>(
-				handler,
-				timeSpan,
-				false,
-				delegate { return timeSpan == null ? default( TimeSpan ) : timeSpan.Value; } );
-		}
+		public TimeSpan GetTimeSpan( ValidationErrorHandler handler, TimeSpan? timeSpan ) =>
+			executeValidationMethodAndHandleEmptyAndReturnDefaultIfInvalid( handler, timeSpan, false, () => timeSpan ?? default );
 
 		/// <summary>
 		/// Validates the given time span.
 		/// </summary>
-		public TimeSpan? GetNullableTimeOfDayTimeSpan( ValidationErrorHandler handler, string timeSpanAsString, string[] formats, bool allowEmpty ) {
-			return executeValidationMethodAndHandleEmptyAndReturnDefaultIfInvalid<TimeSpan?>(
+		public TimeSpan? GetNullableTimeOfDayTimeSpan( ValidationErrorHandler handler, string timeSpanAsString, string[] formats, bool allowEmpty ) =>
+			executeValidationMethodAndHandleEmptyAndReturnDefaultIfInvalid<TimeSpan?>(
 				handler,
 				timeSpanAsString,
 				allowEmpty,
 				() => validateDateTime( handler, timeSpanAsString, formats, DateTime.MinValue, DateTime.MaxValue ).TimeOfDay );
-		}
 
 		/// <summary>
 		/// Validates the given time span.
 		/// </summary>
-		public TimeSpan GetTimeOfDayTimeSpan( ValidationErrorHandler handler, string timeSpanAsString, string[] formats ) {
-			return executeValidationMethodAndHandleEmptyAndReturnDefaultIfInvalid<TimeSpan>(
+		public TimeSpan GetTimeOfDayTimeSpan( ValidationErrorHandler handler, string timeSpanAsString, string[] formats ) =>
+			executeValidationMethodAndHandleEmptyAndReturnDefaultIfInvalid(
 				handler,
 				timeSpanAsString,
 				false,
 				() => validateDateTime( handler, timeSpanAsString, formats, DateTime.MinValue, DateTime.MaxValue ).TimeOfDay );
-		}
 
 		private T executeValidationMethodAndHandleEmptyAndReturnDefaultIfInvalid<T>(
-			ValidationErrorHandler handler, object valueAsObject, bool allowEmpty, ValidationMethod<T> method, T customDefaultReturnValue = default( T ) ) {
+			ValidationErrorHandler handler, object valueAsObject, bool allowEmpty, ValidationMethod<T> method, T customDefaultReturnValue = default ) {
 			var result = customDefaultReturnValue;
 			if( !isEmpty( handler, valueAsObject, allowEmpty ) )
 				result = method();
@@ -907,10 +847,8 @@ namespace Tewl.InputValidation {
 			return result;
 		}
 
-		private string handleEmptyAndReturnEmptyStringIfInvalid(
-			ValidationErrorHandler handler, object valueAsObject, bool allowEmpty, ValidationMethod<string> method ) {
-			return executeValidationMethodAndHandleEmptyAndReturnDefaultIfInvalid( handler, valueAsObject, allowEmpty, method, "" );
-		}
+		private string handleEmptyAndReturnEmptyStringIfInvalid( ValidationErrorHandler handler, object valueAsObject, bool allowEmpty, ValidationMethod<string> method ) =>
+			executeValidationMethodAndHandleEmptyAndReturnDefaultIfInvalid( handler, valueAsObject, allowEmpty, method, "" );
 
 		/// <summary>
 		/// Determines if the given field is empty, and if it is empty, it

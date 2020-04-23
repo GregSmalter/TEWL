@@ -2,7 +2,6 @@
 using JetBrains.Annotations;
 
 namespace Tewl {
-
 	/// <summary>
 	/// Tools for fuzzy string matching.
 	/// </summary>
@@ -75,7 +74,7 @@ namespace Tewl {
 				return 0.0F;
 
 			// Return weighted result
-			return ( flatLevScore * 0.2F ) + ( letterScore * 0.8F );
+			return flatLevScore * 0.2F + letterScore * 0.8F;
 		}
 
 		private static double internalGetSimilarityScore( string s1, string s2 ) {

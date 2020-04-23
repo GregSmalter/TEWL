@@ -5,8 +5,10 @@ using Tewl.Tools;
 
 namespace Tewl.InputValidation {
 	/// <summary>
-	/// This class allows you to control what happens when a validation method generates an error. Every validation method takes a ValidationErrorHandler object
-	/// as the first parameter. Currently you can't re-use these objects for more than one validation call since most validation methods don't reset LastResult.
+	/// This class allows you to control what happens when a validation method generates an error. Every validation method
+	/// takes a ValidationErrorHandler object
+	/// as the first parameter. Currently you can't re-use these objects for more than one validation call since most
+	/// validation methods don't reset LastResult.
 	/// </summary>
 	[ PublicAPI ]
 	public class ValidationErrorHandler {
@@ -15,18 +17,16 @@ namespace Tewl.InputValidation {
 		/// </summary>
 		public delegate void CustomHandler( Validator validator, ErrorCondition errorCondition );
 
-		private readonly string subject = "field";
 		private readonly CustomHandler customHandler;
 		private readonly Dictionary<ErrorCondition, string> customMessages = new Dictionary<ErrorCondition, string>();
 		private ValidationResult validationResult = ValidationResult.NoError();
 
 		/// <summary>
-		/// Creates an error handler that adds standard error messages, based on the specified subject, to the validator. If the subject is used to start a
+		/// Creates an error handler that adds standard error messages, based on the specified subject, to the validator. If the
+		/// subject is used to start a
 		/// sentence, it will be automatically capitalized.
 		/// </summary>
-		public ValidationErrorHandler( string subject ) {
-			this.subject = subject;
-		}
+		public ValidationErrorHandler( string subject ) => Subject = subject;
 
 		/// <summary>
 		/// Creates an object that invokes code of your choice if an error occurs. The given custom handler will
@@ -34,12 +34,11 @@ namespace Tewl.InputValidation {
 		/// added to the validator's error collection.  Even if the handler does not add an error to the validator,
 		/// validator.HasErrors will return true because an error has still occurred.
 		/// </summary>
-		public ValidationErrorHandler( CustomHandler customHandler ) {
-			this.customHandler = customHandler;
-		}
+		public ValidationErrorHandler( CustomHandler customHandler ) => this.customHandler = customHandler;
 
 		/// <summary>
-		/// Modifies this error handler to use a custom message if any errors occur with the specified conditions. If no error conditions are passed, the message
+		/// Modifies this error handler to use a custom message if any errors occur with the specified conditions. If no error
+		/// conditions are passed, the message
 		/// will be used for all errors. This method has no effect if a custom handler has been specified.
 		/// </summary>
 		public void AddCustomErrorMessage( string message, params ErrorCondition[] errorConditions ) {
@@ -56,7 +55,7 @@ namespace Tewl.InputValidation {
 		/// <summary>
 		/// The subject of the error message, if one needs to be generated.
 		/// </summary>
-		internal string Subject { get { return subject; } }
+		internal string Subject { get; } = "field";
 
 		private bool used;
 
@@ -70,10 +69,11 @@ namespace Tewl.InputValidation {
 		/// <summary>
 		/// Returns the ErrorCondition resulting from the validation of the data associated with this package.
 		/// </summary>
-		public ErrorCondition LastResult { get { return validationResult.ErrorCondition; } }
+		public ErrorCondition LastResult => validationResult.ErrorCondition;
 
 		/// <summary>
-		/// If LastResult is not NoError, this method invokes the appropriate behavior according to how this error handler was created.
+		/// If LastResult is not NoError, this method invokes the appropriate behavior according to how this error handler was
+		/// created.
 		/// </summary>
 		internal void HandleResult( Validator validator, bool errorWouldResultInUnusableReturnValue ) {
 			if( validationResult.ErrorCondition == ErrorCondition.NoError )
@@ -87,10 +87,9 @@ namespace Tewl.InputValidation {
 			}
 
 			// build the error message
-			string message;
-			if( !customMessages.TryGetValue( validationResult.ErrorCondition, out message ) )
+			if( !customMessages.TryGetValue( validationResult.ErrorCondition, out var message ) )
 				// NOTE: Do we really need custom message, or can the custom handler manage that?
-				message = validationResult.GetErrorMessage( subject );
+				message = validationResult.GetErrorMessage( Subject );
 
 			validator.AddError( new Error( message, errorWouldResultInUnusableReturnValue ) );
 		}

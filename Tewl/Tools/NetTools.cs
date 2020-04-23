@@ -5,13 +5,11 @@ namespace Tewl.Tools {
 	/// <summary>
 	/// Tools supporting DNS, URIs, encoding, and so forth.
 	/// </summary>
-	[ PublicAPI ] 
+	[ PublicAPI ]
 	public class NetTools {
 		/// <summary>
 		/// Returns the host name of the local computer.
 		/// </summary>
-		public static string GetLocalHostName() {
-			return Dns.GetHostEntry( "" ).HostName;
-		}
+		public static string GetLocalHostName() => Dns.GetHostEntry( "" ).HostName;
 	}
 }

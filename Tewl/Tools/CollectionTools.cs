@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
-using Humanizer;
 using JetBrains.Annotations;
 
 namespace Tewl.Tools {
@@ -47,7 +46,7 @@ namespace Tewl.Tools {
 		/// </summary>
 		public static IEnumerable<T> TakeLast<T>( this IEnumerable<T> c, int n ) {
 			if( n < 0 )
-				throw new ApplicationException( "'n' was {0} which is less than zero.".FormatWith( n ) );
+				throw new ApplicationException( $"'n' was {n} which is less than zero." );
 			var count = c.Count();
 			return c.Skip( count - n );
 		}
@@ -61,7 +60,7 @@ namespace Tewl.Tools {
 		/// Convenience method to allow concatenating individual elements.
 		/// </summary>
 		public static IEnumerable<T> Concat<T>( this IEnumerable<T> items, params T[] ts ) => Enumerable.Concat( items, ts );
-		
+
 		/// <summary>
 		/// Convenience method to allow concatenating individual elements to an existing array.
 		/// </summary>

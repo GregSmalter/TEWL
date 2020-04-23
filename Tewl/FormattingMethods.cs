@@ -26,9 +26,10 @@ namespace Tewl {
 				else {
 					formattedPhoneString += phoneNumber.AreaCode + "-";
 					formattedPhoneString += phoneNumber.Number.Insert( 3, "-" );
-					formattedPhoneString += phoneNumber.Extension.Length == 0 ? "" : ( " x" + phoneNumber.Extension );
+					formattedPhoneString += phoneNumber.Extension.Length == 0 ? "" : " x" + phoneNumber.Extension;
 				}
 			}
+
 			return formattedPhoneString;
 		}
 
@@ -48,6 +49,7 @@ namespace Tewl {
 				if( phoneNumber.Extension.Length > 0 )
 					formattedPhoneString += " x" + phoneNumber.Extension;
 			}
+
 			return formattedPhoneString;
 		}
 
@@ -62,18 +64,17 @@ namespace Tewl {
 					formattedPhoneString = phoneNumber.InternationalNumber;
 				else {
 					formattedPhoneString += phoneNumber.AreaCode + "." + phoneNumber.Number.Insert( 3, "." );
-					formattedPhoneString += phoneNumber.Extension.Length == 0 ? "" : ( " x" + phoneNumber.Extension );
+					formattedPhoneString += phoneNumber.Extension.Length == 0 ? "" : " x" + phoneNumber.Extension;
 				}
 			}
+
 			return formattedPhoneString;
 		}
 
 		/// <summary>
 		/// Extracts the extension digits from the specified phone number. Does not accept null.
 		/// </summary>
-		public static string GetPhoneExtension( string standardPhoneString ) {
-			return PhoneNumber.CreateFromStandardPhoneString( standardPhoneString ).Extension;
-		}
+		public static string GetPhoneExtension( string standardPhoneString ) => PhoneNumber.CreateFromStandardPhoneString( standardPhoneString ).Extension;
 
 		/// <summary>
 		/// Formats the specified social security number with dashes. Accepts the empty string, but does not accept null.
@@ -92,29 +93,29 @@ namespace Tewl {
 			if( zipCode.Length == 0 )
 				addOnCode = "";
 
-			return StringTools.ConcatenateWithDelimiter( Environment.NewLine,
-			                                             deliveryAddress,
-			                                             StringTools.ConcatenateWithDelimiter( " ",
-			                                                                                   StringTools.ConcatenateWithDelimiter( ", ", city, stateAbbreviation ),
-			                                                                                   StringTools.ConcatenateWithDelimiter( "-", zipCode, addOnCode ) ) );
+			return StringTools.ConcatenateWithDelimiter(
+				Environment.NewLine,
+				deliveryAddress,
+				StringTools.ConcatenateWithDelimiter(
+					" ",
+					StringTools.ConcatenateWithDelimiter( ", ", city, stateAbbreviation ),
+					StringTools.ConcatenateWithDelimiter( "-", zipCode, addOnCode ) ) );
 		}
 
 		/// <summary>
 		/// Formats the specified address in a single-line format. Do not pass null for any parameters.
 		/// </summary>
-		public static string GetAddressOneLine( string deliveryAddress, string city, string stateAbbreviation, string zipCode, string addOnCode ) {
-			return GetAddressWithNewLines( deliveryAddress, city, stateAbbreviation, zipCode, addOnCode ).Replace( Environment.NewLine, ", " );
-		}
+		public static string GetAddressOneLine( string deliveryAddress, string city, string stateAbbreviation, string zipCode, string addOnCode ) =>
+			GetAddressWithNewLines( deliveryAddress, city, stateAbbreviation, zipCode, addOnCode ).Replace( Environment.NewLine, ", " );
 
 		/// <summary>
 		/// Uses GetFormattedBytes to return a string in the form "60.1 GiB/s".
 		/// </summary>
-		public static string GetFormattedBytesPerSecond( long numberOfBytes, TimeSpan elapsedTime ) {
-			return GetFormattedBytes( (long)( numberOfBytes / elapsedTime.TotalSeconds ) ) + "/s";
-		}
+		public static string GetFormattedBytesPerSecond( long numberOfBytes, TimeSpan elapsedTime ) => GetFormattedBytes( (long)( numberOfBytes / elapsedTime.TotalSeconds ) ) + "/s";
 
 		/// <summary>
-		/// Returns the given number of bytes in the most useful way possible. For example, 64 will return 64 bytes. 64,000 will return 62 KiB. 64,500,000,000 will
+		/// Returns the given number of bytes in the most useful way possible. For example, 64 will return 64 bytes. 64,000 will
+		/// return 62 KiB. 64,500,000,000 will
 		/// return 60.1 GiB. Maximum precision is 3 significant digits. GiB is the largest unit returned.
 		/// </summary>
 		public static string GetFormattedBytes( long numberOfBytes ) {

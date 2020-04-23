@@ -24,7 +24,8 @@ namespace Tewl.Tools {
 		}
 
 		/// <summary>
-		/// Formats this integer using the M suffix if it's at least one million and the k suffix if it's at least one thousand. Doesn't work with negative
+		/// Formats this integer using the M suffix if it's at least one million and the k suffix if it's at least one thousand.
+		/// Doesn't work with negative
 		/// integers.
 		/// </summary>
 		public static string ToKiloOrMegaString( this int n, bool formatAsCurrency ) {
