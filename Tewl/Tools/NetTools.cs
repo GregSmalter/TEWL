@@ -56,15 +56,6 @@ namespace Tewl.Tools {
 		}
 
 		/// <summary>
-		/// Encodes the given text as HTML, replacing instances of \n with &lt;br/&gt; and optionally replacing the empty string with a non-breaking space.
-		/// </summary>
-		public static string GetTextAsEncodedHtml( this string text, bool returnNonBreakingSpaceIfEmpty = true ) {
-			if( text.IsNullOrWhiteSpace() && returnNonBreakingSpaceIfEmpty )
-				return "&nbsp;";
-			return HttpUtility.HtmlEncode( text ).Replace( "\n", "<br/>" );
-		}
-
-		/// <summary>
 		/// Returns an anchor tag with the specified parameters. Use this only for status messages that are being built after LoadData. In all other cases, use
 		/// EwfLink.
 		/// </summary>
