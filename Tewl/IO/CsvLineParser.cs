@@ -8,7 +8,7 @@ namespace Tewl.IO {
 	/// <summary>
 	/// Parses a line of a Microsoft Excel CSV file using the definition of CSV at http://en.wikipedia.org/wiki/Comma-separated_values.
 	/// </summary>
-	public class CsvLineParser: Parser {
+	public class CsvLineParser: TextBasedTabularDataParser {
 		private readonly IDictionary columnHeadersToIndexes = new Hashtable();
 
 		/// <summary>
@@ -17,12 +17,28 @@ namespace Tewl.IO {
 		public CsvLineParser() {}
 
 		/// <summary>
+		/// Creates a parser designed to parse a CSV file.  Passing true for hasHeaderRow will result in the first row being used to map
+		/// header names to column indices.  This will allow you to access fields using the header name in addition to the column index.
+		/// </summary>
+		public static TabularDataParser CreateWithFilePath( string filePath, bool hasHeaderRow ) {
+			return new CsvLineParser { fileReader = new FileReader( filePath ), hasHeaderRow = hasHeaderRow };
+		}
+
+		/// <summary>
+		/// Creates a parser designed to parse a CSV file.  Passing true for hasHeaderRow will result in the first row being used to map
+		/// header names to column indices.  This will allow you to access fields using the header name in addition to the column index.
+		/// </summary>
+		public static TabularDataParser CreateWithStream( Stream stream, bool hasHeaderRow ) {
+			return new CsvLineParser { fileReader = new FileReader( stream ), hasHeaderRow = hasHeaderRow };
+		}
+
+		/// <summary>
 		/// Creates a line parser with a header row.  The column names are extracted from the header row, and
 		/// parsed CsvLines will allow field access through column name or column index.
 		/// </summary>
 		public CsvLineParser( string headerLine ) {
 			var index = 0;
-			foreach( var columnHeader in Parse( headerLine ).Fields ) {
+			foreach( var columnHeader in ( Parse( headerLine ) as CsvParsedLine ).Fields ) {
 				columnHeadersToIndexes[ columnHeader.ToLower() ] = index;
 				index++;
 			}
@@ -33,14 +49,13 @@ namespace Tewl.IO {
 		/// Internal use only.
 		/// Use ParseAndProcessAllLines instead.
 		/// </summary>
-		public ParsedLine Parse( object stringLineAsObject ) {
-			var line = stringLineAsObject.ToString();
+		internal override CsvParsedLine Parse( string line ) {
 			var fields = new List<string>();
 			if( !line.IsNullOrWhiteSpace() ) {
 				using( TextReader tr = new StringReader( line ) )
 					parseCommaSeparatedFields( tr, fields );
 			}
-			var parsedLine = new ParsedLine( fields );
+			var parsedLine = new CsvParsedLine( fields );
 			parsedLine.ColumnHeadersToIndexes = columnHeadersToIndexes;
 			return parsedLine;
 		}

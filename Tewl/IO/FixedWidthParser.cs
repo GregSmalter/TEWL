@@ -5,12 +5,20 @@ using System.Text;
 using Tewl.Tools;
 
 namespace Tewl.IO {
-	internal class FixedWidthParser: Parser {
+	public class FixedWidthParser: TextBasedTabularDataParser {
 		private int charactersToSkip;
 		private int[] columnWidths; // Maps column indices to column widths
 
 		public FixedWidthParser( int[] columnStartPositions ) {
 			buildColumnWidths( columnStartPositions );
+		}
+
+		/// <summary>
+		/// Creates a parser designed to parse a file with fixed data column widths. Specify the starting position of each column (using one-based column index).
+		/// Characters that take up more than 1 unit of width, such as tabs, can cause problems here.
+		/// </summary>
+		public static TabularDataParser CreateWithFilePath( string filePath, int headerRowsToSkip, params int[] columnStartPositions ) {
+			return new FixedWidthParser( columnStartPositions ) { headerRowsToSkip = headerRowsToSkip, fileReader = new FileReader( filePath ) };
 		}
 
 		private void buildColumnWidths( int[] columnStartPositions ) {
@@ -33,9 +41,7 @@ namespace Tewl.IO {
 			// We don't know how wide the last column is, but we don't need to since we will just read to the end of the line
 		}
 
-		public ParsedLine Parse( object stringLineAsObject ) {
-			var line = stringLineAsObject.ToString();
-
+		internal override CsvParsedLine Parse( string line ) {
 			var fields = new List<string>();
 			if( !line.IsNullOrWhiteSpace() ) {
 				using( TextReader tr = new StringReader( line ) ) {
@@ -46,7 +52,7 @@ namespace Tewl.IO {
 						fields.Add( parseFixedWidthField( tr, columnWidths[ i ] ).Trim() );
 				}
 			}
-			return new ParsedLine( fields );
+			return new CsvParsedLine( fields );
 		}
 
 		private static string parseFixedWidthField( TextReader tr, int width ) {
