@@ -22,7 +22,7 @@ namespace Tewl.IO {
 		public override void ParseAndProcessAllLines( LineProcessingMethod lineHandler, ICollection<ValidationError> validationErrors ) {
 			fileReader.ExecuteInStreamReader(
 				delegate( StreamReader reader ) {
-					IDictionary columnHeadersToIndexes = null;
+					IDictionary<string,int> columnHeadersToIndexes = null;
 
 					// This skips the header row and creates a name to index map out of it. 
 					if( hasHeaderRow )
@@ -56,8 +56,8 @@ namespace Tewl.IO {
 				} );
 		}
 
-		private IDictionary buildColumnHeadersToIndexesDictionary( string headerLine ) {
-			IDictionary columnHeadersToIndexes = new ListDictionary();
+		private IDictionary<string,int> buildColumnHeadersToIndexesDictionary( string headerLine ) {
+			var columnHeadersToIndexes = new Dictionary<string,int>();
 			var index = 0;
 			foreach( var columnHeader in Parse( headerLine ).Fields ) {
 				columnHeadersToIndexes[ columnHeader.ToLower() ] = index;

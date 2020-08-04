@@ -35,7 +35,7 @@ namespace Tewl.IO {
 		internal IDictionary<string, int> ColumnHeadersToIndexes { set => columnHeadersToIndexes = value ?? new Dictionary<string, int>(); }
 
 		internal CsvParsedLine( List<string> fields ) {
-			this.fields = fields;
+			Fields = fields;
 			ContainsData = false;
 			foreach( var field in fields ) {
 				if( !field.IsNullOrWhiteSpace() ) {
