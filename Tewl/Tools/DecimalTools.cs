@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Numerics;
+using JetBrains.Annotations;
 
 namespace Tewl.Tools {
 	/// <summary>
 	/// Extension methods for decimals.
 	/// </summary>
+	[ PublicAPI ]
 	public static class DecimalTools {
 		// Avoiding implicit conversions just for clarity.
 		private static readonly BigInteger ten = new BigInteger( 10 );
@@ -24,8 +26,7 @@ namespace Tewl.Tools {
 
 				// The loop condition here is ugly, because we want to do both the DivRem part and the exponent check :(
 				while( exponent > 0 ) {
-					BigInteger remainder;
-					var divided = BigInteger.DivRem( mantissa, ten, out remainder );
+					var divided = BigInteger.DivRem( mantissa, ten, out var remainder );
 					if( remainder != BigInteger.Zero )
 						break;
 					exponent--;
@@ -51,16 +52,12 @@ namespace Tewl.Tools {
 		/// <summary>
 		/// Rounds this value to the nearest hundred.
 		/// </summary>
-		public static int RoundToHundred( this decimal value, MidpointRounding m ) {
-			return (int)Math.Round( value / 100m, m ) * 100;
-		}
+		public static int RoundToHundred( this decimal value, MidpointRounding m ) => (int)Math.Round( value / 100m, m ) * 100;
 
 		/// <summary>
 		/// Returns the dollar amount to two decimal places prefixed with $. e.g. $8.99
 		/// </summary>
-		public static string ToMoneyString( this decimal d ) {
-			return d.ToString( "c2" );
-		}
+		public static string ToMoneyString( this decimal d ) => d.ToString( "c2" );
 
 		/// <summary>
 		/// Returns true if this dollar value includes fractional cents.

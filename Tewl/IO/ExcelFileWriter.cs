@@ -2,27 +2,27 @@
 using System.IO;
 using System.Linq;
 using ClosedXML.Excel;
-using Humanizer;
+using JetBrains.Annotations;
 using Tewl.Tools;
 
 namespace Tewl.IO {
 	/// <summary>
 	/// Represents an Excel workbook (file).
 	/// </summary>
+	[ PublicAPI ]
 	public class ExcelFileWriter {
 		/// <summary>
 		/// Gets a safe file name (using ToSafeFileName) using the appropriate extension.
 		/// </summary>
-		public static string GetSafeFileName( string fileNameWithoutExtension ) {
-			return "{0}.xlsx".FormatWith( fileNameWithoutExtension ).ToSafeFileName();
-		}
+		public static string GetSafeFileName( string fileNameWithoutExtension ) => $"{fileNameWithoutExtension}.xlsx".ToSafeFileName();
 
 		// NOTE: It's a shame that this can't be a TabularDataFileWriter.
 		private readonly XLWorkbook workbook;
 		private readonly Dictionary<string, ExcelWorksheet> namesToWorksheets = new Dictionary<string, ExcelWorksheet>();
 
 		/// <summary>
-		/// True if every worksheet should auto-fit its column widths immediately before saving. The default is true when creating a new blank ExcelFileWriter.
+		/// True if every worksheet should auto-fit its column widths immediately before saving. The default is true when creating
+		/// a new blank ExcelFileWriter.
 		/// </summary>
 		public bool AutofitOnSave { get; set; }
 
@@ -82,8 +82,7 @@ namespace Tewl.IO {
 		/// Returns the worksheet with the given name in this workbook. If not found, returns null.
 		/// </summary>
 		public ExcelWorksheet GetWorksheetByName( string name ) {
-			ExcelWorksheet workSheet;
-			namesToWorksheets.TryGetValue( name, out workSheet );
+			namesToWorksheets.TryGetValue( name, out var workSheet );
 			return workSheet;
 		}
 

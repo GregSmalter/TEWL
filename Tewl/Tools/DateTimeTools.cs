@@ -2,11 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using Humanizer;
+using JetBrains.Annotations;
 
 namespace Tewl.Tools {
 	/// <summary>
 	/// Provides helpful DateTime methods.
 	/// </summary>
+	[ PublicAPI ]
 	public static class DateTimeTools {
 		internal static readonly string[] DayMonthYearFormats = { dayMonthYearFormatLz, dayMonthYearFormat };
 		internal static readonly string[] MonthDayYearFormats = { monthDayYearFormat, "MM/dd/yy" };
@@ -18,112 +20,95 @@ namespace Tewl.Tools {
 		private const string monthYearFormat = "MMMM yyyy";
 
 		/// <summary>
-		/// Formats the date portion of the specified date/time in "day month year" style, e.g. 5 Apr 2008. Returns stringIfNull if the
+		/// Formats the date portion of the specified date/time in "day month year" style, e.g. 5 Apr 2008. Returns stringIfNull if
+		/// the
 		/// specified date/time is null.
 		/// </summary>
-		public static string ToDayMonthYearString( this DateTime? dateTime, string stringIfNull, bool useLeadingZero, bool includeDayOfWeek = false ) {
-			return dateTime.HasValue ? ToDayMonthYearString( dateTime.Value, useLeadingZero, includeDayOfWeek: includeDayOfWeek ) : stringIfNull;
-		}
+		public static string ToDayMonthYearString( this DateTime? dateTime, string stringIfNull, bool useLeadingZero, bool includeDayOfWeek = false ) =>
+			dateTime.HasValue ? ToDayMonthYearString( dateTime.Value, useLeadingZero, includeDayOfWeek: includeDayOfWeek ) : stringIfNull;
 
 		/// <summary>
 		/// Formats the date portion of the specified date/time in "day month year" style, e.g. 5 Apr 2008.
 		/// </summary>
-		public static string ToDayMonthYearString( this DateTime dateTime, bool useLeadingZero, bool includeDayOfWeek = false ) {
-			return dateTime.ToString(
-				( includeDayOfWeek ? "ddd, " : "" ) + ( useLeadingZero ? dayMonthYearFormatLz : dayMonthYearFormat ),
-				Cultures.EnglishUnitedStates );
-		}
+		public static string ToDayMonthYearString( this DateTime dateTime, bool useLeadingZero, bool includeDayOfWeek = false ) =>
+			dateTime.ToString( ( includeDayOfWeek ? "ddd, " : "" ) + ( useLeadingZero ? dayMonthYearFormatLz : dayMonthYearFormat ), Cultures.EnglishUnitedStates );
 
 		/// <summary>
 		/// Formats the date portion of the specified date/time in "01/01/2001" style. Returns stringIfNull if the
 		/// specified date/time is null.
 		/// </summary>
-		public static string ToMonthDayYearString( this DateTime? dateTime, string stringIfNull ) {
-			return dateTime.HasValue ? ToMonthDayYearString( dateTime.Value ) : stringIfNull;
-		}
+		public static string ToMonthDayYearString( this DateTime? dateTime, string stringIfNull ) => dateTime.HasValue ? ToMonthDayYearString( dateTime.Value ) : stringIfNull;
 
 		/// <summary>
 		/// Formats the date portion of the specified date/time in "01/01/2001" style.
 		/// </summary>
-		public static string ToMonthDayYearString( this DateTime dateTime ) {
-			return dateTime.ToString( monthDayYearFormat, Cultures.EnglishUnitedStates );
-		}
+		public static string ToMonthDayYearString( this DateTime dateTime ) => dateTime.ToString( monthDayYearFormat, Cultures.EnglishUnitedStates );
 
 		/// <summary>
 		/// Formats the date portion of the specified date/time in "month year" style, e.g. April 2008.
 		/// </summary>
-		public static string ToMonthYearString( this DateTimeOffset dateTime ) {
-			return dateTime.ToString( monthYearFormat, Cultures.EnglishUnitedStates );
-		}
+		public static string ToMonthYearString( this DateTimeOffset dateTime ) => dateTime.ToString( monthYearFormat, Cultures.EnglishUnitedStates );
 
 		/// <summary>
-		/// Formats the time portion of the specified date/time in hour:minute style followed by a single lowercase letter indicating AM or PM. Returns stringIfNull
+		/// Formats the time portion of the specified date/time in hour:minute style followed by a single lowercase letter
+		/// indicating AM or PM. Returns stringIfNull
 		/// if the specified date/time is null.
 		/// </summary>
-		public static string ToHourAndMinuteString( this DateTime? dateTime, string stringIfNull ) {
-			return dateTime.HasValue ? ToHourAndMinuteString( dateTime.Value ) : stringIfNull;
-		}
+		public static string ToHourAndMinuteString( this DateTime? dateTime, string stringIfNull ) => dateTime.HasValue ? ToHourAndMinuteString( dateTime.Value ) : stringIfNull;
 
 		/// <summary>
-		/// Formats the time portion of the specified date/time in hour:minute style followed by a single lowercase letter indicating AM or PM.
+		/// Formats the time portion of the specified date/time in hour:minute style followed by a single lowercase letter
+		/// indicating AM or PM.
 		/// </summary>
-		public static string ToHourAndMinuteString( this DateTime dateTime ) {
-			return dateTime.ToString( HourAndMinuteFormat, Cultures.EnglishUnitedStates ).ToLower();
-		}
+		public static string ToHourAndMinuteString( this DateTime dateTime ) => dateTime.ToString( HourAndMinuteFormat, Cultures.EnglishUnitedStates ).ToLower();
 
 		/// <summary>
 		/// Returns the begin date of the specified date's month.
 		/// </summary>
-		public static DateTime MonthBeginDate( this DateTime date ) {
-			return new DateTime( date.Year, date.Month, 1 );
-		}
+		public static DateTime MonthBeginDate( this DateTime date ) => new DateTime( date.Year, date.Month, 1 );
 
 		/// <summary>
 		/// Returns the date that the given week starts on.
 		/// </summary>
-		public static DateTime WeekBeginDate( this DateTime dateTime ) {
-			return dateTime.AddDays( -(int)dateTime.DayOfWeek ).Date;
-		}
+		public static DateTime WeekBeginDate( this DateTime dateTime ) => dateTime.AddDays( -(int)dateTime.DayOfWeek ).Date;
 
 		/// <summary>
 		/// Returns true if this date/time contains time information.
 		/// </summary>
-		public static bool HasTime( this DateTime? dateTime ) {
-			return dateTime.HasValue && dateTime.Value.HasTime();
-		}
+		public static bool HasTime( this DateTime? dateTime ) => dateTime.HasValue && dateTime.Value.HasTime();
 
 		/// <summary>
 		/// Returns true if this date/time contains time information.
 		/// </summary>
-		public static bool HasTime( this DateTime dateTime ) {
+		public static bool HasTime( this DateTime dateTime ) =>
 			// See http://stackoverflow.com/a/681451/35349.
-			return dateTime.TimeOfDay != TimeSpan.Zero;
-		}
+			dateTime.TimeOfDay != TimeSpan.Zero;
 
 		/// <summary>
-		/// Returns true if this date is in between the given DateTimes (inclusive at beginning of range, exclusive at end of range).
+		/// Returns true if this date is in between the given DateTimes (inclusive at beginning of range, exclusive at end of
+		/// range).
 		/// Passing null for either of the two dates is considered to be infinity in that direction.
 		/// Therefore, passing null for both dates will always result in true.
 		/// </summary>
-		public static bool IsBetweenDateTimes( this DateTime dateTime, DateTime? onOrAfterDate, DateTime? onOrBeforeDate ) {
-			return ( onOrAfterDate == null || dateTime >= onOrAfterDate ) && ( onOrBeforeDate == null || dateTime < onOrBeforeDate );
-		}
+		public static bool IsBetweenDateTimes( this DateTime dateTime, DateTime? onOrAfterDate, DateTime? onOrBeforeDate ) =>
+			( onOrAfterDate == null || dateTime >= onOrAfterDate ) && ( onOrBeforeDate == null || dateTime < onOrBeforeDate );
 
 		/// <summary>
 		/// Returns true if this date is in between (inclusive) the given dates.
 		/// This method differs from IsBetweenDateTimes in that onOrAfterDate and onOrBeforeDate must be dates only
 		/// (an exception will be thrown if time information is passed - use .Date if you have to.)
 		/// and that it is inclusive on both ends of the range.
-		/// This method also correctly returns true in the case where the dateTime parameter is 3:30PM on 11/15/09 and the onOrBeforeDate is 11/15/09.
+		/// This method also correctly returns true in the case where the dateTime parameter is 3:30PM on 11/15/09 and the
+		/// onOrBeforeDate is 11/15/09.
 		/// If you want to define a range with time information, use IsBetweenDateTimes instead.
-		/// Passing null for either of the two dates is considered to be infinity in that direction. Therefore, passing null for both dates will always result in true.
+		/// Passing null for either of the two dates is considered to be infinity in that direction. Therefore, passing null for
+		/// both dates will always result in true.
 		/// </summary>
 		public static bool IsBetweenDates( this DateTime dateTime, DateTime? onOrAfterDate, DateTime? onOrBeforeDate ) {
 			assertDateTimeHasNoTime( onOrAfterDate, "on or after date" );
 			assertDateTimeHasNoTime( onOrBeforeDate, "on or before date" );
 
-			if( onOrBeforeDate.HasValue )
-				onOrBeforeDate = onOrBeforeDate.Value.AddDays( 1 );
+			onOrBeforeDate = onOrBeforeDate?.AddDays( 1 );
 			return IsBetweenDateTimes( dateTime, onOrAfterDate, onOrBeforeDate );
 		}
 
@@ -147,12 +132,12 @@ namespace Tewl.Tools {
 		}
 
 		/// <summary>
-		/// Returns true if the specified date/time range overlaps the specified date range. Passing null for any date means infinity in that direction.
+		/// Returns true if the specified date/time range overlaps the specified date range. Passing null for any date means
+		/// infinity in that direction.
 		/// Throws an exception if the date range contains time information. Use .Date if you have to.
 		/// See documentation for IsBetweenDates for more information on the date range.
 		/// </summary>
-		public static bool DateTimeRangeOverlapsDateRange(
-			DateTime? dateTimeRangeBegin, DateTime? dateTimeRangeEnd, DateTime? dateRangeBegin, DateTime? dateRangeEnd ) {
+		public static bool DateTimeRangeOverlapsDateRange( DateTime? dateTimeRangeBegin, DateTime? dateTimeRangeEnd, DateTime? dateRangeBegin, DateTime? dateRangeEnd ) {
 			assertDateTimeHasNoTime( dateRangeBegin, "date range begin" );
 			assertDateTimeHasNoTime( dateRangeEnd, "date range end" );
 
@@ -199,7 +184,8 @@ namespace Tewl.Tools {
 		}
 
 		/// <summary>
-		/// Returns true when each day between begin and end dates is represented inside one of the date ranges in dateRanges, inclusive.
+		/// Returns true when each day between begin and end dates is represented inside one of the date ranges in dateRanges,
+		/// inclusive.
 		/// Be sure time information is not included. No begin date may be after an end date.
 		/// </summary>
 		public static bool DateRangesCoverAllDates( DateTime beginDate, DateTime endDate, IEnumerable<Tuple<DateTime?, DateTime?>> dateRanges ) {
@@ -207,6 +193,7 @@ namespace Tewl.Tools {
 				if( !dateRanges.Any( dr => day.IsBetweenDates( dr.Item1, dr.Item2 ) ) )
 					return false;
 			}
+
 			return true;
 		}
 
@@ -221,7 +208,7 @@ namespace Tewl.Tools {
 			var age = endDate.Year - beginDate.Year;
 
 			// ...then check for the 1-year offset
-			if( endDate.Month < beginDate.Month || ( endDate.Month == beginDate.Month && endDate.Day < beginDate.Day ) )
+			if( endDate.Month < beginDate.Month || endDate.Month == beginDate.Month && endDate.Day < beginDate.Day )
 				age -= 1;
 
 			return age;
@@ -233,8 +220,11 @@ namespace Tewl.Tools {
 		/// <param name="year">The year.</param>
 		/// <param name="month">The month.</param>
 		/// <param name="day">The day of the week.</param>
-		/// <param name="weeksFromFirst">The number of weeks from the first occurrence of the specified day of the week in the month. Pass a negative value to count
-		/// backward from the first occurrence in the next month.</param>
+		/// <param name="weeksFromFirst">
+		/// The number of weeks from the first occurrence of the specified day of the week in the month. Pass a negative value to
+		/// count
+		/// backward from the first occurrence in the next month.
+		/// </param>
 		// Based on http://stackoverflow.com/a/5422046/35349.
 		public static DateTime GetDateOfDayOfWeekInMonth( int year, int month, DayOfWeek day, int weeksFromFirst ) {
 			var date = new DateTime( year, month, 1 );
@@ -255,12 +245,30 @@ namespace Tewl.Tools {
 		}
 
 		/// <summary>
-		/// Returns the number of weeks from the first occurrence of the specified date's day of the week in the month to the specified date.
+		/// Returns the number of weeks from the first occurrence of the specified date's day of the week in the month to the
+		/// specified date.
 		/// </summary>
 		public static int WeeksFromFirstOccurrenceOfDayOfWeekInMonth( this DateTime date, bool countBackwardFromFirstOccurrenceInNextMonth ) {
 			if( countBackwardFromFirstOccurrenceInNextMonth )
 				return ( date.Day - DateTime.DaysInMonth( date.Year, date.Month ) ) / 7 - 1;
 			return ( date.Day - 1 ) / 7;
 		}
+
+		/// <summary>
+		/// Returns the given UTC <see cref="DateTime" /> to local time.
+		/// Doesn't matter if <see cref="DateTime.Kind" /> is correctly set.
+		/// Null values return null.
+		/// </summary>
+		/// <param name="d"></param>
+		/// <returns></returns>
+		public static DateTime? UtcToLocal( this DateTime? d ) => d != null ? TimeZoneInfo.ConvertTimeFromUtc( d.Value, TimeZoneInfo.Local ) : (DateTime?)null;
+
+		/// <summary>
+		/// Returns the given UTC <see cref="DateTime" /> to local time.
+		/// Doesn't matter if <see cref="DateTime.Kind" /> is correctly set.
+		/// </summary>
+		/// <param name="d"></param>
+		/// <returns></returns>
+		public static DateTime UtcToLocal( this DateTime d ) => UtcToLocal( (DateTime?)d ).Value;
 	}
 }

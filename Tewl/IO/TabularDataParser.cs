@@ -1,17 +1,19 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.IO;
+using JetBrains.Annotations;
 using Tewl.InputValidation;
 
 namespace Tewl.IO {
 	/// <summary>
 	/// Use this to process several lines of any type of tabular data, such as CSVs or fixed-width data files.
 	/// </summary>
-	 public class TabularDataParser {
+	[PublicAPI] 
+	public class TabularDataParser {
 		/// <summary>
-		/// Method that knows how to process a line from a particular file.  The validator is new for each row and has no errors, initially.
+		/// Method that knows how to process a line from a particular file.  The validator is new for each row and has no errors,
+		/// initially.
 		/// </summary>
 		public delegate void LineProcessingMethod( Validator validator, TabularDataParsedLine line );
 
@@ -19,45 +21,49 @@ namespace Tewl.IO {
 		protected bool hasHeaderRow;
 
 		/// <summary>
-		/// The number of rows in the file, not including the header rows that were skipped with headerRowsToSkip or hasHeaderRows = true.
+		/// The number of rows in the file, not including the header rows that were skipped with headerRowsToSkip or hasHeaderRows
+		/// = true.
 		/// This is the number of rows in the file that were parsed.
-		/// This properly only has meaning after ParseAndProcessAllLines has been called. 
+		/// This properly only has meaning after ParseAndProcessAllLines has been called.
 		/// </summary>
 		public int NonHeaderRows { get; protected set; }
 
 		/// <summary>
-		/// The number of header rows in the file. This is equal to 1 if hasHeaderRow was passed as true, or equal to headerRowsToSkip otherwise.
+		/// The number of header rows in the file. This is equal to 1 if hasHeaderRow was passed as true, or equal to
+		/// headerRowsToSkip otherwise.
 		/// </summary>
-		public int HeaderRows { get { return hasHeaderRow ? 1 : headerRowsToSkip; } }
+		public int HeaderRows => hasHeaderRow ? 1 : headerRowsToSkip;
 
 		/// <summary>
-		/// The total number of rows in the file, including any header rows. This properly only has meaning after ParseAndProcessAllLines has been called. 
+		/// The total number of rows in the file, including any header rows. This properly only has meaning after
+		/// ParseAndProcessAllLines has been called.
 		/// </summary>
-		public int TotalRows { get { return HeaderRows + NonHeaderRows; } }
+		public int TotalRows => HeaderRows + NonHeaderRows;
 
 		/// <summary>
 		/// The number of rows in the file with at least one non-blank field.
-		/// This properly only has meaning after ParseAndProcessAllLines has been called. 
+		/// This properly only has meaning after ParseAndProcessAllLines has been called.
 		/// This is the number of rows in that file that were processed (the lineHandler callback was performed).
 		/// </summary>
 		public int RowsContainingData { get; protected set; }
 
 		/// <summary>
 		/// The number of rows in the file that were processed without encountering any validation errors.
-		/// This properly only has meaning after ParseAndProcessAllLines has been called. 
+		/// This properly only has meaning after ParseAndProcessAllLines has been called.
 		/// </summary>
 		public int RowsWithoutValidationErrors { get; protected set; }
 
 		/// <summary>
 		/// The number of rows in the file that did encounter validation errors when processed.
-		/// This properly only has meaning after ParseAndProcessAllLines has been called. 
+		/// This properly only has meaning after ParseAndProcessAllLines has been called.
 		/// </summary>
-		public int RowsWithValidationErrors { get { return RowsContainingData - RowsWithoutValidationErrors; } }
+		public int RowsWithValidationErrors => RowsContainingData - RowsWithoutValidationErrors;
 
 		protected TabularDataParser() { }
 
 		/// <summary>
-		/// Creates a parser designed to parse a file with fixed data column widths. Specify the starting position of each column (using one-based column index).
+		/// Creates a parser designed to parse a file with fixed data column widths. Specify the starting position of each column
+		/// (using one-based column index).
 		/// Characters that take up more than 1 unit of width, such as tabs, can cause problems here.
 		/// </summary>
 		public static TabularDataParser CreateForFixedWidthFile( string filePath, int headerRowsToSkip, params int[] columnStartPositions ) {
@@ -65,16 +71,20 @@ namespace Tewl.IO {
 		}
 
 		/// <summary>
-		/// Creates a parser designed to parse a CSV file.  Passing true for hasHeaderRow will result in the first row being used to map
-		/// header names to column indices.  This will allow you to access fields using the header name in addition to the column index.
+		/// Creates a parser designed to parse a CSV file.  Passing true for hasHeaderRow will result in the first row being used
+		/// to map
+		/// header names to column indices.  This will allow you to access fields using the header name in addition to the column
+		/// index.
 		/// </summary>
 		public static TabularDataParser CreateForCsvFile( string filePath, bool hasHeaderRow ) {
 			return CsvLineParser.CreateWithFilePath( filePath, hasHeaderRow );
 		}
 
 		/// <summary>
-		/// Creates a parser designed to parse a CSV file.  Passing true for hasHeaderRow will result in the first row being used to map
-		/// header names to column indices.  This will allow you to access fields using the header name in addition to the column index.
+		/// Creates a parser designed to parse a CSV file.  Passing true for hasHeaderRow will result in the first row being used
+		/// to map
+		/// header names to column indices.  This will allow you to access fields using the header name in addition to the column
+		/// index.
 		/// </summary>
 		public static TabularDataParser CreateForCsvFile( Stream stream, bool hasHeaderRow ) {
 			return CsvLineParser.CreateWithStream( stream, hasHeaderRow );

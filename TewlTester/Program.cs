@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using Tewl.InputValidation;
 using Tewl.IO;
 
@@ -14,7 +15,7 @@ namespace TewlTester {
 			var csvParser = TabularDataParser.CreateForCsvFile( @"C:\EveryoneFullControl\Knocking2020StateNotes.csv", true );
 			var validationErrors = new List<ValidationError>();
 
-			csvParser.ParseAndProcessAllLines( importThing, validationErrors );
+			parser.ProcessAllLines( importThing, validationErrors );
 
 			Console.WriteLine( $"CSV test: {csvParser.RowsWithoutValidationErrors} rows imported without error." );
 		}
