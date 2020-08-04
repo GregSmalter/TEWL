@@ -23,9 +23,13 @@ namespace Tewl.IO {
 			fileReader.ExecuteInStreamReader(
 				delegate( StreamReader reader ) {
 					IDictionary columnHeadersToIndexes = null;
+
+					// This skips the header row and creates a name to index map out of it. 
 					if( hasHeaderRow )
 						columnHeadersToIndexes = buildColumnHeadersToIndexesDictionary( reader.ReadLine() );
 
+					// GMS NOTE: It may be time to just remove this feature. It seems like only FixedWidth uses it (can be created with a non-zero value) and there are probably better ways to do it for whatever program needed that. 
+					// This is a bit misleading. HeaderRowsToSkip will be 0 even when we've skipped the header row due to hasHeadRow, above. 
 					for( var i = 0; i < headerRowsToSkip; i++ )
 						reader.ReadLine();
 

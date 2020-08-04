@@ -50,7 +50,7 @@ namespace Tewl.IO {
 
 		/// <summary>
 		/// Returns the value of the field with the given column index.
-		/// Gracefully return empty string when overindexed.  This prevents problems with files that have no value in the last column.
+		/// Gracefully return empty string when over-indexed.  This prevents problems with files that have no value in the last column.
 		/// </summary>
 		public string this[ int index ] {
 			get {

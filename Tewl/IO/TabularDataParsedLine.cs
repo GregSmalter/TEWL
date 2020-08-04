@@ -15,8 +15,7 @@
 		int LineNumber { get; }
 
 		/// <summary>
-		/// Returns the value of the field with the given column index.
-		/// Gracefully return empty string when overindexed.  This prevents problems with files that have no value in the last column.
+		/// Returns the value of the field with the given zero-based column index.
 		/// </summary>
 		string this[ int index ] {get; }
 
