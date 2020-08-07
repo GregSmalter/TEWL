@@ -27,7 +27,7 @@ namespace Tewl.IO {
 			var rows = ws1.RangeUsed().RowsUsed().ToList();
 			rows = rows.Where( r => !r.IsEmpty() ).ToList();
 			var header = rows.First();
-			var headerFields = header.Cells().ToList().Select( c => c.Value.ToString() ).ToList();
+			var headerFields = header.Cells().ToList().Select( c => c.Value.ToString().ToLower() ).ToList();
 			foreach( var row in rows.Skip( HeaderRows ) ) {
 				var parsedLine = new ExcelParsedLine( headerFields, row );
 				NonHeaderRows++;

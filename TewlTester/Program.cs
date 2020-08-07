@@ -11,7 +11,7 @@ namespace TewlTester {
 		}
 
 		private static void testCsv() {
-			var csvParser = TabularDataParser.CreateForCsvFile( @"C:\EveryoneFullControl\Knocking2020StateNotes.csv", true );
+			var csvParser = TabularDataParser.CreateForCsvFile( @"..\..\..\TestFiles\TewlTestBook.csv", true );
 			var validationErrors = new List<ValidationError>();
 
 			csvParser.ParseAndProcessAllLines( importThing, validationErrors );
@@ -20,7 +20,7 @@ namespace TewlTester {
 		}
 
 		private static void testXls() {
-			var xlsParser = TabularDataParser.CreateForExcelFile( @"C:\EveryoneFullControl\Knocking2020StateNotes.xlsx" );
+			var xlsParser = TabularDataParser.CreateForExcelFile( @"..\..\..\TestFiles\TewlTestBook.xlsx" );
 			var validationErrors = new List<ValidationError>();
 
 			xlsParser.ParseAndProcessAllLines( importThing, validationErrors );
@@ -29,7 +29,8 @@ namespace TewlTester {
 		}
 
 		private static void importThing( Validator validator, TabularDataParsedLine line ) {
-			Console.WriteLine( line.LineNumber + ": " + line[ 0 ] );
+			var value = line["dATe"];
+			Console.WriteLine( line.LineNumber + ": " + value );
 		}
 	}
 }

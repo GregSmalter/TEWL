@@ -18,7 +18,8 @@ namespace Tewl.IO {
 		// Index is zero-based. The Cell() function on the IXLRangeRow is 1-based. 
 		public string this[ int index ] => row.Cell( index + 1 ).Value.ToString();
 
-		public string this[ string columnName ] => row.Cell( headerFields.IndexOf( columnName ) ).Value.ToString();
+		// Index is zero-based. The Cell() function on the IXLRangeRow is 1-based. 
+		public string this[ string columnName ] => row.Cell( headerFields.IndexOf( columnName.ToLower() ) + 1 ).Value.ToString();
 
 		public bool ContainsField( string fieldName ) => headerFields.Contains( fieldName );
 	}
