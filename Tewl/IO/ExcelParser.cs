@@ -12,8 +12,6 @@ namespace Tewl.IO {
 
 		public ExcelParser( Stream fileStream ) => workbook = new XLWorkbook( fileStream );
 
-		// GMS NOTE: HeaderRowsToSkip has to be addressed. Are we supporting it here?
-
 		/// <summary>
 		/// For every line (after headerRowsToSkip) in the file with the given path, calls the line handling method you pass.
 		/// The validationErrors collection will hold all validation errors encountered during the processing of all lines.
