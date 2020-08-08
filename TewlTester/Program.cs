@@ -29,7 +29,7 @@ namespace TewlTester {
 			Console.WriteLine( $"Excel test: {xlsParser.RowsWithoutValidationErrors} rows imported without error." );
 		}
 
-		private static void importThing( Validator validator, TabularDataParsedLine line ) {
+		private static void importThing( Validator validator, ParsedLine line ) {
 			var value = line["dATe"];
 			Console.WriteLine( line.LineNumber + ": " + value );
 		}

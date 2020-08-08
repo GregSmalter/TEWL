@@ -5,7 +5,7 @@ namespace Tewl.IO.TabularDataParsing {
 	/// Represents a line/row that been parsed into fields that are accessible through the indexers of this object.
 	/// </summary>
 	[PublicAPI]
-	public interface TabularDataParsedLine {
+	public interface ParsedLine {
 		/// <summary>
 		/// Returns true if any field on this line has a non-empty, non-whitespace value.
 		/// </summary>

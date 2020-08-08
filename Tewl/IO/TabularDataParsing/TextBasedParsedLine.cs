@@ -9,7 +9,7 @@ namespace Tewl.IO.TabularDataParsing {
 	/// are accessible through the indexers of this object.
 	/// </summary>
 	[PublicAPI]
-	internal class TextBasedParsedLine : TabularDataParsedLine {
+	internal class TextBasedParsedLine : ParsedLine {
 		private IDictionary<string, int> columnHeadersToIndexes;
 		private int? lineNumber;
 

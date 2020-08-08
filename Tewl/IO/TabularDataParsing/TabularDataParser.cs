@@ -14,7 +14,7 @@ namespace Tewl.IO.TabularDataParsing {
 		/// Method that knows how to process a line from a particular file.  The validator is new for each row and has no errors,
 		/// initially.
 		/// </summary>
-		public delegate void LineProcessingMethod( Validator validator, TabularDataParsedLine line );
+		public delegate void LineProcessingMethod( Validator validator, ParsedLine line );
 
 		/// <summary>
 		/// Header rows to skip, shared by all parsers.

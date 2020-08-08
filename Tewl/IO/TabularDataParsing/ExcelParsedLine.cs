@@ -2,7 +2,7 @@
 using ClosedXML.Excel;
 
 namespace Tewl.IO.TabularDataParsing {
-	class ExcelParsedLine: TabularDataParsedLine {
+	class ExcelParsedLine: ParsedLine {
 		private readonly List<string> headerFields;
 		private readonly IXLRangeRow row;
 
