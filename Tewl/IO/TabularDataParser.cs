@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using JetBrains.Annotations;
@@ -7,9 +6,9 @@ using Tewl.InputValidation;
 
 namespace Tewl.IO {
 	/// <summary>
-	/// Use this to process several lines of any type of tabular data, such as CSVs or fixed-width data files.
+	/// Use this to process several lines of any type of tabular data, such as CSVs, fixed-width data files, or Excel files.
 	/// </summary>
-	[PublicAPI] 
+	[ PublicAPI ]
 	public class TabularDataParser {
 		/// <summary>
 		/// Method that knows how to process a line from a particular file.  The validator is new for each row and has no errors,
@@ -17,7 +16,14 @@ namespace Tewl.IO {
 		/// </summary>
 		public delegate void LineProcessingMethod( Validator validator, TabularDataParsedLine line );
 
+		/// <summary>
+		/// Header rows to skip, shared by all parsers.
+		/// </summary>
 		protected int headerRowsToSkip;
+
+		/// <summary>
+		/// True if there is a header row. Also implies header rows to skip is 1.
+		/// </summary>
 		protected bool hasHeaderRow;
 
 		/// <summary>
@@ -59,6 +65,9 @@ namespace Tewl.IO {
 		/// </summary>
 		public int RowsWithValidationErrors => RowsContainingData - RowsWithoutValidationErrors;
 
+		/// <summary>
+		/// Constructs a tabular data parser. Empty. 
+		/// </summary>
 		protected TabularDataParser() { }
 
 		/// <summary>
@@ -66,9 +75,8 @@ namespace Tewl.IO {
 		/// (using one-based column index).
 		/// Characters that take up more than 1 unit of width, such as tabs, can cause problems here.
 		/// </summary>
-		public static TabularDataParser CreateForFixedWidthFile( string filePath, int headerRowsToSkip, params int[] columnStartPositions ) {
-			return FixedWidthParser.CreateWithFilePath( filePath, headerRowsToSkip, columnStartPositions );
-		}
+		public static TabularDataParser CreateForFixedWidthFile( string filePath, int headerRowsToSkip, params int[] columnStartPositions ) =>
+			FixedWidthParser.CreateWithFilePath( filePath, headerRowsToSkip, columnStartPositions );
 
 		/// <summary>
 		/// Creates a parser designed to parse a CSV file.  Passing true for hasHeaderRow will result in the first row being used
@@ -76,9 +84,7 @@ namespace Tewl.IO {
 		/// header names to column indices.  This will allow you to access fields using the header name in addition to the column
 		/// index.
 		/// </summary>
-		public static TabularDataParser CreateForCsvFile( string filePath, bool hasHeaderRow ) {
-			return CsvLineParser.CreateWithFilePath( filePath, hasHeaderRow );
-		}
+		public static TabularDataParser CreateForCsvFile( string filePath, bool hasHeaderRow ) => CsvLineParser.CreateWithFilePath( filePath, hasHeaderRow );
 
 		/// <summary>
 		/// Creates a parser designed to parse a CSV file.  Passing true for hasHeaderRow will result in the first row being used
@@ -86,29 +92,23 @@ namespace Tewl.IO {
 		/// header names to column indices.  This will allow you to access fields using the header name in addition to the column
 		/// index.
 		/// </summary>
-		public static TabularDataParser CreateForCsvFile( Stream stream, bool hasHeaderRow ) {
-			return CsvLineParser.CreateWithStream( stream, hasHeaderRow );
-		}
+		public static TabularDataParser CreateForCsvFile( Stream stream, bool hasHeaderRow ) => CsvLineParser.CreateWithStream( stream, hasHeaderRow );
 
 		/// <summary>
 		/// Assumes header row. Fields will always be accessible by name.
 		/// </summary>
-		public static TabularDataParser CreateForExcelFile( Stream stream ) {
-			return new ExcelParser( stream ) { hasHeaderRow = true };
-		}
+		public static TabularDataParser CreateForExcelFile( Stream stream ) => new ExcelParser( stream ) { hasHeaderRow = true };
 
 		/// <summary>
 		/// Assumes header row. Fields will always be accessible by name.
 		/// </summary>
-		public static TabularDataParser CreateForExcelFile( string filePath )  {
-			return new ExcelParser( filePath ) { hasHeaderRow = true };
-		}
+		public static TabularDataParser CreateForExcelFile( string filePath ) => new ExcelParser( filePath ) { hasHeaderRow = true };
 
 		/// <summary>
 		/// For every line (after headerRowsToSkip) in the file with the given path, calls the line handling method you pass.
 		/// Each line handler method will be given a fresh validator to do its work with.
 		/// </summary>
-		public void ParseAndProcessAllLines( TabularDataParser.LineProcessingMethod lineHandler ) {
+		public void ParseAndProcessAllLines( LineProcessingMethod lineHandler ) {
 			ParseAndProcessAllLines( lineHandler, null );
 		}
 
@@ -116,7 +116,7 @@ namespace Tewl.IO {
 		/// For every line (after headerRowsToSkip) in the file with the given path, calls the line handling method you pass.
 		/// Each line handler method will be given a fresh validator to do its work with.
 		/// </summary>
-		public virtual void ParseAndProcessAllLines( TabularDataParser.LineProcessingMethod lineHandler, ICollection<ValidationError> validationErrors ) {
+		public virtual void ParseAndProcessAllLines( LineProcessingMethod lineHandler, ICollection<ValidationError> validationErrors ) {
 			throw new NotImplementedException( "Each parser must have a specific implementation of parse and process all lines." );
 		}
 	}

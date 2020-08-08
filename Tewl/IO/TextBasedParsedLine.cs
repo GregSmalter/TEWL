@@ -3,15 +3,13 @@ using System.Collections.Generic;
 using JetBrains.Annotations;
 using Tewl.Tools;
 
-// GMS NOTE: Rename to TextBasedTabularParsedLine or something .This is used by fixed width as well. Deliited?
-
 namespace Tewl.IO {
 	/// <summary>
 	/// Represents a line of text from a CSV file that has been parsed into fields that
 	/// are accessible through the indexers of this object.
 	/// </summary>
 	[PublicAPI]
-	internal class CsvParsedLine : TabularDataParsedLine {
+	internal class TextBasedParsedLine : TabularDataParsedLine {
 		private IDictionary<string, int> columnHeadersToIndexes;
 		private int? lineNumber;
 
@@ -34,7 +32,7 @@ namespace Tewl.IO {
 
 		internal IDictionary<string, int> ColumnHeadersToIndexes { set => columnHeadersToIndexes = value ?? new Dictionary<string, int>(); }
 
-		internal CsvParsedLine( List<string> fields ) {
+		internal TextBasedParsedLine( List<string> fields ) {
 			Fields = fields;
 			ContainsData = false;
 			foreach( var field in fields ) {

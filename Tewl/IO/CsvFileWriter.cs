@@ -6,7 +6,7 @@ namespace Tewl.IO {
 	/// Helps in writing data to a file in CSV format.
 	/// </summary>
 	[ PublicAPI ]
-	public class CsvFileWriter: TabularDataFileWriter {
+	public class CsvFileWriter: TextBasedTabularDataFileWriter {
 		private string line = "";
 
 		/// <summary>

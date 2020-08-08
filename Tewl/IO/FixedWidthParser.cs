@@ -39,7 +39,7 @@ namespace Tewl.IO {
 			// We don't know how wide the last column is, but we don't need to since we will just read to the end of the line
 		}
 
-		internal override CsvParsedLine Parse( string line ) {
+		internal override TextBasedParsedLine Parse( string line ) {
 			var fields = new List<string>();
 			if( !line.IsNullOrWhiteSpace() ) {
 				using( TextReader tr = new StringReader( line ) ) {
@@ -50,7 +50,7 @@ namespace Tewl.IO {
 						fields.Add( parseFixedWidthField( tr, columnWidths[ i ] ).Trim() );
 				}
 			}
-			return new CsvParsedLine( fields );
+			return new TextBasedParsedLine( fields );
 		}
 
 		private static string parseFixedWidthField( TextReader tr, int width ) {

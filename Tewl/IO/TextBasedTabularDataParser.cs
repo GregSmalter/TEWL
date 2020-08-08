@@ -1,13 +1,14 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.IO;
 using Tewl.InputValidation;
 
 namespace Tewl.IO {
+	/// <summary>
+	/// Data parser for text-based file formats of tabular data, such as CSV and fixed-width.
+	/// </summary>
 	public class TextBasedTabularDataParser: TabularDataParser {
-		internal virtual CsvParsedLine Parse( string line ) => throw new NotImplementedException( "Parsers must have a specific implementation of Parse." );
+		internal virtual TextBasedParsedLine Parse( string line ) => throw new NotImplementedException( "Parsers must have a specific implementation of Parse." );
 
 		protected FileReader fileReader;
 
@@ -22,7 +23,7 @@ namespace Tewl.IO {
 		public override void ParseAndProcessAllLines( LineProcessingMethod lineHandler, ICollection<ValidationError> validationErrors ) {
 			fileReader.ExecuteInStreamReader(
 				delegate( StreamReader reader ) {
-					IDictionary<string,int> columnHeadersToIndexes = null;
+					IDictionary<string, int> columnHeadersToIndexes = null;
 
 					// This skips the header row and creates a name to index map out of it. 
 					if( hasHeaderRow )
@@ -56,8 +57,8 @@ namespace Tewl.IO {
 				} );
 		}
 
-		private IDictionary<string,int> buildColumnHeadersToIndexesDictionary( string headerLine ) {
-			var columnHeadersToIndexes = new Dictionary<string,int>();
+		private IDictionary<string, int> buildColumnHeadersToIndexesDictionary( string headerLine ) {
+			var columnHeadersToIndexes = new Dictionary<string, int>();
 			var index = 0;
 			foreach( var columnHeader in Parse( headerLine ).Fields ) {
 				columnHeadersToIndexes[ columnHeader.ToLower() ] = index;

@@ -8,7 +8,7 @@ namespace Tewl.IO {
 	/// Helps in writing data to a file in tab-separated values format.
 	/// </summary>
 	[ PublicAPI ]
-	public class TabDelimitedFileWriter: TabularDataFileWriter {
+	public class TabDelimitedFileWriter: TextBasedTabularDataFileWriter {
 		private const char delimiter = '\t';
 		private string line = "";
 

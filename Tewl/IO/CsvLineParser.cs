@@ -40,7 +40,7 @@ namespace Tewl.IO {
 		/// </summary>
 		public CsvLineParser( string headerLine ) {
 			var index = 0;
-			foreach( var columnHeader in ( Parse( headerLine ) as CsvParsedLine ).Fields ) {
+			foreach( var columnHeader in ( Parse( headerLine ) as TextBasedParsedLine ).Fields ) {
 				columnHeadersToIndexes[ columnHeader.ToLower() ] = index;
 				index++;
 			}
@@ -51,13 +51,13 @@ namespace Tewl.IO {
 		/// Internal use only.
 		/// Use ParseAndProcessAllLines instead.
 		/// </summary>
-		internal override CsvParsedLine Parse( string line ) {
+		internal override TextBasedParsedLine Parse( string line ) {
 			var fields = new List<string>();
 			if( !line.IsNullOrWhiteSpace() ) {
 				using( TextReader tr = new StringReader( line ) )
 					parseCommaSeparatedFields( tr, fields );
 			}
-			var parsedLine = new CsvParsedLine( fields );
+			var parsedLine = new TextBasedParsedLine( fields );
 			parsedLine.ColumnHeadersToIndexes = columnHeadersToIndexes;
 			return parsedLine;
 		}

@@ -16,7 +16,6 @@ namespace Tewl.IO {
 		/// </summary>
 		public static string GetSafeFileName( string fileNameWithoutExtension ) => $"{fileNameWithoutExtension}.xlsx".ToSafeFileName();
 
-		// NOTE: It's a shame that this can't be a TabularDataFileWriter.
 		private readonly XLWorkbook workbook;
 		private readonly Dictionary<string, ExcelWorksheet> namesToWorksheets = new Dictionary<string, ExcelWorksheet>();
 

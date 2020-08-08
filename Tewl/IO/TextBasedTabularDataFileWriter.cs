@@ -6,7 +6,7 @@ namespace Tewl.IO {
 	/// Provides a way to write tabular data to files.
 	/// </summary>
 	[ PublicAPI ]
-	public interface TabularDataFileWriter {
+	public interface TextBasedTabularDataFileWriter {
 		/// <summary>
 		/// Clears the current line.  This does not affect the file at all, it simply undoes any
 		/// calls to AddValueToLine made since the last WriteCurrentLineToFile call.

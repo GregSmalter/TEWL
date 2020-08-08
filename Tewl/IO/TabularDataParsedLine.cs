@@ -1,8 +1,10 @@
-﻿namespace Tewl.IO {
+﻿using JetBrains.Annotations;
+
+namespace Tewl.IO {
 	/// <summary>
-	/// Represents a line/row that been parsed into fields that
-	/// are accessible through the indexers of this object.
+	/// Represents a line/row that been parsed into fields that are accessible through the indexers of this object.
 	/// </summary>
+	[PublicAPI]
 	public interface TabularDataParsedLine {
 		/// <summary>
 		/// Returns true if any field on this line has a non-empty, non-whitespace value.
