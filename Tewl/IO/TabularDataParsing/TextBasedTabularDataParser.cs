@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using Tewl.InputValidation;
 
-namespace Tewl.IO {
+namespace Tewl.IO.TabularDataParsing {
 	/// <summary>
 	/// Data parser for text-based file formats of tabular data, such as CSV and fixed-width.
 	/// </summary>

@@ -1,6 +1,6 @@
 ﻿using JetBrains.Annotations;
 
-namespace Tewl.IO {
+namespace Tewl.IO.TabularDataParsing {
 	/// <summary>
 	/// Represents a line/row that been parsed into fields that are accessible through the indexers of this object.
 	/// </summary>

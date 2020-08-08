@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using ClosedXML.Excel;
 
-namespace Tewl.IO {
+namespace Tewl.IO.TabularDataParsing {
 	class ExcelParsedLine: TabularDataParsedLine {
 		private readonly List<string> headerFields;
 		private readonly IXLRangeRow row;

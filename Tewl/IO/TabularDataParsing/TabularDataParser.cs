@@ -4,7 +4,7 @@ using System.IO;
 using JetBrains.Annotations;
 using Tewl.InputValidation;
 
-namespace Tewl.IO {
+namespace Tewl.IO.TabularDataParsing {
 	/// <summary>
 	/// Use this to process several lines of any type of tabular data, such as CSVs, fixed-width data files, or Excel files.
 	/// </summary>

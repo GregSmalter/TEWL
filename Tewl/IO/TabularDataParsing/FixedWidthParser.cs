@@ -4,7 +4,7 @@ using System.IO;
 using System.Text;
 using Tewl.Tools;
 
-namespace Tewl.IO {
+namespace Tewl.IO.TabularDataParsing {
 	public class FixedWidthParser: TextBasedTabularDataParser {
 		private int charactersToSkip;
 		private int[] columnWidths; // Maps column indices to column widths

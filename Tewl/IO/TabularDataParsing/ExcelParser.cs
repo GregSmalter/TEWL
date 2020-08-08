@@ -4,7 +4,7 @@ using System.Linq;
 using ClosedXML.Excel;
 using Tewl.InputValidation;
 
-namespace Tewl.IO {
+namespace Tewl.IO.TabularDataParsing {
 	internal class ExcelParser: TabularDataParser {
 		readonly XLWorkbook workbook;
 

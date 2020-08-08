@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Tewl.InputValidation;
 using Tewl.IO;
+using Tewl.IO.TabularDataParsing;
 
 namespace TewlTester {
 	class Program {

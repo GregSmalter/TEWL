@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using JetBrains.Annotations;
 using Tewl.Tools;
 
-namespace Tewl.IO {
+namespace Tewl.IO.TabularDataParsing {
 	/// <summary>
 	/// Represents a line of text from a CSV file that has been parsed into fields that
 	/// are accessible through the indexers of this object.

@@ -4,7 +4,7 @@ using System.Text;
 using JetBrains.Annotations;
 using Tewl.Tools;
 
-namespace Tewl.IO {
+namespace Tewl.IO.TabularDataParsing {
 	/// <summary>
 	/// Parses a line of a Microsoft Excel CSV file using the definition of CSV at
 	/// http://en.wikipedia.org/wiki/Comma-separated_values.
