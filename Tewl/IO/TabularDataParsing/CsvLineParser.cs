@@ -10,7 +10,7 @@ namespace Tewl.IO.TabularDataParsing {
 	/// http://en.wikipedia.org/wiki/Comma-separated_values.
 	/// </summary>
 	[PublicAPI]
-	public class CsvLineParser: TextBasedTabularDataParser {
+	internal class CsvLineParser: TextBasedTabularDataParser {
 		private readonly Dictionary<string, int> columnHeadersToIndexes = new Dictionary<string, int>();
 
 		/// <summary>

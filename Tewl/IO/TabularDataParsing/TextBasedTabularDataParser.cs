@@ -7,7 +7,7 @@ namespace Tewl.IO.TabularDataParsing {
 	/// <summary>
 	/// Data parser for text-based file formats of tabular data, such as CSV and fixed-width.
 	/// </summary>
-	public class TextBasedTabularDataParser: TabularDataParser {
+	internal class TextBasedTabularDataParser: TabularDataParser {
 		internal virtual TextBasedParsedLine Parse( string line ) => throw new NotImplementedException( "Parsers must have a specific implementation of Parse." );
 
 		protected FileReader fileReader;
