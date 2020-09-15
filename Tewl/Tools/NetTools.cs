@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
 using System.Net;
-using System.Web;
 using JetBrains.Annotations;
 
 namespace Tewl.Tools {
@@ -72,9 +71,13 @@ namespace Tewl.Tools {
 			return broken.Value;
 		}
 
-		internal static void ExecuteWithResponse( string url, Action<HttpWebResponse> method, bool disableCertificateValidation = false ) {
+		/// <summary>
+		/// Performs an HTTP HEAD request for the specified URL and executes the specified method with the response. The response will be null if the server is
+		/// unavailable.
+		/// </summary>
+		public static void ExecuteWithResponse( string url, Action<HttpWebResponse> method, bool disableCertificateValidation = false ) {
 			var request = WebRequest.CreateHttp( url );
-		
+
 			request.Method = "HEAD";
 			if( disableCertificateValidation )
 				request.ServerCertificateValidationCallback += ( sender, certificate, chain, errors ) => true;
