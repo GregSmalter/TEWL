@@ -15,7 +15,7 @@ namespace Tewl.Tools {
 		/// If every attempt fails, a new application exception will be thrown with the given message. The original exception will
 		/// be the inner exception.
 		/// </summary>
-		public static void Retry( this Action action, string failureMessage, int maxAttempts = 30, int retryIntervalMs = 2000 ) {
+		public static void Retry( Action action, string failureMessage, int maxAttempts = 30, int retryIntervalMs = 2000 ) {
 			for( var i = 0;; i += 1 ) {
 				try {
 					action();
