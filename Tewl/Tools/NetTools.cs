@@ -67,7 +67,7 @@ namespace Tewl.Tools {
 		/// </summary>
 		public static bool LinkIsBroken( string url ) {
 			bool? broken = null;
-			ExecuteWithResponse( url, response => broken = response == null || response.StatusCode != HttpStatusCode.OK );
+			ExecuteHttpHeadRequest( url, response => broken = response == null || response.StatusCode != HttpStatusCode.OK );
 			return broken.Value;
 		}
 
@@ -75,14 +75,14 @@ namespace Tewl.Tools {
 		/// Performs an HTTP HEAD request for the specified URL and executes the specified method with the response. The response will be null if the server is
 		/// unavailable.
 		/// </summary>
-		public static void ExecuteWithResponse( string url, Action<HttpWebResponse> method, bool disableCertificateValidation = false ) {
+		public static void ExecuteHttpHeadRequest( string url, Action<HttpWebResponse> responseHandler, bool disableCertificateValidation = false ) {
 			var request = WebRequest.CreateHttp( url );
 
 			request.Method = "HEAD";
 			if( disableCertificateValidation )
 				request.ServerCertificateValidationCallback += ( sender, certificate, chain, errors ) => true;
 			using( var response = request.getResponseIfPossible() )
-				method( response );
+				responseHandler( response );
 		}
 
 		private static HttpWebResponse getResponseIfPossible( this HttpWebRequest request ) {
