@@ -57,11 +57,6 @@ namespace Tewl.Tools {
 		public static HashSet<T> ToHashSet<T>( this IEnumerable<T> items ) => new HashSet<T>( items );
 
 		/// <summary>
-		/// Convenience method to allow concatenating individual elements.
-		/// </summary>
-		public static IEnumerable<T> Concat<T>( this IEnumerable<T> items, params T[] ts ) => Enumerable.Concat( items, ts );
-
-		/// <summary>
 		/// Convenience method to allow concatenating individual elements to an existing array.
 		/// </summary>
 		public static T[] ConcatArray<T>( this IEnumerable<T> items, params T[] ts ) => Enumerable.Concat( items, ts ).ToArray();
