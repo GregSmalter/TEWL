@@ -78,7 +78,7 @@ namespace Tewl.Tools {
 		public static void ExecuteHttpHeadRequest( string url, Action<HttpWebResponse> responseHandler, bool disableCertificateValidation = false ) {
 			var request = WebRequest.CreateHttp( url );
 
-			request.Method = "HEAD";
+			request.Method = WebRequestMethods.Http.Head;
 			if( disableCertificateValidation )
 				request.ServerCertificateValidationCallback += ( sender, certificate, chain, errors ) => true;
 			using( var response = request.getResponseIfPossible() )
