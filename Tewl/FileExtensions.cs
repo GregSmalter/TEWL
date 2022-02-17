@@ -1,10 +1,12 @@
 ﻿using System.Linq;
+using JetBrains.Annotations;
 
 namespace Tewl {
 	/// <summary>
 	/// String constants for the content types for common file types.
 	/// Includes the period prefix.
 	/// </summary>
+	[ PublicAPI ]
 	public class FileExtensions {
 		/// <summary>
 		/// An APK file.

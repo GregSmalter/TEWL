@@ -1,35 +1,37 @@
 <?xml version="1.0"?>
-<package >
-  <metadata>
-    <id>Tewl</id>
-    <version>0.0.0.0</version>
-    <title>The Toolkit for the Enterprise Web Library</title>
-    <authors>William Gross, Greg Smalter, Sam Rueby</authors>
-    <owners>Greg Smalter, Sam Rueby</owners>
-    <license type="expression">MIT</license>
-    <projectUrl>https://github.com/GregSmalter/TEWL</projectUrl>
-    <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <description>The Toolkit for the Enterprise Web Library. This can be used to conveniently gain validation, IO, and string manipulation functions without subscribing to the whole library lifecycle. </description>
-    <tags>EWL, ASP.NET, Validation, CSV, IO, string manipulation</tags>
-    <dependencies>
-      <group targetFramework=".NETFramework4.6.1">
-        <dependency id="ClosedXML" version="0.92.1" exclude="Build,Analyzers" />
-        <dependency id="Humanizer.Core" version="2.2.0" exclude="Build,Analyzers" />
-        <dependency id="System.Collections.Immutable" version="1.3.1" exclude="Build,Analyzers" />
-      </group>
-      <group targetFramework=".NETStandard2.0">
-        <dependency id="ClosedXML" version="0.92.1" exclude="Build,Analyzers" />
-        <dependency id="Humanizer.Core" version="2.2.0" exclude="Build,Analyzers" />
-        <dependency id="System.Collections.Immutable" version="1.3.1" exclude="Build,Analyzers" />
-      </group>
-    </dependencies>
-  </metadata>
-  <files>
-    <file src="bin\Release\net461\Tewl.dll" target="lib\net461\Tewl.dll" />
-    <file src="bin\Release\net461\Tewl.pdb" target="lib\net461\Tewl.pdb" />
-    <file src="bin\Release\net461\Tewl.xml" target="lib\net461\Tewl.xml" />
-    <file src="bin\Release\netstandard2.0\Tewl.dll" target="lib\netstandard2.0\Tewl.dll" />
-    <file src="bin\Release\netstandard2.0\Tewl.pdb" target="lib\netstandard2.0\Tewl.pdb" />
-    <file src="bin\Release\netstandard2.0\Tewl.xml" target="lib\netstandard2.0\Tewl.xml" />
-  </files>
+<package>
+	<metadata>
+		<id>Tewl</id>
+		<version>0.0.0.0</version>
+		<title>The Toolkit for the Enterprise Web Library</title>
+		<authors>William Gross, Greg Smalter, Sam Rueby</authors>
+		<owners>Greg Smalter, Sam Rueby</owners>
+		<license type="expression">MIT</license>
+		<projectUrl>https://github.com/GregSmalter/TEWL</projectUrl>
+		<requireLicenseAcceptance>false</requireLicenseAcceptance>
+		<description>The Toolkit for the Enterprise Web Library. This can be used to conveniently gain validation, IO, and string manipulation functions without subscribing to the whole library lifecycle. </description>
+		<tags>EWL, ASP.NET, Validation, CSV, IO, string manipulation</tags>
+		<dependencies>
+			<group targetFramework=".NETFramework4.6.1">
+				<dependency id="ClosedXML" version="0.95.0" exclude="Build,Analyzers" />
+				<dependency id="Humanizer.Core" version="2.8.2" exclude="Build,Analyzers" />
+				<dependency id="System.Collections.Immutable" version="1.7.0" exclude="Build,Analyzers" />
+				<dependency id="System.ValueTuple" version="4.4.0" exclude="Build,Analyzers" />
+			</group>
+			<group targetFramework=".NETStandard2.0">
+				<dependency id="ClosedXML" version="0.95.0" exclude="Build,Analyzers" />
+				<dependency id="Humanizer.Core" version="2.8.2" exclude="Build,Analyzers" />
+				<dependency id="System.Collections.Immutable" version="1.7.0" exclude="Build,Analyzers" />
+				<dependency id="System.ValueTuple" version="4.4.0" exclude="Build,Analyzers" />
+			</group>
+		</dependencies>
+	</metadata>
+	<files>
+		<file src="bin\Release\net461\Tewl.dll" target="lib\net461\Tewl.dll" />
+		<file src="bin\Release\net461\Tewl.pdb" target="lib\net461\Tewl.pdb" />
+		<file src="bin\Release\net461\Tewl.xml" target="lib\net461\Tewl.xml" />
+		<file src="bin\Release\netstandard2.0\Tewl.dll" target="lib\netstandard2.0\Tewl.dll" />
+		<file src="bin\Release\netstandard2.0\Tewl.pdb" target="lib\netstandard2.0\Tewl.pdb" />
+		<file src="bin\Release\netstandard2.0\Tewl.xml" target="lib\netstandard2.0\Tewl.xml" />
+	</files>
 </package>
