@@ -1,12 +1,13 @@
 using System;
 using System.IO;
-using Humanizer;
+using JetBrains.Annotations;
 using Tewl.Tools;
 
 namespace Tewl.IO {
 	/// <summary>
 	/// Helps communicate with standard out, standard error, and files.
 	/// </summary>
+	[ PublicAPI ]
 	public class Output {
 		/// <summary>
 		/// Permanently redirects standard output and error to file, with autoflushing enabled.
@@ -23,20 +24,16 @@ namespace Tewl.IO {
 		/// <summary>
 		/// Writes the message prepended by a timestamp.
 		/// </summary>
-		public static void WriteTimeStampedOutput( string message ) {
-			Console.Out.WriteLine( "{0}  {1}".FormatWith( getTimestamp(), message ) );
-		}
+		public static void WriteTimeStampedOutput( string message ) => Console.Out.WriteLine( $"{getTimestamp()}  {message}" );
 
 		/// <summary>
 		/// Writes the error message prepended by a timestamp.
 		/// </summary>
-		public static void WriteTimeStampedError( string message ) {
-			Console.Error.WriteLine( "{0}  {1}".FormatWith( getTimestamp(), message ) );
-		}
+		public static void WriteTimeStampedError( string message ) => Console.Error.WriteLine( $"{getTimestamp()}  {message}" );
 
 		private static string getTimestamp() {
 			var now = DateTime.Now;
-			return "{0}, {1}".FormatWith( now.ToDayMonthYearString( true ), now.ToString( "HH:mm:ss", Cultures.EnglishUnitedStates ) );
+			return $"{now.ToDayMonthYearString( true )}, {now.ToString( "HH:mm:ss", Cultures.EnglishUnitedStates )}";
 		}
 	}
 }

@@ -1,22 +1,30 @@
 ﻿using System;
 using System.Text;
+using JetBrains.Annotations;
 
 namespace Tewl.Exceptions {
 	/// <inheritdoc />
 	/// <summary>
 	/// Thrown when there is an error running a program.
 	/// </summary>
+	[ PublicAPI ]
 	public class RunProgramException: Exception {
 		private readonly string message;
 		private readonly int? errorCode;
 		internal string ProcessOutput;
 		internal string ProcessError;
 
-		public RunProgramException( string message, int? errorCode, Exception innerException = null ):base(null, innerException) {
+		/// <summary>
+		/// Constructs <see cref="RunProgramException"/>
+		/// </summary>
+		public RunProgramException( string message, int? errorCode, Exception innerException = null ): base( null, innerException ) {
 			this.message = message;
 			this.errorCode = errorCode;
 		}
 
+		/// <summary>
+		/// Exception informational message.
+		/// </summary>
 		public override string Message {
 			get {
 				try {
