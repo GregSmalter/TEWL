@@ -1,16 +1,20 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Text;
+using JetBrains.Annotations;
 using Tewl.Exceptions;
 
 namespace Tewl.Tools {
 	/// <summary>
 	/// Convenience methods for invoking external Processes.
 	/// </summary>
+	[ PublicAPI ]
 	public static class ProcessTools {
 		/// <summary>
-		/// Runs the specified program with the specified arguments and passes in the specified input. If the program is in a folder that is included in the Path environment variable,
-		/// specify its name only. Otherwise, specify a path to the program. In either case, you do not need ".exe" at the end. Specify the empty string for input
+		/// Runs the specified program with the specified arguments and passes in the specified input. If the program is in a
+		/// folder that is included in the Path environment variable,
+		/// specify its name only. Otherwise, specify a path to the program. In either case, you do not need ".exe" at the end.
+		/// Specify the empty string for input
 		/// if you do not wish to pass any input to the program.
 		/// Returns the output of the program.
 		/// </summary>
@@ -18,7 +22,10 @@ namespace Tewl.Tools {
 		/// <param name="arguments">Do not pass null.</param>
 		/// <param name="input">Do not pass null.</param>
 		/// <param name="workingDirectory">Do not pass null. Pass the empty string for the current working directory.</param>
-		/// <param name="waitForExitTimeout">Waits for given duration for the program exists before throwing an exception. Null will wait for exit indefinitely.!</param>
+		/// <param name="waitForExitTimeout">
+		/// Waits for given duration for the program exists before throwing an exception. Null
+		/// will wait for exit indefinitely.!
+		/// </param>
 		/// <exception cref="RunProgramException">When any error occurs.</exception>
 		/// <returns>The output of the program. Does not include standard error.</returns>
 		public static string RunProgram( string program, string arguments, string input = "", string workingDirectory = "", TimeSpan? waitForExitTimeout = null ) {
@@ -44,8 +51,10 @@ namespace Tewl.Tools {
 		}
 
 		/// <summary>
-		/// Runs the specified program with the specified arguments and passes in the specified input. If the program is in a folder that is included in the Path environment variable,
-		/// specify its name only. Otherwise, specify a path to the program. In either case, you do not need ".exe" at the end. Specify the empty string for input
+		/// Runs the specified program with the specified arguments and passes in the specified input. If the program is in a
+		/// folder that is included in the Path environment variable,
+		/// specify its name only. Otherwise, specify a path to the program. In either case, you do not need ".exe" at the end.
+		/// Specify the empty string for input
 		/// if you do not wish to pass any input to the program.
 		/// </summary>
 		/// <param name="program">A command or exe.</param>
@@ -54,7 +63,10 @@ namespace Tewl.Tools {
 		/// <param name="errorOutputWriter">A function accepting a line of error output.</param>
 		/// <param name="input">Do not pass null.</param>
 		/// <param name="workingDirectory">Do not pass null. Pass the empty string for the current working directory.</param>
-		/// <param name="waitForExitTimeout">Waits for given duration for the program exists before throwing an exception. Null will wait for exit indefinitely.!</param>
+		/// <param name="waitForExitTimeout">
+		/// Waits for given duration for the program exists before throwing an exception. Null
+		/// will wait for exit indefinitely.!
+		/// </param>
 		/// <exception cref="RunProgramException">When any error occurs.</exception>
 		public static void RunProgram(
 			string program, string arguments, Action<string> outputWriter, Action<string> errorOutputWriter, string input = "", string workingDirectory = "",
@@ -130,11 +142,12 @@ namespace Tewl.Tools {
 		}
 
 		private static void ensureProcessExited( Process process ) {
-			if( !process?.HasExited ?? false )
+			if( !process?.HasExited ?? false ) {
 				try {
 					process.Kill();
 				}
 				catch { }
+			}
 
 			process?.Dispose();
 		}

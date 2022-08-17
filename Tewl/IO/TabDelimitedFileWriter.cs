@@ -1,12 +1,14 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using JetBrains.Annotations;
 
 namespace Tewl.IO {
 	/// <summary>
 	/// Helps in writing data to a file in tab-separated values format.
 	/// </summary>
-	public class TabDelimitedFileWriter: TabularDataFileWriter {
+	[ PublicAPI ]
+	public class TabDelimitedFileWriter: TextBasedTabularDataFileWriter {
 		private const char delimiter = '\t';
 		private string line = "";
 
@@ -14,9 +16,7 @@ namespace Tewl.IO {
 		/// Clears the current line.  This does not affect the file at all, it simply undoes any
 		/// calls to AddValueToLine made since the last WriteCurrentLineToFile call.
 		/// </summary>
-		public void ClearLine() {
-			line = "";
-		}
+		public void ClearLine() => line = "";
 
 		/// <summary>
 		/// Adds the given value as a column on the current line.  Value may be null.  If

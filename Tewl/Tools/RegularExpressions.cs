@@ -1,9 +1,11 @@
 ﻿using System.Text.RegularExpressions;
+using JetBrains.Annotations;
 
 namespace Tewl.Tools {
 	/// <summary>
 	/// Contains common regular expression strings.
 	/// </summary>
+	[ PublicAPI ]
 	public class RegularExpressions {
 		/// <summary>
 		/// This regex will match anything inside and including &lt;&gt; brackets. %lt;/?\w+((\s+\w+(\s*=\s*(?:".*?"|'.*?'|[^'"&gt;\s]+))?)+\s*|\s*)/?&gt;
@@ -13,8 +15,6 @@ namespace Tewl.Tools {
 		/// <summary>
 		/// Returns the given source string without /**/ comments.
 		/// </summary>
-		public static string RemoveMultiLineCStyleComments( string source ) {
-			return Regex.Replace( source, @"/\*.*?\*/", "", RegexOptions.Singleline );
-		}
+		public static string RemoveMultiLineCStyleComments( string source ) => Regex.Replace( source, @"/\*.*?\*/", "", RegexOptions.Singleline );
 	}
 }

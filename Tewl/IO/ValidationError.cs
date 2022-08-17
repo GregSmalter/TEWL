@@ -1,7 +1,10 @@
+using JetBrains.Annotations;
+
 namespace Tewl.IO {
 	/// <summary>
 	/// Holds information about a validation error generated as a result of processing a parsed line.
 	/// </summary>
+	[ PublicAPI ]
 	public class ValidationError {
 		/// <summary>
 		/// Creates a validation error that occurred when processing the given line number.

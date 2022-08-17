@@ -1,20 +1,38 @@
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using JetBrains.Annotations;
 using Tewl.Tools;
 
-namespace Tewl.IO {
+namespace Tewl.IO.TabularDataParsing {
 	/// <summary>
-	/// Parses a line of a Microsoft Excel CSV file using the definition of CSV at http://en.wikipedia.org/wiki/Comma-separated_values.
+	/// Parses a line of a Microsoft Excel CSV file using the definition of CSV at
+	/// http://en.wikipedia.org/wiki/Comma-separated_values.
 	/// </summary>
-	public class CsvLineParser: Parser {
-		private readonly IDictionary columnHeadersToIndexes = new Hashtable();
+	[PublicAPI]
+	internal class CsvLineParser: TextBasedTabularDataParser {
+		private readonly Dictionary<string, int> columnHeadersToIndexes = new Dictionary<string, int>();
 
 		/// <summary>
 		/// Creates a line parser with no header row.  Fields will be access via indexes rather than by column name.
 		/// </summary>
-		public CsvLineParser() {}
+		public CsvLineParser() { }
+
+		/// <summary>
+		/// Creates a parser designed to parse a CSV file.  Passing true for hasHeaderRow will result in the first row being used to map
+		/// header names to column indices.  This will allow you to access fields using the header name in addition to the column index.
+		/// </summary>
+		public static TabularDataParser CreateWithFilePath( string filePath, bool hasHeaderRow ) {
+			return new CsvLineParser { fileReader = new FileReader( filePath ), hasHeaderRow = hasHeaderRow };
+		}
+
+		/// <summary>
+		/// Creates a parser designed to parse a CSV file.  Passing true for hasHeaderRow will result in the first row being used to map
+		/// header names to column indices.  This will allow you to access fields using the header name in addition to the column index.
+		/// </summary>
+		public static TabularDataParser CreateWithStream( Stream stream, bool hasHeaderRow ) {
+			return new CsvLineParser { fileReader = new FileReader( stream ), hasHeaderRow = hasHeaderRow };
+		}
 
 		/// <summary>
 		/// Creates a line parser with a header row.  The column names are extracted from the header row, and
@@ -22,7 +40,7 @@ namespace Tewl.IO {
 		/// </summary>
 		public CsvLineParser( string headerLine ) {
 			var index = 0;
-			foreach( var columnHeader in Parse( headerLine ).Fields ) {
+			foreach( var columnHeader in ( Parse( headerLine ) as TextBasedParsedLine ).Fields ) {
 				columnHeadersToIndexes[ columnHeader.ToLower() ] = index;
 				index++;
 			}
@@ -33,13 +51,13 @@ namespace Tewl.IO {
 		/// Internal use only.
 		/// Use ParseAndProcessAllLines instead.
 		/// </summary>
-		public ParsedLine Parse( string line ) {
+		internal override TextBasedParsedLine Parse( string line ) {
 			var fields = new List<string>();
 			if( !line.IsNullOrWhiteSpace() ) {
 				using( TextReader tr = new StringReader( line ) )
 					parseCommaSeparatedFields( tr, fields );
 			}
-			var parsedLine = new ParsedLine( fields );
+			var parsedLine = new TextBasedParsedLine( fields );
 			parsedLine.ColumnHeadersToIndexes = columnHeadersToIndexes;
 			return parsedLine;
 		}

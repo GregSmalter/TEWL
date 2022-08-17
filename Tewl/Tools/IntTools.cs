@@ -1,9 +1,11 @@
 ﻿using System;
+using JetBrains.Annotations;
 
 namespace Tewl.Tools {
 	/// <summary>
 	/// Extension methods for integers.
 	/// </summary>
+	[ PublicAPI ]
 	public static class IntTools {
 		/// <summary>
 		/// Executes action n times.
@@ -22,7 +24,8 @@ namespace Tewl.Tools {
 		}
 
 		/// <summary>
-		/// Formats this integer using the M suffix if it's at least one million and the k suffix if it's at least one thousand. Doesn't work with negative
+		/// Formats this integer using the M suffix if it's at least one million and the k suffix if it's at least one thousand.
+		/// Doesn't work with negative
 		/// integers.
 		/// </summary>
 		public static string ToKiloOrMegaString( this int n, bool formatAsCurrency ) {
