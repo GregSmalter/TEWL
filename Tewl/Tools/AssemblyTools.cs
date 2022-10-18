@@ -24,7 +24,10 @@ namespace Tewl.Tools {
 		public static Dictionary<TKey, TInterface> BuildSingletonDictionary<TInterface, TKey>( Assembly assembly, Func<TInterface, TKey> getIdMethod ) {
 			var singletons = new Dictionary<TKey, TInterface>();
 			foreach( var type in assembly.getImplementations<TInterface>() ) {
-				var instanceProperty = type.GetProperty( "Instance" );
+				var instancePropertyName = "Instance";
+				var instanceProperty = type.GetProperty( instancePropertyName );
+				if( instanceProperty is null )
+					throw new Exception( $"Unable to find required property '{instancePropertyName}' on type {type.FullName}." );
 				var singleton = (TInterface)instanceProperty.GetValue( null, null );
 				singletons.Add( getIdMethod( singleton ), singleton );
 			}
