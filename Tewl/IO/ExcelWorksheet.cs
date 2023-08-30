@@ -93,7 +93,7 @@ namespace Tewl.IO {
 				v.GetEmailAddress( new ValidationErrorHandler( "" ), cellValue, false );
 				if( !v.ErrorsOccurred ) {
 					cell.Value = cellValue;
-					cell.Hyperlink = new XLHyperlink( "mailto:" + cellValue );
+					cell.SetHyperlink( new XLHyperlink( "mailto:" + cellValue ) );
 					continue;
 				}
 
@@ -101,7 +101,7 @@ namespace Tewl.IO {
 				var validatedUrl = v.GetUrl( new ValidationErrorHandler( "" ), cellValue, false );
 				if( !v.ErrorsOccurred ) {
 					cell.Value = cellValue;
-					cell.Hyperlink = new XLHyperlink( validatedUrl );
+					cell.SetHyperlink( new XLHyperlink( validatedUrl ) );
 					continue;
 				}
 
