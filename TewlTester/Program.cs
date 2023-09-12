@@ -11,6 +11,7 @@ namespace TewlTester {
 			testExcelWriting();
 			testCsvWriting();
 			testCsv();
+			testTabDelimitedWriting();
 			testXls();
 		}
 
@@ -28,6 +29,13 @@ namespace TewlTester {
 			var csvFile = new CsvFileWriter();
 
 			using( var stream = new StreamWriter( File.OpenWrite( "tewlTestTabularWrite.csv" ) ) )
+				writeData( csvFile, stream );
+		}
+
+		private static void testTabDelimitedWriting() {
+			var csvFile = new TabDelimitedFileWriter();
+
+			using( var stream = new StreamWriter( File.OpenWrite( "tewlTestTabularWrite.txt" ) ) )
 				writeData( csvFile, stream );
 		}
 
