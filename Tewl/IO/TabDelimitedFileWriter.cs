@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using System.Linq;
 using JetBrains.Annotations;
 
 namespace Tewl.IO {
@@ -27,7 +26,10 @@ namespace Tewl.IO {
 				line += delimiter;
 			else {
 				var s = val.ToString();
-				if( s.Contains( delimiter ) || s.Contains( Environment.NewLine ) )
+
+				if( s.Contains(
+					    delimiter.ToString() /*This ToString is unnecessary, but is here for the accidental reason of forcing the correct overload to be selected. An intrusive extension method was introduced in ClosedXML version 102. Once we get beyond 103 we should remove this.*/ ) ||
+				    s.Contains( Environment.NewLine ) )
 					throw new ApplicationException( "The tab-separated values format does not support tabs or newline sequences in a value." );
 				line += s + delimiter;
 			}
