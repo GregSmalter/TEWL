@@ -21,10 +21,5 @@ namespace Tewl.Tools {
 		/// Returns "Yes" if this is true and the empty string otherwise.
 		/// </summary>
 		public static string ToYesOrEmpty( this bool b ) => b ? "Yes" : "";
-
-		/// <summary>
-		/// Converts a boolean into a decimal for storage in Oracle.
-		/// </summary>
-		public static decimal BooleanToDecimal( this bool b ) => b ? 1 : 0;
 	}
 }
