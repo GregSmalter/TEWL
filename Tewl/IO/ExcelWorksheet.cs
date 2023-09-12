@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Linq;
 using ClosedXML.Excel;
 using JetBrains.Annotations;
 using Tewl.InputValidation;
-using Tewl.Tools;
 
 namespace Tewl.IO {
 	/// <summary>
@@ -75,21 +73,13 @@ namespace Tewl.IO {
 
 				setOrAddCellStyle( cell, bold: bold, textWrapped: true );
 
-				var v = new Validator();
-				var detectedDate = v.GetNullableDateTime(
-					new ValidationErrorHandler( "" ),
-					cellValue,
-					DateTimeTools.DayMonthYearFormats.Concat( DateTimeTools.MonthDayYearFormats ).ToArray(),
-					false,
-					DateTime.MinValue,
-					DateTime.MaxValue );
-				if( !v.ErrorsOccurred ) {
+				if( DateTime.TryParse( cellValue, out var detectedDate ) ) {
 					setOrAddCellStyle( cell, false, date: true );
 					cell.Value = detectedDate;
 					continue;
 				}
 
-				v = new Validator();
+				var v = new Validator();
 				v.GetEmailAddress( new ValidationErrorHandler( "" ), cellValue, false );
 				if( !v.ErrorsOccurred ) {
 					cell.Value = cellValue;
