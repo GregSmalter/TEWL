@@ -1,12 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
-	  <TargetFrameworks>netstandard2.0;net461</TargetFrameworks>
-  </PropertyGroup>
 
-	<PropertyGroup>
-		<GenerateDocumentationFile>true</GenerateDocumentationFile>
+  <PropertyGroup>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <LangVersion>latest</LangVersion>
-	</PropertyGroup>
+  </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="ClosedXML" Version="0.102.1" />
@@ -15,4 +12,5 @@
     <PackageReference Include="System.Collections.Immutable" Version="1.7.0" />
     <PackageReference Include="System.ValueTuple" Version="4.5.0" />
   </ItemGroup>
+
 </Project>
