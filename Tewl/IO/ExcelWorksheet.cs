@@ -71,36 +71,42 @@ public class ExcelWorksheet {
 		foreach( var cellValue in cellValues ) {
 			var cell = worksheet.Cell( rowIndex, columnIndex++ );
 			setOrAddCellStyle( cell, bold: bold, textWrapped: true );
-			putRowValueInCell( cell, cellValue );
+
+			try {
+				putRowValueInCell( cell, cellValue );
+			}
+			catch( Exception e ) {
+				throw new Exception( "Failed to put the value \"{0}\" into a cell.".FormatWith( cellValue ), e );
+			}
 		}
 
 		++rowIndex;
 	}
 
-	private void putRowValueInCell( IXLCell cell, string cellValue ) {
-		if( DateTime.TryParse( cellValue, out var detectedDate ) ) {
+	private void putRowValueInCell( IXLCell cell, string value ) {
+		if( DateTime.TryParse( value, out var detectedDate ) ) {
 			setOrAddCellStyle( cell, date: true );
 			cell.Value = detectedDate;
 			return;
 		}
 
 		var v = new Validator();
-		v.GetEmailAddress( new ValidationErrorHandler( "" ), cellValue, false );
+		v.GetEmailAddress( new ValidationErrorHandler( "" ), value, false );
 		if( !v.ErrorsOccurred ) {
-			cell.Value = cellValue;
-			cell.SetHyperlink( new XLHyperlink( "mailto:" + cellValue ) );
+			cell.Value = value;
+			cell.SetHyperlink( new XLHyperlink( "mailto:" + value ) );
 			return;
 		}
 
 		v = new Validator();
-		var validatedUrl = v.GetUrl( new ValidationErrorHandler( "" ), cellValue, false );
+		var validatedUrl = v.GetUrl( new ValidationErrorHandler( "" ), value, false );
 		if( !v.ErrorsOccurred ) {
-			cell.Value = cellValue;
+			cell.Value = value;
 			cell.SetHyperlink( new XLHyperlink( validatedUrl ) );
 			return;
 		}
 
-		cell.Value = cellValue;
+		cell.Value = value;
 	}
 
 	/// <summary>
