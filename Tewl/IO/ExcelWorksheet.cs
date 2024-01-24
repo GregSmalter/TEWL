@@ -70,35 +70,37 @@ public class ExcelWorksheet {
 		var columnIndex = 1;
 		foreach( var cellValue in cellValues ) {
 			var cell = worksheet.Cell( rowIndex, columnIndex++ );
-
 			setOrAddCellStyle( cell, bold: bold, textWrapped: true );
-
-			if( DateTime.TryParse( cellValue, out var detectedDate ) ) {
-				setOrAddCellStyle( cell, false, date: true );
-				cell.Value = detectedDate;
-				continue;
-			}
-
-			var v = new Validator();
-			v.GetEmailAddress( new ValidationErrorHandler( "" ), cellValue, false );
-			if( !v.ErrorsOccurred ) {
-				cell.Value = cellValue;
-				cell.SetHyperlink( new XLHyperlink( "mailto:" + cellValue ) );
-				continue;
-			}
-
-			v = new Validator();
-			var validatedUrl = v.GetUrl( new ValidationErrorHandler( "" ), cellValue, false );
-			if( !v.ErrorsOccurred ) {
-				cell.Value = cellValue;
-				cell.SetHyperlink( new XLHyperlink( validatedUrl ) );
-				continue;
-			}
-
-			cell.Value = cellValue;
+			putRowValueInCell( cell, cellValue );
 		}
 
 		++rowIndex;
+	}
+
+	private void putRowValueInCell( IXLCell cell, string cellValue ) {
+		if( DateTime.TryParse( cellValue, out var detectedDate ) ) {
+			setOrAddCellStyle( cell, date: true );
+			cell.Value = detectedDate;
+			return;
+		}
+
+		var v = new Validator();
+		v.GetEmailAddress( new ValidationErrorHandler( "" ), cellValue, false );
+		if( !v.ErrorsOccurred ) {
+			cell.Value = cellValue;
+			cell.SetHyperlink( new XLHyperlink( "mailto:" + cellValue ) );
+			return;
+		}
+
+		v = new Validator();
+		var validatedUrl = v.GetUrl( new ValidationErrorHandler( "" ), cellValue, false );
+		if( !v.ErrorsOccurred ) {
+			cell.Value = cellValue;
+			cell.SetHyperlink( new XLHyperlink( validatedUrl ) );
+			return;
+		}
+
+		cell.Value = cellValue;
 	}
 
 	/// <summary>
