@@ -8,7 +8,7 @@ namespace Tewl.Tools;
 [ PublicAPI ]
 public static class DateTimeTools {
 	internal static readonly string[] DayMonthYearFormats = { dayMonthYearFormatLz, dayMonthYearFormat };
-	internal static readonly string[] MonthDayYearFormats = { monthDayYearFormat, "MM/dd/yy" };
+	internal static readonly string[] MonthDayYearFormats = { monthDayYearFormat, "M/d/yyyy", "MM/dd/yy" };
 	internal const string HourAndMinuteFormat = "h:mmt";
 
 	private const string dayMonthYearFormatLz = "dd MMM yyyy";

@@ -84,13 +84,21 @@ public class ExcelWorksheet {
 	}
 
 	private void putRowValueInCell( IXLCell cell, string value ) {
-		if( DateTime.TryParse( value, out var detectedDate ) ) {
+		var v = new Validator();
+		var detectedDate = v.GetNullableDateTime(
+			new ValidationErrorHandler( "" ),
+			value,
+			DateTimeTools.DayMonthYearFormats.Concat( DateTimeTools.MonthDayYearFormats ).ToArray(),
+			false,
+			DateTime.MinValue,
+			DateTime.MaxValue );
+		if( !v.ErrorsOccurred ) {
 			setOrAddCellStyle( cell, date: true );
 			cell.Value = detectedDate;
 			return;
 		}
 
-		var v = new Validator();
+		v = new Validator();
 		v.GetEmailAddress( new ValidationErrorHandler( "" ), value, false );
 		if( !v.ErrorsOccurred ) {
 			cell.Value = value;
