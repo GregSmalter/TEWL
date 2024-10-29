@@ -414,6 +414,16 @@ public static class StringTools {
 	}
 
 	/// <summary>
+	/// Returns true if this string matches any of the given search terms.
+	/// </summary>
+	/// <param name="text"></param>
+	/// <param name="searchTerms"></param>
+	public static bool MatchesSearch( this string text, string searchTerms ) {
+		var terms = searchTerms.Separate();
+		return terms.Any( term => text.IsLike( term, ignoreSurroundingWhitespace: false ) );
+	}
+
+	/// <summary>
 	/// Returns true if strings starts with otherString, ignoring case.
 	/// </summary>
 	public static bool StartsWithIgnoreCase( this string s, string otherString ) => s.StartsWith( otherString, StringComparison.OrdinalIgnoreCase );
