@@ -2,7 +2,6 @@
 using System.Text;
 using System.Text.RegularExpressions;
 using AvsAnLib;
-using JetBrains.Annotations;
 
 namespace Tewl.Tools;
 
@@ -59,20 +58,41 @@ public static class StringTools {
 	/// <summary>
 	/// Returns the given string with its first letter-or-digit character capitalized.
 	/// </summary>
-	public static string CapitalizeString( this string text ) {
+	[ Obsolete( "Please use Capitalize instead, and do not pass null." ) ]
+	public static string? CapitalizeString( this string? text ) {
 		if( text == null )
 			return null;
+		return text.Capitalize();
+	}
 
-		return new string( text.ToCharArray().Select( ( c, index ) => index == getIndexOfFirstLetterOrDigit( text ) ? char.ToUpper( c ) : c ).ToArray() );
+	/// <summary>
+	/// Returns the given string with its first letter-or-digit character capitalized.
+	/// </summary>
+	public static string Capitalize( this string text ) {
+		var index = getIndexOfFirstLetterOrDigit( text );
+		return index < 0 ? text : text[ ..index ] + char.ToUpper( text[ index ] ) + text[ ( index + 1 ).. ];
 	}
 
 	/// <summary>
 	/// Returns the given string with its first letter-or-digit character lowercased. Do not pass null.
 	/// </summary>
-	public static string LowercaseString( this string text ) =>
-		new( text.ToCharArray().Select( ( c, index ) => index == getIndexOfFirstLetterOrDigit( text ) ? char.ToLower( c ) : c ).ToArray() );
+	[ Obsolete( "Please use Uncapitalize instead." ) ]
+	public static string LowercaseString( this string text ) => text.Uncapitalize();
 
-	private static int getIndexOfFirstLetterOrDigit( string text ) => text.IndexOfAny( text.ToCharArray().Where( char.IsLetterOrDigit ).ToArray() );
+	/// <summary>
+	/// Returns the given string with its first letter-or-digit character lowercased.
+	/// </summary>
+	public static string Uncapitalize( this string text ) {
+		var index = getIndexOfFirstLetterOrDigit( text );
+		return index < 0 ? text : text[ ..index ] + char.ToLower( text[ index ] ) + text[ ( index + 1 ).. ];
+	}
+
+	private static int getIndexOfFirstLetterOrDigit( string text ) {
+		for( var i = 0; i < text.Length; i += 1 )
+			if( char.IsLetterOrDigit( text[ i ] ) )
+				return i;
+		return -1;
+	}
 
 	/// <summary>
 	/// Removes all of the non-alphanumeric characters from this string.
@@ -174,7 +194,7 @@ public static class StringTools {
 	/// Example: "FIRST_NAME" becomes "First Name".
 	/// </summary>
 	public static string OracleToEnglish( this string text ) =>
-		ConcatenateWithDelimiter( " ", text.Separate( "_", true ).Select( s => s.ToLower().CapitalizeString() ).ToArray() );
+		ConcatenateWithDelimiter( " ", text.Separate( "_", true ).Select( s => s.ToLower().Capitalize() ).ToArray() );
 
 	/// <summary>
 	/// Removes whitespace from between words, capitalizes the first letter of each word, lowercases the remainder of each
@@ -182,7 +202,7 @@ public static class StringTools {
 	/// and lowercases the first letter of the whole string (ex: "One two" becomes "oneTwo"). Trims the resulting string.
 	/// Do not call this on the null string.
 	/// </summary>
-	public static string EnglishToCamel( this string text ) => text.EnglishToPascal().LowercaseString();
+	public static string EnglishToCamel( this string text ) => text.EnglishToPascal().Uncapitalize();
 
 	/// <summary>
 	/// Removes whitespace from between words, capitalizes the first letter of each word, and lowercases the remainder of each
@@ -190,8 +210,7 @@ public static class StringTools {
 	/// Trims the resulting string.
 	/// Do not call this on the null string.
 	/// </summary>
-	public static string EnglishToPascal( this string text ) =>
-		ConcatenateWithDelimiter( "", text.Separate().Select( t => t.ToLower().CapitalizeString() ).ToArray() );
+	public static string EnglishToPascal( this string text ) => ConcatenateWithDelimiter( "", text.Separate().Select( t => t.ToLower().Capitalize() ).ToArray() );
 
 	/// <summary>
 	/// Lowercases the specified string and replaces spaces with underscores.
@@ -679,5 +698,5 @@ public static class StringTools {
 	/// <returns></returns>
 	// ReSharper restore GrammarMistakeInComment
 	public static string AddIndefiniteArticle( this string word, bool capitalizeWord = false ) =>
-		AvsAn.Query( word ).Article + " " + ( capitalizeWord ? word.CapitalizeString() : word );
+		AvsAn.Query( word ).Article + " " + ( capitalizeWord ? word.Capitalize() : word );
 }
