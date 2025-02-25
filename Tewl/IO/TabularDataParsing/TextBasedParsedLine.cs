@@ -6,7 +6,7 @@ namespace Tewl.IO.TabularDataParsing;
 /// </summary>
 [ PublicAPI ]
 internal class TextBasedParsedLine: ParsedLine {
-	private IDictionary<string, int> columnHeadersToIndexes;
+	private readonly IReadOnlyDictionary<string, int> columnHeadersToIndexes;
 	private readonly int lineNumber;
 	private readonly IReadOnlyList<string> fields;
 
@@ -17,9 +17,8 @@ internal class TextBasedParsedLine: ParsedLine {
 
 	int ParsedLine.LineNumber => lineNumber;
 
-	internal IDictionary<string, int> ColumnHeadersToIndexes { set => columnHeadersToIndexes = value ?? new Dictionary<string, int>(); }
-
-	internal TextBasedParsedLine( int lineNumber, IReadOnlyList<string> fields ) {
+	internal TextBasedParsedLine( IReadOnlyDictionary<string, int>? columnHeadersToIndexes, int lineNumber, IReadOnlyList<string> fields ) {
+		this.columnHeadersToIndexes = columnHeadersToIndexes ?? new Dictionary<string, int>();
 		this.lineNumber = lineNumber;
 		this.fields = fields;
 		ContainsData = false;

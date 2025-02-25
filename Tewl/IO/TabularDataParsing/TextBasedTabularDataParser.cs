@@ -20,7 +20,7 @@ namespace Tewl.IO.TabularDataParsing {
 		public override void ParseAndProcessAllLines( LineProcessingMethod lineHandler, ICollection<ValidationError> validationErrors ) {
 			fileReader.ExecuteInStreamReader(
 				delegate( StreamReader reader ) {
-					IDictionary<string, int> columnHeadersToIndexes = null;
+					IReadOnlyDictionary<string, int> columnHeadersToIndexes = null;
 
 					// This skips the header row and creates a name to index map out of it. 
 					if( hasHeaderRow )
@@ -34,10 +34,9 @@ namespace Tewl.IO.TabularDataParsing {
 					string line;
 					for( var lineNumber = HeaderRows + 1; ( line = reader.ReadLine() ) != null; lineNumber++ ) {
 						NonHeaderRows++;
-						var parsedLine = new TextBasedParsedLine( lineNumber, parseLine( line ) );
+						var parsedLine = new TextBasedParsedLine( columnHeadersToIndexes, lineNumber, parseLine( line ) );
 						if( parsedLine.ContainsData ) {
 							RowsContainingData++;
-							parsedLine.ColumnHeadersToIndexes = columnHeadersToIndexes;
 							var validator = new Validator();
 							lineHandler( validator, parsedLine );
 							if( validator.ErrorsOccurred ) {
@@ -52,7 +51,7 @@ namespace Tewl.IO.TabularDataParsing {
 				} );
 		}
 
-		private IDictionary<string, int> buildColumnHeadersToIndexesDictionary( string headerLine ) {
+		private IReadOnlyDictionary<string, int> buildColumnHeadersToIndexesDictionary( string headerLine ) {
 			var columnHeadersToIndexes = new Dictionary<string, int>();
 			var index = 0;
 			foreach( var columnHeader in parseLine( headerLine ) ) {
