@@ -1,14 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using Tewl.InputValidation;
+﻿using Tewl.InputValidation;
 
 namespace Tewl.IO.TabularDataParsing {
 	/// <summary>
 	/// Data parser for text-based file formats of tabular data, such as CSV and fixed-width.
 	/// </summary>
-	internal class TextBasedTabularDataParser: TabularDataParser {
-		internal virtual TextBasedParsedLine Parse( string line ) => throw new NotImplementedException( "Parsers must have a specific implementation of Parse." );
+	internal abstract class TextBasedTabularDataParser: TabularDataParser {
+		protected abstract IReadOnlyList<string> parseLine( string line );
 
 		protected FileReader fileReader;
 
@@ -37,7 +34,7 @@ namespace Tewl.IO.TabularDataParsing {
 					string line;
 					for( var lineNumber = HeaderRows + 1; ( line = reader.ReadLine() ) != null; lineNumber++ ) {
 						NonHeaderRows++;
-						var parsedLine = Parse( line );
+						var parsedLine = new TextBasedParsedLine( parseLine( line ) );
 						if( parsedLine.ContainsData ) {
 							RowsContainingData++;
 							parsedLine.LineNumber = lineNumber;
@@ -45,10 +42,9 @@ namespace Tewl.IO.TabularDataParsing {
 							var validator = new Validator();
 							lineHandler( validator, parsedLine );
 							if( validator.ErrorsOccurred ) {
-								if( validationErrors != null ) {
+								if( validationErrors != null )
 									foreach( var error in validator.Errors )
 										validationErrors.Add( new ValidationError( "Line " + lineNumber, error.UnusableValueReturned, error.Message ) );
-								}
 							}
 							else
 								RowsWithoutValidationErrors++;
@@ -60,7 +56,7 @@ namespace Tewl.IO.TabularDataParsing {
 		private IDictionary<string, int> buildColumnHeadersToIndexesDictionary( string headerLine ) {
 			var columnHeadersToIndexes = new Dictionary<string, int>();
 			var index = 0;
-			foreach( var columnHeader in Parse( headerLine ).Fields ) {
+			foreach( var columnHeader in parseLine( headerLine ) ) {
 				columnHeadersToIndexes[ columnHeader.ToLower() ] = index;
 				index++;
 			}

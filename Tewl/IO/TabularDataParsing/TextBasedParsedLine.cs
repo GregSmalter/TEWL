@@ -28,7 +28,7 @@ internal class TextBasedParsedLine: ParsedLine {
 
 	internal IDictionary<string, int> ColumnHeadersToIndexes { set => columnHeadersToIndexes = value ?? new Dictionary<string, int>(); }
 
-	internal TextBasedParsedLine( List<string> fields ) {
+	internal TextBasedParsedLine( IReadOnlyList<string> fields ) {
 		Fields = fields;
 		ContainsData = false;
 		foreach( var field in fields )
@@ -38,7 +38,7 @@ internal class TextBasedParsedLine: ParsedLine {
 			}
 	}
 
-	internal List<string> Fields { get; }
+	internal IReadOnlyList<string> Fields { get; }
 
 	public string this[ int index ] {
 		get {

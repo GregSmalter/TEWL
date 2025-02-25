@@ -32,17 +32,13 @@ namespace Tewl.IO.TabularDataParsing {
 
 		/// <summary>
 		/// Parses a line of a Microsoft Excel CSV file and returns a collection of string fields.
-		/// Internal use only.
-		/// Use ParseAndProcessAllLines instead.
 		/// </summary>
-		internal override TextBasedParsedLine Parse( string line ) {
+		protected override IReadOnlyList<string> parseLine( string line ) {
 			var fields = new List<string>();
 			if( !line.IsNullOrWhiteSpace() )
 				using( TextReader tr = new StringReader( line ) )
 					parseCommaSeparatedFields( tr, fields );
-			var parsedLine = new TextBasedParsedLine( fields );
-			parsedLine.ColumnHeadersToIndexes = columnHeadersToIndexes;
-			return parsedLine;
+			return fields;
 		}
 
 		private static void parseCommaSeparatedFields( TextReader tr, List<string> fields ) {

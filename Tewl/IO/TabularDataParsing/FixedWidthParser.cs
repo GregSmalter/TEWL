@@ -1,8 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
 using System.Text;
-using Tewl.Tools;
 
 namespace Tewl.IO.TabularDataParsing {
 	internal class FixedWidthParser: TextBasedTabularDataParser {
@@ -39,9 +35,9 @@ namespace Tewl.IO.TabularDataParsing {
 			// We don't know how wide the last column is, but we don't need to since we will just read to the end of the line
 		}
 
-		internal override TextBasedParsedLine Parse( string line ) {
+		protected override IReadOnlyList<string> parseLine( string line ) {
 			var fields = new List<string>();
-			if( !line.IsNullOrWhiteSpace() ) {
+			if( !line.IsNullOrWhiteSpace() )
 				using( TextReader tr = new StringReader( line ) ) {
 					for( var i = 0; i < charactersToSkip; i++ )
 						tr.Read();
@@ -49,8 +45,7 @@ namespace Tewl.IO.TabularDataParsing {
 					for( var i = 0; i < columnWidths.Length; i++ )
 						fields.Add( parseFixedWidthField( tr, columnWidths[ i ] ).Trim() );
 				}
-			}
-			return new TextBasedParsedLine( fields );
+			return fields;
 		}
 
 		private static string parseFixedWidthField( TextReader tr, int width ) {
