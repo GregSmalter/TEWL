@@ -68,7 +68,7 @@ namespace Tewl.IO.TabularDataParsing {
 		/// <summary>
 		/// Constructs a tabular data parser. Empty. 
 		/// </summary>
-		protected TabularDataParser() { }
+		protected TabularDataParser() {}
 
 		/// <summary>
 		/// Creates a parser designed to parse a file with fixed data column widths. Specify the starting position of each column
@@ -84,7 +84,7 @@ namespace Tewl.IO.TabularDataParsing {
 		/// header names to column indices.  This will allow you to access fields using the header name in addition to the column
 		/// index.
 		/// </summary>
-		public static TabularDataParser CreateForCsvFile( string filePath, bool hasHeaderRow ) => CsvLineParser.CreateWithFilePath( filePath, hasHeaderRow );
+		public static TabularDataParser CreateForCsvFile( string filePath, bool hasHeaderRow ) => new CsvLineParser( filePath ) { hasHeaderRow = hasHeaderRow };
 
 		/// <summary>
 		/// Creates a parser designed to parse a CSV file.  Passing true for hasHeaderRow will result in the first row being used
@@ -92,7 +92,7 @@ namespace Tewl.IO.TabularDataParsing {
 		/// header names to column indices.  This will allow you to access fields using the header name in addition to the column
 		/// index.
 		/// </summary>
-		public static TabularDataParser CreateForCsvFile( Stream stream, bool hasHeaderRow ) => CsvLineParser.CreateWithStream( stream, hasHeaderRow );
+		public static TabularDataParser CreateForCsvFile( Stream stream, bool hasHeaderRow ) => new CsvLineParser( stream ) { hasHeaderRow = hasHeaderRow };
 
 		/// <summary>
 		/// Assumes header row. Fields will always be accessible by name.

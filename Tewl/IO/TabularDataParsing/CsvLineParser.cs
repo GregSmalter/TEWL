@@ -12,15 +12,17 @@ internal class CsvLineParser: TextBasedTabularDataParser {
 	/// Creates a parser designed to parse a CSV file.  Passing true for hasHeaderRow will result in the first row being used to map
 	/// header names to column indices.  This will allow you to access fields using the header name in addition to the column index.
 	/// </summary>
-	public static TabularDataParser CreateWithFilePath( string filePath, bool hasHeaderRow ) =>
-		new CsvLineParser { fileReader = new FileReader( filePath ), hasHeaderRow = hasHeaderRow };
+	public CsvLineParser( string filePath ) {
+		fileReader = new FileReader( filePath );
+	}
 
 	/// <summary>
 	/// Creates a parser designed to parse a CSV file.  Passing true for hasHeaderRow will result in the first row being used to map
 	/// header names to column indices.  This will allow you to access fields using the header name in addition to the column index.
 	/// </summary>
-	public static TabularDataParser CreateWithStream( Stream stream, bool hasHeaderRow ) =>
-		new CsvLineParser { fileReader = new FileReader( stream ), hasHeaderRow = hasHeaderRow };
+	public CsvLineParser( Stream stream ) {
+		fileReader = new FileReader( stream );
+	}
 
 	/// <summary>
 	/// Parses a line of a Microsoft Excel CSV file and returns a collection of string fields.
