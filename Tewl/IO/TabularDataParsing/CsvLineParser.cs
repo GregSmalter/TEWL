@@ -1,22 +1,18 @@
-using System.Collections.Generic;
-using System.IO;
 using System.Text;
-using JetBrains.Annotations;
-using Tewl.Tools;
 
 namespace Tewl.IO.TabularDataParsing {
 	/// <summary>
 	/// Parses a line of a Microsoft Excel CSV file using the definition of CSV at
 	/// http://en.wikipedia.org/wiki/Comma-separated_values.
 	/// </summary>
-	[PublicAPI]
+	[ PublicAPI ]
 	internal class CsvLineParser: TextBasedTabularDataParser {
 		private readonly Dictionary<string, int> columnHeadersToIndexes = new Dictionary<string, int>();
 
 		/// <summary>
 		/// Creates a line parser with no header row.  Fields will be access via indexes rather than by column name.
 		/// </summary>
-		public CsvLineParser() { }
+		public CsvLineParser() {}
 
 		/// <summary>
 		/// Creates a parser designed to parse a CSV file.  Passing true for hasHeaderRow will result in the first row being used to map
@@ -35,28 +31,15 @@ namespace Tewl.IO.TabularDataParsing {
 		}
 
 		/// <summary>
-		/// Creates a line parser with a header row.  The column names are extracted from the header row, and
-		/// parsed CsvLines will allow field access through column name or column index.
-		/// </summary>
-		public CsvLineParser( string headerLine ) {
-			var index = 0;
-			foreach( var columnHeader in ( Parse( headerLine ) as TextBasedParsedLine ).Fields ) {
-				columnHeadersToIndexes[ columnHeader.ToLower() ] = index;
-				index++;
-			}
-		}
-
-		/// <summary>
 		/// Parses a line of a Microsoft Excel CSV file and returns a collection of string fields.
 		/// Internal use only.
 		/// Use ParseAndProcessAllLines instead.
 		/// </summary>
 		internal override TextBasedParsedLine Parse( string line ) {
 			var fields = new List<string>();
-			if( !line.IsNullOrWhiteSpace() ) {
+			if( !line.IsNullOrWhiteSpace() )
 				using( TextReader tr = new StringReader( line ) )
 					parseCommaSeparatedFields( tr, fields );
-			}
 			var parsedLine = new TextBasedParsedLine( fields );
 			parsedLine.ColumnHeadersToIndexes = columnHeadersToIndexes;
 			return parsedLine;
