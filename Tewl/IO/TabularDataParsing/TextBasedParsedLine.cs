@@ -8,6 +8,7 @@ namespace Tewl.IO.TabularDataParsing;
 internal class TextBasedParsedLine: ParsedLine {
 	private IDictionary<string, int> columnHeadersToIndexes;
 	private readonly int lineNumber;
+	private readonly IReadOnlyList<string> fields;
 
 	/// <summary>
 	/// Returns true if any field on this line has a non-empty, non-whitespace value.
@@ -20,7 +21,7 @@ internal class TextBasedParsedLine: ParsedLine {
 
 	internal TextBasedParsedLine( int lineNumber, IReadOnlyList<string> fields ) {
 		this.lineNumber = lineNumber;
-		Fields = fields;
+		this.fields = fields;
 		ContainsData = false;
 		foreach( var field in fields )
 			if( !field.IsNullOrWhiteSpace() ) {
@@ -29,15 +30,13 @@ internal class TextBasedParsedLine: ParsedLine {
 			}
 	}
 
-	internal IReadOnlyList<string> Fields { get; }
-
 	public string this[ int index ] {
 		get {
 			// Gracefully return empty string when over-indexed. This prevents problems with files that have no value in the last column.
-			if( index >= Fields.Count )
+			if( index >= fields.Count )
 				return "";
 
-			return Fields[ index ];
+			return fields[ index ];
 		}
 	}
 
@@ -67,7 +66,7 @@ internal class TextBasedParsedLine: ParsedLine {
 	/// </summary>
 	public override string ToString() {
 		var text = "";
-		foreach( var field in Fields )
+		foreach( var field in fields )
 			text += ", " + field;
 		return text.TruncateStart( text.Length - 2 );
 	}
