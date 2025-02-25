@@ -34,10 +34,9 @@ namespace Tewl.IO.TabularDataParsing {
 					string line;
 					for( var lineNumber = HeaderRows + 1; ( line = reader.ReadLine() ) != null; lineNumber++ ) {
 						NonHeaderRows++;
-						var parsedLine = new TextBasedParsedLine( parseLine( line ) );
+						var parsedLine = new TextBasedParsedLine( lineNumber, parseLine( line ) );
 						if( parsedLine.ContainsData ) {
 							RowsContainingData++;
-							parsedLine.LineNumber = lineNumber;
 							parsedLine.ColumnHeadersToIndexes = columnHeadersToIndexes;
 							var validator = new Validator();
 							lineHandler( validator, parsedLine );

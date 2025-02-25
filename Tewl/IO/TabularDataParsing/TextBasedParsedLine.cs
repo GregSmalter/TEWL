@@ -7,28 +7,19 @@ namespace Tewl.IO.TabularDataParsing;
 [ PublicAPI ]
 internal class TextBasedParsedLine: ParsedLine {
 	private IDictionary<string, int> columnHeadersToIndexes;
-	private int? lineNumber;
+	private readonly int lineNumber;
 
 	/// <summary>
 	/// Returns true if any field on this line has a non-empty, non-whitespace value.
 	/// </summary>
 	public bool ContainsData { get; }
 
-	/// <summary>
-	/// Returns the line number from the source document that this parsed line was created from.
-	/// </summary>
-	public int LineNumber {
-		get {
-			if( lineNumber.HasValue )
-				return lineNumber.Value;
-			throw new ApplicationException( "Line number has not been initialized and has no meaning." );
-		}
-		internal set => lineNumber = value;
-	}
+	int ParsedLine.LineNumber => lineNumber;
 
 	internal IDictionary<string, int> ColumnHeadersToIndexes { set => columnHeadersToIndexes = value ?? new Dictionary<string, int>(); }
 
-	internal TextBasedParsedLine( IReadOnlyList<string> fields ) {
+	internal TextBasedParsedLine( int lineNumber, IReadOnlyList<string> fields ) {
+		this.lineNumber = lineNumber;
 		Fields = fields;
 		ContainsData = false;
 		foreach( var field in fields )
