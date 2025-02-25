@@ -33,7 +33,7 @@ internal class FixedWidthParser: TextBasedTabularDataParser {
 		// We don't know how wide the last column is, but we don't need to since we will just read to the end of the line
 	}
 
-	protected override IReadOnlyList<string> parseLine( string line ) {
+	protected override IReadOnlyList<string> parseLine( string? line ) {
 		var fields = new List<string>();
 		if( !line.IsNullOrWhiteSpace() )
 			using( TextReader tr = new StringReader( line ) ) {

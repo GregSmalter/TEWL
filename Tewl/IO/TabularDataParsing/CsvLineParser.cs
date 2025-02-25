@@ -25,7 +25,7 @@ internal class CsvLineParser: TextBasedTabularDataParser {
 	/// <summary>
 	/// Parses a line of a Microsoft Excel CSV file and returns a collection of string fields.
 	/// </summary>
-	protected override IReadOnlyList<string> parseLine( string line ) {
+	protected override IReadOnlyList<string> parseLine( string? line ) {
 		var fields = new List<string>();
 		if( !line.IsNullOrWhiteSpace() )
 			using( TextReader tr = new StringReader( line ) )
