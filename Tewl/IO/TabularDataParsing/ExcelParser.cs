@@ -16,9 +16,23 @@ internal class ExcelParser: TabularDataParser {
 		var rows = ws1.RangeUsed().RowsUsed().ToList();
 		rows = rows.Where( r => !r.IsEmpty() ).ToList();
 		var header = rows.First();
-		var headerFields = header.Cells().ToList().Select( c => c.Value.ToString().ToLower() ).ToList();
+
+		var columnIndicesByName = header.Cells().Select( ( cell, index ) => ( cell.Value.ToString(), index ) ).ToDictionary( StringComparer.OrdinalIgnoreCase );
+
+		var missingColumns = requiredColumns!.Where( i => !columnIndicesByName.ContainsKey( i ) ).Materialize();
+		if( missingColumns.Any() ) {
+			var columnList = StringTools.GetEnglishListPhrase( missingColumns.Select( i => $"“{i}”" ), true );
+			var singularize = missingColumns.Count == 1;
+			validationErrors.Add(
+				new ValidationError(
+					"Header row",
+					false,
+					$"The required {( singularize ? "column" : "columns" )} {columnList} {( singularize ? "is" : "are" )} missing." ) );
+			return;
+		}
+
 		foreach( var row in rows.Skip( HeaderRows ) ) {
-			ParsedLine parsedLine = new ExcelParsedLine( headerFields, row );
+			ParsedLine parsedLine = new ExcelParsedLine( columnIndicesByName, row );
 			NonHeaderRows++;
 			if( parsedLine.ContainsData ) {
 				RowsContainingData++;
@@ -28,7 +42,7 @@ internal class ExcelParser: TabularDataParser {
 					RowsWithoutValidationErrors++;
 				else if( !disableLineProcessingErrorAccumulation )
 					foreach( var error in validator.Errors )
-						validationErrors.Add( new ValidationError( "Line " + parsedLine.LineNumber, error.UnusableValueReturned, error.Message ) );
+						validationErrors.Add( new ValidationError( "Row " + parsedLine.LineNumber, error.UnusableValueReturned, error.Message ) );
 			}
 		}
 	}
