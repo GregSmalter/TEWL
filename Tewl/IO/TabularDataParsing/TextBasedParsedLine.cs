@@ -6,7 +6,7 @@ namespace Tewl.IO.TabularDataParsing;
 /// </summary>
 [ PublicAPI ]
 internal class TextBasedParsedLine: ParsedLine {
-	private readonly IReadOnlyDictionary<string, int> columnHeadersToIndexes;
+	private readonly IReadOnlyDictionary<string, int>? columnIndicesByName;
 	private readonly int lineNumber;
 	private readonly IReadOnlyList<string> fields;
 
@@ -17,8 +17,8 @@ internal class TextBasedParsedLine: ParsedLine {
 
 	int ParsedLine.LineNumber => lineNumber;
 
-	internal TextBasedParsedLine( IReadOnlyDictionary<string, int>? columnHeadersToIndexes, int lineNumber, IReadOnlyList<string> fields ) {
-		this.columnHeadersToIndexes = columnHeadersToIndexes ?? new Dictionary<string, int>();
+	internal TextBasedParsedLine( IReadOnlyDictionary<string, int>? columnIndicesByName, int lineNumber, IReadOnlyList<string> fields ) {
+		this.columnIndicesByName = columnIndicesByName;
 		this.lineNumber = lineNumber;
 		this.fields = fields;
 		ContainsData = false;
@@ -41,24 +41,20 @@ internal class TextBasedParsedLine: ParsedLine {
 
 	string ParsedLine.this[ string columnName ] {
 		get {
-			if( columnHeadersToIndexes.Count == 0 )
+			if( columnIndicesByName is null )
 				throw new InvalidOperationException( "The CSV parser returning this CsvLine was not created with a headerLine with which to populate column names." );
 
 			if( columnName == null )
 				throw new ArgumentException( "Column name cannot be null." );
 
-			if( !columnHeadersToIndexes.TryGetValue( columnName.ToLower(), out var index ) ) {
-				var keys = "";
-				foreach( var key in columnHeadersToIndexes.Keys )
-					keys += key + ", ";
-				throw new ArgumentException( "Column '" + columnName + "' does not exist.  The columns are: " + keys );
-			}
-
-			return this[ index ];
+			return columnIndicesByName.TryGetValue( columnName, out var index )
+				       ? this[ index ]
+				       : throw new ArgumentException(
+					         $"Column “{columnName}” does not exist. The columns are {StringTools.GetEnglishListPhrase( columnIndicesByName.Keys.Select( i => $"“{i}”" ), true )}." );
 		}
 	}
 
-	bool ParsedLine.ContainsField( string fieldName ) => columnHeadersToIndexes.Keys.Contains( fieldName.ToLower() );
+	bool ParsedLine.ContainsField( string fieldName ) => columnIndicesByName is not null && columnIndicesByName.ContainsKey( fieldName );
 
 	/// <summary>
 	/// Returns a comma-delimited list of fields.

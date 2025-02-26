@@ -13,24 +13,25 @@ internal abstract class TextBasedTabularDataParser: TabularDataParser {
 	public override void ParseAndProcessAllLines(
 		LineProcessingMethod lineHandler, ICollection<ValidationError> validationErrors, bool disableLineProcessingErrorAccumulation = false ) {
 		fileReader!.ExecuteInStreamReader(
-			delegate( StreamReader reader ) {
-				IReadOnlyDictionary<string, int>? columnHeadersToIndexes = null;
+			reader => {
+				IReadOnlyDictionary<string, int>? columnIndicesByName = null;
 				if( requiredColumns is not null ) {
 					// This skips the header row and creates a name to index map out of it.
-					columnHeadersToIndexes = buildColumnHeadersToIndexesDictionary( reader.ReadLine() );
+					columnIndicesByName = parseLine( reader.ReadLine() ).Select( ( name, index ) => ( name, index ) ).ToDictionary( StringComparer.OrdinalIgnoreCase );
 
-					var missingColumns = requiredColumns.Where( i => !columnHeadersToIndexes.ContainsKey( i.ToLower() ) ).Materialize();
+					var missingColumns = requiredColumns.Where( i => !columnIndicesByName.ContainsKey( i ) ).Materialize();
 					if( missingColumns.Any() ) {
-						var columnList = StringTools.GetEnglishListPhrase( missingColumns, true );
+						var columnList = StringTools.GetEnglishListPhrase( missingColumns.Select( i => $"“{i}”" ), true );
 						var singularize = missingColumns.Count == 1;
 						validationErrors.Add(
 							new ValidationError(
 								"Header line",
 								false,
 								$"The required {( singularize ? "column" : "columns" )} {columnList} {( singularize ? "is" : "are" )} missing." +
-								( columnHeadersToIndexes.Count == 1
+								( columnIndicesByName.Count == 1
 									  ? " Also, only a single column was detected, so please confirm that fields are separated by commas and not semicolons."
 									  : "" ) ) );
+						return;
 					}
 				}
 
@@ -41,7 +42,7 @@ internal abstract class TextBasedTabularDataParser: TabularDataParser {
 
 				for( var lineNumber = HeaderRows + 1; reader.ReadLine() is {} line; lineNumber++ ) {
 					NonHeaderRows++;
-					var parsedLine = new TextBasedParsedLine( columnHeadersToIndexes, lineNumber, parseLine( line ) );
+					var parsedLine = new TextBasedParsedLine( columnIndicesByName, lineNumber, parseLine( line ) );
 					if( parsedLine.ContainsData ) {
 						RowsContainingData++;
 						var validator = new Validator();
@@ -54,16 +55,5 @@ internal abstract class TextBasedTabularDataParser: TabularDataParser {
 					}
 				}
 			} );
-	}
-
-	private IReadOnlyDictionary<string, int> buildColumnHeadersToIndexesDictionary( string? headerLine ) {
-		var columnHeadersToIndexes = new Dictionary<string, int>();
-		var index = 0;
-		foreach( var columnHeader in parseLine( headerLine ) ) {
-			columnHeadersToIndexes[ columnHeader.ToLower() ] = index;
-			index++;
-		}
-
-		return columnHeadersToIndexes;
 	}
 }
