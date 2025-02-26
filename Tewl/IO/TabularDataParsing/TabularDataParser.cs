@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
-using JetBrains.Annotations;
 using Tewl.InputValidation;
 
 namespace Tewl.IO.TabularDataParsing {
@@ -9,7 +5,7 @@ namespace Tewl.IO.TabularDataParsing {
 	/// Use this to process several lines of any type of tabular data, such as CSVs, fixed-width data files, or Excel files.
 	/// </summary>
 	[ PublicAPI ]
-	public class TabularDataParser {
+	public abstract class TabularDataParser {
 		/// <summary>
 		/// Method that knows how to process a line from a particular file.  The validator is new for each row and has no errors,
 		/// initially.
@@ -22,9 +18,9 @@ namespace Tewl.IO.TabularDataParsing {
 		protected int headerRowsToSkip;
 
 		/// <summary>
-		/// True if there is a header row. Also implies header rows to skip is 1.
+		/// Has a value if there is a header row. Also implies header rows to skip is 1.
 		/// </summary>
-		protected bool hasHeaderRow;
+		protected IReadOnlyCollection<string>? requiredColumns;
 
 		/// <summary>
 		/// The number of rows in the file, not including the header rows that were skipped with headerRowsToSkip or hasHeaderRows
@@ -38,7 +34,7 @@ namespace Tewl.IO.TabularDataParsing {
 		/// The number of header rows in the file. This is equal to 1 if hasHeaderRow was passed as true, or equal to
 		/// headerRowsToSkip otherwise.
 		/// </summary>
-		public int HeaderRows => hasHeaderRow ? 1 : headerRowsToSkip;
+		public int HeaderRows => requiredColumns is not null ? 1 : headerRowsToSkip;
 
 		/// <summary>
 		/// The total number of rows in the file, including any header rows. This properly only has meaning after
@@ -79,45 +75,53 @@ namespace Tewl.IO.TabularDataParsing {
 			FixedWidthParser.CreateWithFilePath( filePath, headerRowsToSkip, columnStartPositions );
 
 		/// <summary>
-		/// Creates a parser designed to parse a CSV file.  Passing true for hasHeaderRow will result in the first row being used
-		/// to map
-		/// header names to column indices.  This will allow you to access fields using the header name in addition to the column
-		/// index.
+		/// Creates a parser designed to parse a CSV file.
 		/// </summary>
-		public static TabularDataParser CreateForCsvFile( string filePath, bool hasHeaderRow ) => new CsvLineParser( filePath ) { hasHeaderRow = hasHeaderRow };
+		/// <param name="filePath"></param>
+		/// <param name="requiredColumns">If the file has a header row, you must pass a collection (empty or not) for this parameter, which will allow you to access
+		/// fields using the column name in addition to the index. If the collection is nonempty and any of the specified columns are missing,
+		/// ParseAndProcessAllLines will generate validation errors and return without processing any lines. Pass null for this parameter if the file does not have a header row.</param>
+		public static TabularDataParser CreateForCsvFile( string filePath, IReadOnlyCollection<string>? requiredColumns ) =>
+			new CsvLineParser( filePath ) { requiredColumns = requiredColumns };
 
 		/// <summary>
-		/// Creates a parser designed to parse a CSV file.  Passing true for hasHeaderRow will result in the first row being used
-		/// to map
-		/// header names to column indices.  This will allow you to access fields using the header name in addition to the column
-		/// index.
+		/// Creates a parser designed to parse a CSV file.
 		/// </summary>
-		public static TabularDataParser CreateForCsvFile( Stream stream, bool hasHeaderRow ) => new CsvLineParser( stream ) { hasHeaderRow = hasHeaderRow };
+		/// <param name="stream"></param>
+		/// <param name="requiredColumns">If the file has a header row, you must pass a collection (empty or not) for this parameter, which will allow you to access
+		/// fields using the column name in addition to the index. If the collection is nonempty and any of the specified columns are missing,
+		/// ParseAndProcessAllLines will generate validation errors and return without processing any lines. Pass null for this parameter if the file does not have a header row.</param>
+		public static TabularDataParser CreateForCsvFile( Stream stream, IReadOnlyCollection<string>? requiredColumns ) =>
+			new CsvLineParser( stream ) { requiredColumns = requiredColumns };
 
 		/// <summary>
 		/// Assumes header row. Fields will always be accessible by name.
 		/// </summary>
-		public static TabularDataParser CreateForExcelFile( Stream stream ) => new ExcelParser( stream ) { hasHeaderRow = true };
+		/// <param name="stream"></param>
+		/// <param name="requiredColumns">If any of the columns specified in this collection are missing, ParseAndProcessAllLines will generate validation errors
+		/// and return without processing any lines.</param>
+		public static TabularDataParser CreateForExcelFile( Stream stream, IReadOnlyCollection<string> requiredColumns ) =>
+			new ExcelParser( stream ) { requiredColumns = requiredColumns };
 
 		/// <summary>
 		/// Assumes header row. Fields will always be accessible by name.
 		/// </summary>
-		public static TabularDataParser CreateForExcelFile( string filePath ) => new ExcelParser( filePath ) { hasHeaderRow = true };
+		/// <param name="filePath"></param>
+		/// <param name="requiredColumns">If any of the columns specified in this collection are missing, ParseAndProcessAllLines will generate validation errors
+		/// and return without processing any lines.</param>
+		public static TabularDataParser CreateForExcelFile( string filePath, IReadOnlyCollection<string> requiredColumns ) =>
+			new ExcelParser( filePath ) { requiredColumns = requiredColumns };
 
 		/// <summary>
 		/// For every line (after headerRowsToSkip) in the file with the given path, calls the line handling method you pass.
+		/// The validationErrors collection will hold all validation errors encountered during the processing of all lines.
 		/// Each line handler method will be given a fresh validator to do its work with.
 		/// </summary>
-		public void ParseAndProcessAllLines( LineProcessingMethod lineHandler ) {
-			ParseAndProcessAllLines( lineHandler, null );
-		}
-
-		/// <summary>
-		/// For every line (after headerRowsToSkip) in the file with the given path, calls the line handling method you pass.
-		/// Each line handler method will be given a fresh validator to do its work with.
-		/// </summary>
-		public virtual void ParseAndProcessAllLines( LineProcessingMethod lineHandler, ICollection<ValidationError> validationErrors ) {
-			throw new NotImplementedException( "Each parser must have a specific implementation of parse and process all lines." );
-		}
+		/// <param name="lineHandler"></param>
+		/// <param name="validationErrors"></param>
+		/// <param name="disableLineProcessingErrorAccumulation">Pass true to only use the error collection for missing columns. This is useful when processing
+		/// extremely large data sets, since accumulating all line-processing errors in one collection may result in high memory usage.</param>
+		public abstract void ParseAndProcessAllLines(
+			LineProcessingMethod lineHandler, ICollection<ValidationError> validationErrors, bool disableLineProcessingErrorAccumulation = false );
 	}
 }

@@ -10,15 +10,8 @@ internal class ExcelParser: TabularDataParser {
 
 	public ExcelParser( Stream fileStream ) => workbook = new XLWorkbook( fileStream );
 
-	/// <summary>
-	/// For every line (after headerRowsToSkip) in the file with the given path, calls the line handling method you pass.
-	/// The validationErrors collection will hold all validation errors encountered during the processing of all lines.
-	/// When processing extremely large data sets, accumulating validationErrors in one collection may result in high memory
-	/// usage. To avoid
-	/// this, use the overload without this collection.
-	/// Each line handler method will be given a fresh validator to do its work with.
-	/// </summary>
-	public override void ParseAndProcessAllLines( LineProcessingMethod lineHandler, ICollection<ValidationError> validationErrors ) {
+	public override void ParseAndProcessAllLines(
+		LineProcessingMethod lineHandler, ICollection<ValidationError> validationErrors, bool disableLineProcessingErrorAccumulation = false ) {
 		var ws1 = workbook.Worksheets.First();
 		var rows = ws1.RangeUsed().RowsUsed().ToList();
 		rows = rows.Where( r => !r.IsEmpty() ).ToList();
@@ -31,13 +24,11 @@ internal class ExcelParser: TabularDataParser {
 				RowsContainingData++;
 				var validator = new Validator();
 				lineHandler( validator, parsedLine );
-				if( validator.ErrorsOccurred ) {
-					if( validationErrors != null )
-						foreach( var error in validator.Errors )
-							validationErrors.Add( new ValidationError( "Line " + parsedLine.LineNumber, error.UnusableValueReturned, error.Message ) );
-				}
-				else
+				if( !validator.ErrorsOccurred )
 					RowsWithoutValidationErrors++;
+				else if( !disableLineProcessingErrorAccumulation )
+					foreach( var error in validator.Errors )
+						validationErrors.Add( new ValidationError( "Line " + parsedLine.LineNumber, error.UnusableValueReturned, error.Message ) );
 			}
 		}
 	}
