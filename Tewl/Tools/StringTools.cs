@@ -11,6 +11,26 @@ namespace Tewl.Tools;
 [ PublicAPI ]
 public static class StringTools {
 	/// <summary>
+	/// A list-phrase conjunction for use with <see cref="GetEnglishListPhrase"/>.
+	/// </summary>
+	public enum ListConjunction {
+		/// <summary>
+		/// And
+		/// </summary>
+		And,
+
+		/// <summary>
+		/// Or
+		/// </summary>
+		Or,
+
+		/// <summary>
+		/// Nor
+		/// </summary>
+		Nor
+	}
+
+	/// <summary>
 	/// Returns a two-element string array containing
 	/// the strings on either side of the given word (neither
 	/// including the word).  Whole word (word surrounded by
@@ -386,17 +406,25 @@ public static class StringTools {
 	/// <summary>
 	/// Returns a string representing the list of items in the form "one, two, three and four".
 	/// </summary>
-	public static string GetEnglishListPhrase( IEnumerable<string> items, bool useSerialComma ) {
+	public static string GetEnglishListPhrase( IEnumerable<string> items, bool useSerialComma, ListConjunction conjunction = ListConjunction.And ) {
 		items = items.Where( i => i.Any() ).ToArray();
+		var conjunctionText = conjunction switch
+			{
+				ListConjunction.And => "and",
+				ListConjunction.Or => "or",
+				ListConjunction.Nor => "nor",
+				_ => throw new ArgumentOutOfRangeException( nameof(conjunction), conjunction, null )
+			};
 		switch( items.Count() ) {
 			case 0:
 				return "";
 			case 1:
 				return items.First();
 			case 2:
-				return items.First() + " and " + items.ElementAt( 1 );
+				return items.First() + $" {conjunctionText} " + items.ElementAt( 1 );
 			default:
-				return ConcatenateWithDelimiter( ", ", items.Take( items.Count() - 1 ).ToArray() ) + ( useSerialComma ? ", and " : " and " ) + items.Last();
+				return ConcatenateWithDelimiter( ", ", items.Take( items.Count() - 1 ).ToArray() ) +
+				       ( useSerialComma ? $", {conjunctionText} " : $" {conjunctionText} " ) + items.Last();
 		}
 	}
 
