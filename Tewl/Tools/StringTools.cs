@@ -156,9 +156,8 @@ public static class StringTools {
 	}
 
 	/// <summary>
-	/// Returns the given string with every instance of "xY" where x is a lowercase
-	/// letter and Y is a capital letter with "x Y".  Therefore, "LeftLeg" becomes "Left Leg".
-	/// Also handles digits and converts a string such as "Reference1Name" to "Reference 1 Name".
+	/// Returns the given string with every instance of xY, where x is a letter and Y is a capital letter, replaced with x Y. Therefore, “LeftLeg” becomes
+	/// “Left Leg” and “DoubleABattery” becomes “Double A Battery”. Also handles digits, converting a string such as “Reference12Name” to “Reference 12 Name”.
 	/// </summary>
 	public static string CamelToEnglish( this string text ) {
 		// Don't do anything with null
@@ -166,13 +165,15 @@ public static class StringTools {
 		if( string.IsNullOrEmpty( text ) )
 			return text;
 
+		// ReSharper disable GrammarMistakeInComment
 		// When a space should be inserted directly before the current character onto the new string:
 		// Y/N insert space
 		//													text[i]
 		//										lower		upper		digit
 		//							lower   N				Y				Y
-		//	text[i-1]		upper		N				N				Y
+		//	text[i-1]		upper		N				Y				Y
 		//							digit		Y				Y				N
+		// ReSharper restore GrammarMistakeInComment
 
 		var newText = "";
 		for( var i = 1; i < text.Length; i++ ) {
@@ -181,12 +182,11 @@ public static class StringTools {
 			var previousChar = new { IsUpper = char.IsUpper( text[ i - 1 ] ), IsLower = char.IsLower( text[ i - 1 ] ), IsDigit = char.IsDigit( text[ i - 1 ] ) };
 			var currentChar = new { IsUpper = char.IsUpper( text[ i ] ), IsLower = char.IsLower( text[ i ] ), IsDigit = char.IsDigit( text[ i ] ) };
 
-			if( currentChar.IsUpper && ( previousChar.IsLower || previousChar.IsDigit ) || currentChar.IsDigit && ( previousChar.IsLower || previousChar.IsUpper ) ||
-			    currentChar.IsLower && previousChar.IsDigit )
+			if( currentChar.IsUpper || currentChar.IsDigit && ( previousChar.IsLower || previousChar.IsUpper ) || currentChar.IsLower && previousChar.IsDigit )
 				newText += " ";
 		}
 
-		return newText + text[ text.Length - 1 ];
+		return newText + text[ ^1 ];
 	}
 
 	/// <summary>
