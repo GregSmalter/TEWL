@@ -767,10 +767,10 @@ public class Validator {
 		return date;
 	}
 
-	private static DateTime validateDateTime( ValidationErrorHandler errorHandler, string dateAsString, string[] formats, DateTime min, DateTime max ) {
+	private static DateTime validateDateTime( ValidationErrorHandler errorHandler, string dateAsString, string[]? formats, DateTime min, DateTime max ) {
 		var date = DateTime.Now;
 		try {
-			date = formats != null
+			date = formats is not null
 				       ? DateTime.ParseExact( dateAsString, formats, null, DateTimeStyles.None )
 				       : DateTime.Parse( dateAsString, Cultures.EnglishUnitedStates );
 			validateNativeDateTime( errorHandler, date, false, min, max );
@@ -806,7 +806,7 @@ public class Validator {
 	/// Validates the date using given allowEmpty, min, and max constraints.
 	/// </summary>
 	public DateTime? GetNullableDateTime(
-		ValidationErrorHandler handler, string dateAsString, string[] formats, bool allowEmpty, DateTime minDate, DateTime maxDate ) =>
+		ValidationErrorHandler handler, string dateAsString, string[]? formats, bool allowEmpty, DateTime minDate, DateTime maxDate ) =>
 		executeValidationMethodAndHandleEmptyAndReturnDefaultIfInvalid<DateTime?>(
 			handler,
 			dateAsString,
@@ -816,7 +816,7 @@ public class Validator {
 	/// <summary>
 	/// Validates the date using given min and max constraints.
 	/// </summary>
-	public DateTime GetDateTime( ValidationErrorHandler handler, string dateAsString, string[] formats, DateTime minDate, DateTime maxDate ) =>
+	public DateTime GetDateTime( ValidationErrorHandler handler, string dateAsString, string[]? formats, DateTime minDate, DateTime maxDate ) =>
 		executeValidationMethodAndHandleEmptyAndReturnDefaultIfInvalid(
 			handler,
 			dateAsString,
@@ -838,7 +838,7 @@ public class Validator {
 	/// <summary>
 	/// Validates the given time span.
 	/// </summary>
-	public TimeSpan? GetNullableTimeOfDayTimeSpan( ValidationErrorHandler handler, string timeSpanAsString, string[] formats, bool allowEmpty ) =>
+	public TimeSpan? GetNullableTimeOfDayTimeSpan( ValidationErrorHandler handler, string timeSpanAsString, string[]? formats, bool allowEmpty ) =>
 		executeValidationMethodAndHandleEmptyAndReturnDefaultIfInvalid<TimeSpan?>(
 			handler,
 			timeSpanAsString,
@@ -848,7 +848,7 @@ public class Validator {
 	/// <summary>
 	/// Validates the given time span.
 	/// </summary>
-	public TimeSpan GetTimeOfDayTimeSpan( ValidationErrorHandler handler, string timeSpanAsString, string[] formats ) =>
+	public TimeSpan GetTimeOfDayTimeSpan( ValidationErrorHandler handler, string timeSpanAsString, string[]? formats ) =>
 		executeValidationMethodAndHandleEmptyAndReturnDefaultIfInvalid(
 			handler,
 			timeSpanAsString,
