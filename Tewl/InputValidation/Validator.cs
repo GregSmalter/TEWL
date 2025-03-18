@@ -136,9 +136,9 @@ public class Validator {
 
 	private static bool validateBoolean( string booleanAsString, ValidationErrorHandler errorHandler ) {
 		if( booleanAsString.IsNullOrWhiteSpace() )
-			errorHandler.SetValidationResult( ValidationResult.Empty() );
+			errorHandler.SetValidationResult( ValidationError.Empty() );
 		else if( booleanAsString != "1" && booleanAsString != "0" && booleanAsString != true.ToString() && booleanAsString != false.ToString() )
-			errorHandler.SetValidationResult( ValidationResult.Invalid() );
+			errorHandler.SetValidationResult( ValidationError.Invalid() );
 
 		return booleanAsString == "1" || booleanAsString == true.ToString();
 	}
@@ -263,21 +263,21 @@ public class Validator {
 		long intResult = 0;
 
 		if( valueAsString.IsNullOrWhiteSpace() )
-			errorHandler.SetValidationResult( ValidationResult.Empty() );
+			errorHandler.SetValidationResult( ValidationError.Empty() );
 		else
 			try {
 				intResult = Convert.ToInt64( valueAsString );
 
 				if( intResult > maxValue )
-					errorHandler.SetValidationResult( ValidationResult.TooLarge( minValue, maxValue ) );
+					errorHandler.SetValidationResult( ValidationError.TooLarge( minValue, maxValue ) );
 				else if( intResult < minValue )
-					errorHandler.SetValidationResult( ValidationResult.TooSmall( minValue, maxValue ) );
+					errorHandler.SetValidationResult( ValidationError.TooSmall( minValue, maxValue ) );
 			}
 			catch( FormatException ) {
-				errorHandler.SetValidationResult( ValidationResult.Invalid() );
+				errorHandler.SetValidationResult( ValidationError.Invalid() );
 			}
 			catch( OverflowException ) {
-				errorHandler.SetValidationResult( ValidationResult.Invalid() );
+				errorHandler.SetValidationResult( ValidationError.Invalid() );
 			}
 
 		if( errorHandler.LastResult != ErrorCondition.NoError )
@@ -310,22 +310,22 @@ public class Validator {
 	private static float validateFloat( string floatAsString, ValidationErrorHandler errorHandler, float min, float max ) {
 		float floatValue = 0;
 		if( floatAsString.IsNullOrWhiteSpace() )
-			errorHandler.SetValidationResult( ValidationResult.Empty() );
+			errorHandler.SetValidationResult( ValidationError.Empty() );
 		else {
 			try {
 				floatValue = float.Parse( floatAsString );
 			}
 			catch( FormatException ) {
-				errorHandler.SetValidationResult( ValidationResult.Invalid() );
+				errorHandler.SetValidationResult( ValidationError.Invalid() );
 			}
 			catch( OverflowException ) {
-				errorHandler.SetValidationResult( ValidationResult.Invalid() );
+				errorHandler.SetValidationResult( ValidationError.Invalid() );
 			}
 
 			if( floatValue < min )
-				errorHandler.SetValidationResult( ValidationResult.TooSmall( min, max ) );
+				errorHandler.SetValidationResult( ValidationError.TooSmall( min, max ) );
 			else if( floatValue > max )
-				errorHandler.SetValidationResult( ValidationResult.TooLarge( min, max ) );
+				errorHandler.SetValidationResult( ValidationError.TooLarge( min, max ) );
 		}
 
 		return floatValue;
@@ -369,7 +369,7 @@ public class Validator {
 
 	private static decimal validateDecimal( string decimalAsString, ValidationErrorHandler errorHandler, decimal min, decimal max ) {
 		if( decimalAsString.IsNullOrWhiteSpace() ) {
-			errorHandler.SetValidationResult( ValidationResult.Empty() );
+			errorHandler.SetValidationResult( ValidationError.Empty() );
 			return 0;
 		}
 
@@ -377,12 +377,12 @@ public class Validator {
 		try {
 			decimalVal = decimal.Parse( decimalAsString );
 			if( decimalVal < min )
-				errorHandler.SetValidationResult( ValidationResult.TooSmall( min, max ) );
+				errorHandler.SetValidationResult( ValidationError.TooSmall( min, max ) );
 			else if( decimalVal > max )
-				errorHandler.SetValidationResult( ValidationResult.TooLarge( min, max ) );
+				errorHandler.SetValidationResult( ValidationError.TooLarge( min, max ) );
 		}
 		catch {
-			errorHandler.SetValidationResult( ValidationResult.Invalid() );
+			errorHandler.SetValidationResult( ValidationError.Invalid() );
 		}
 
 		return decimalVal;
@@ -416,9 +416,9 @@ public class Validator {
 			() => {
 				var errorMessage = "The length of the " + errorHandler.Subject + " must be between " + minLength + " and " + maxLength + " characters.";
 				if( text.Length > maxLength )
-					errorHandler.SetValidationResult( ValidationResult.Custom( ErrorCondition.TooLong, errorMessage ) );
+					errorHandler.SetValidationResult( ValidationError.Custom( ErrorCondition.TooLong, errorMessage ) );
 				else if( text.Length < minLength )
-					errorHandler.SetValidationResult( ValidationResult.Custom( ErrorCondition.TooShort, errorMessage ) );
+					errorHandler.SetValidationResult( ValidationError.Custom( ErrorCondition.TooShort, errorMessage ) );
 
 				return text.Trim();
 			} );
@@ -451,7 +451,7 @@ public class Validator {
 						    emailAddress,
 						    "^" + localPart + "@" + domain + "$",
 						    RegexOptions.IgnoreCase ) )
-						errorHandler.SetValidationResult( ValidationResult.Invalid() );
+						errorHandler.SetValidationResult( ValidationError.Invalid() );
 					// Max length is already checked by the string validation
 					// NOTE: We should really enforce the max length of the domain portion and the local portion individually as well.
 				}
@@ -478,7 +478,7 @@ public class Validator {
 			() => {
 				/* If the string is just a number, reject it right out. */
 				if( int.TryParse( url, out _ ) || double.TryParse( url, out _ ) ) {
-					errorHandler.SetValidationResult( ValidationResult.Invalid() );
+					errorHandler.SetValidationResult( ValidationError.Invalid() );
 					return url;
 				}
 
@@ -486,7 +486,7 @@ public class Validator {
 				var testingValidator = new Validator();
 				testingValidator.GetEmailAddress( new ValidationErrorHandler( "" ), url, allowEmpty );
 				if( !testingValidator.ErrorsOccurred ) {
-					errorHandler.SetValidationResult( ValidationResult.Invalid() );
+					errorHandler.SetValidationResult( ValidationError.Invalid() );
 					return url;
 				}
 
@@ -510,7 +510,7 @@ public class Validator {
 							throw new UriFormatException();
 					}
 					catch( UriFormatException ) {
-						errorHandler.SetValidationResult( ValidationResult.Invalid() );
+						errorHandler.SetValidationResult( ValidationError.Invalid() );
 					}
 
 				return url;
@@ -586,7 +586,7 @@ public class Validator {
 						phoneNumber = PhoneNumber.CreateFromParts( firstFive.Substring( 0, 3 ), firstFive.Substring( 3 ) + input, "" );
 					}
 					else
-						errorHandler.SetValidationResult( ValidationResult.Custom( ErrorCondition.Invalid, "The five digit phone number you entered isn't recognized." ) );
+						errorHandler.SetValidationResult( ValidationError.Custom( ErrorCondition.Invalid, "The five digit phone number you entered isn't recognized." ) );
 				}
 				// International phone numbers
 				// We require a country code and then at least 7 digits (but if country code is more than one digit, we require fewer subsequent digits).
@@ -609,12 +609,12 @@ public class Validator {
 						phoneNumber = PhoneNumber.CreateFromParts( areaCode, number, extension );
 						if( !allowExtension && phoneNumber.Extension.Length > 0 )
 							errorHandler.SetValidationResult(
-								ValidationResult.Custom(
+								ValidationError.Custom(
 									ErrorCondition.Invalid,
 									invalidPrefix + " Extensions are not permitted in this field. Use the separate extension field." ) );
 					}
 					else
-						errorHandler.SetValidationResult( ValidationResult.Custom( ErrorCondition.Invalid, invalidMessage ) );
+						errorHandler.SetValidationResult( ValidationError.Custom( ErrorCondition.Invalid, invalidMessage ) );
 				}
 
 				return phoneNumber;
@@ -634,7 +634,7 @@ public class Validator {
 			() => {
 				extension = extension.Trim();
 				if( !Regex.IsMatch( extension, @"^ *(?<ext>\d{1,5}) *$" ) )
-					errorHandler.SetValidationResult( ValidationResult.Invalid() );
+					errorHandler.SetValidationResult( ValidationError.Invalid() );
 
 				return extension;
 			} );
@@ -661,7 +661,7 @@ public class Validator {
 					text = text.Replace( garbageString, "" );
 				text = text.Trim();
 				if( !Regex.IsMatch( text, @"^\d{" + numberOfDigits + "}$" ) )
-					errorHandler.SetValidationResult( ValidationResult.Invalid() );
+					errorHandler.SetValidationResult( ValidationError.Invalid() );
 				return text;
 			} );
 
@@ -760,7 +760,7 @@ public class Validator {
 
 	private static DateTime validateSqlSmallDateTimeExact( ValidationErrorHandler errorHandler, string dateAsString, string pattern ) {
 		if( !DateTime.TryParseExact( dateAsString, pattern, Cultures.EnglishUnitedStates, DateTimeStyles.None, out var date ) )
-			errorHandler.SetValidationResult( ValidationResult.Invalid() );
+			errorHandler.SetValidationResult( ValidationError.Invalid() );
 		else
 			validateNativeDateTime( errorHandler, date, false, SqlSmallDateTimeMinValue, SqlSmallDateTimeMaxValue );
 
@@ -776,14 +776,14 @@ public class Validator {
 			validateNativeDateTime( errorHandler, date, false, min, max );
 		}
 		catch( FormatException ) {
-			errorHandler.SetValidationResult( ValidationResult.Invalid() );
+			errorHandler.SetValidationResult( ValidationError.Invalid() );
 		}
 		catch( ArgumentOutOfRangeException ) {
 			// Undocumented exception that there are reports of being thrown
-			errorHandler.SetValidationResult( ValidationResult.Invalid() );
+			errorHandler.SetValidationResult( ValidationError.Invalid() );
 		}
 		catch( ArgumentNullException ) {
-			errorHandler.SetValidationResult( ValidationResult.Empty() );
+			errorHandler.SetValidationResult( ValidationError.Empty() );
 		}
 
 		return date;
@@ -791,14 +791,14 @@ public class Validator {
 
 	private static void validateNativeDateTime( ValidationErrorHandler errorHandler, DateTime? date, bool allowEmpty, DateTime minDate, DateTime maxDate ) {
 		if( date == null && !allowEmpty )
-			errorHandler.SetValidationResult( ValidationResult.Empty() );
+			errorHandler.SetValidationResult( ValidationError.Empty() );
 		else if( date.HasValue ) {
 			var minMaxMessage = " It must be between " + minDate.ToDayMonthYearString( false ) + " and " + maxDate.ToDayMonthYearString( false ) + ".";
 			if( date < minDate )
 				errorHandler.SetValidationResult(
-					ValidationResult.Custom( ErrorCondition.TooEarly, "The " + errorHandler.Subject + " is too early." + minMaxMessage ) );
+					ValidationError.Custom( ErrorCondition.TooEarly, "The " + errorHandler.Subject + " is too early." + minMaxMessage ) );
 			else if( date >= maxDate )
-				errorHandler.SetValidationResult( ValidationResult.Custom( ErrorCondition.TooLate, "The " + errorHandler.Subject + " is too late." + minMaxMessage ) );
+				errorHandler.SetValidationResult( ValidationError.Custom( ErrorCondition.TooLate, "The " + errorHandler.Subject + " is too late." + minMaxMessage ) );
 		}
 	}
 
@@ -885,7 +885,7 @@ public class Validator {
 		var isEmpty = valueAsObject.ObjectToString( true ).Trim().Length == 0;
 
 		if( !allowEmpty && isEmpty )
-			errorHandler.SetValidationResult( ValidationResult.Empty() );
+			errorHandler.SetValidationResult( ValidationError.Empty() );
 
 		return isEmpty;
 	}

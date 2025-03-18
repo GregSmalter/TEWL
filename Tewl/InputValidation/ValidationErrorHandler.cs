@@ -1,8 +1,3 @@
-using System;
-using System.Collections.Generic;
-using JetBrains.Annotations;
-using Tewl.Tools;
-
 namespace Tewl.InputValidation {
 	/// <summary>
 	/// This class allows you to control what happens when a validation method generates an error. Every validation method
@@ -19,7 +14,7 @@ namespace Tewl.InputValidation {
 
 		private readonly CustomHandler customHandler;
 		private readonly Dictionary<ErrorCondition, string> customMessages = new Dictionary<ErrorCondition, string>();
-		private ValidationResult validationResult = ValidationResult.NoError();
+		private ValidationError validationResult = ValidationError.NoError();
 
 		/// <summary>
 		/// Creates an error handler that adds standard error messages, based on the specified subject, to the validator. If the
@@ -42,14 +37,12 @@ namespace Tewl.InputValidation {
 		/// will be used for all errors. This method has no effect if a custom handler has been specified.
 		/// </summary>
 		public void AddCustomErrorMessage( string message, params ErrorCondition[] errorConditions ) {
-			if( errorConditions.Length > 0 ) {
+			if( errorConditions.Length > 0 )
 				foreach( var e in errorConditions )
 					customMessages.Add( e, message );
-			}
-			else {
+			else
 				foreach( var e in EnumTools.GetValues<ErrorCondition>() )
 					customMessages.Add( e, message );
-			}
 		}
 
 		/// <summary>
@@ -59,7 +52,7 @@ namespace Tewl.InputValidation {
 
 		private bool used;
 
-		internal void SetValidationResult( ValidationResult validationResult ) {
+		internal void SetValidationResult( ValidationError validationResult ) {
 			if( used )
 				throw new ApplicationException( "Validation error handlers cannot be re-used." );
 			used = true;
@@ -89,7 +82,7 @@ namespace Tewl.InputValidation {
 			// build the error message
 			if( !customMessages.TryGetValue( validationResult.ErrorCondition, out var message ) )
 				// NOTE: Do we really need custom message, or can the custom handler manage that?
-				message = validationResult.GetErrorMessage( Subject );
+				message = validationResult.GetMessage( Subject );
 
 			validator.AddError( new Error( message, errorWouldResultInUnusableReturnValue ) );
 		}
