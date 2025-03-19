@@ -12,9 +12,6 @@ namespace Tewl.InputValidation;
 /// </summary>
 [ PublicAPI ]
 public class Validator {
-	// NOTE: There is already something called this.  Also, put it in its own file.
-	private delegate T ValidationMethod<T>();
-
 	internal static readonly DateTime SqlSmallDateTimeMinValue = new DateTime( 1900, 1, 1 );
 	internal static readonly DateTime SqlSmallDateTimeMaxValue = new DateTime( 2079, 6, 6 );
 
@@ -116,11 +113,7 @@ public class Validator {
 	/// Passing an empty string or null will result in ErrorCondition.Empty.
 	/// </summary>
 	public bool GetBoolean( ValidationErrorHandler errorHandler, string booleanAsString ) =>
-		executeValidationMethodAndHandleEmptyAndReturnDefaultIfInvalid(
-			errorHandler,
-			booleanAsString,
-			false,
-			delegate { return validateBoolean( booleanAsString, errorHandler ); } );
+		executeValidationMethodAndHandleEmptyAndReturnDefaultIfInvalid<bool, string>( errorHandler, booleanAsString, false, validateBoolean );
 
 	/// <summary>
 	/// Accepts either true/false (case-sensitive) or 1/0.
@@ -128,19 +121,18 @@ public class Validator {
 	/// If allowEmpty is true and the given string is empty, null will be returned.
 	/// </summary>
 	public bool? GetNullableBoolean( ValidationErrorHandler errorHandler, string booleanAsString, bool allowEmpty ) =>
-		executeValidationMethodAndHandleEmptyAndReturnDefaultIfInvalid<bool?>(
+		executeValidationMethodAndHandleEmptyAndReturnDefaultIfInvalid<bool?, string>(
 			errorHandler,
 			booleanAsString,
 			allowEmpty,
-			() => validateBoolean( booleanAsString, errorHandler ) );
+			( valueSetter, trimmedInput ) => validateBoolean( value => valueSetter( value ), trimmedInput ) );
 
-	private static bool validateBoolean( string booleanAsString, ValidationErrorHandler errorHandler ) {
-		if( booleanAsString.IsNullOrWhiteSpace() )
-			errorHandler.SetValidationResult( ValidationError.Empty() );
-		else if( booleanAsString != "1" && booleanAsString != "0" && booleanAsString != true.ToString() && booleanAsString != false.ToString() )
-			errorHandler.SetValidationResult( ValidationError.Invalid() );
+	private static ValidationError? validateBoolean( Action<bool> valueSetter, string trimmedInput ) {
+		if( trimmedInput != "1" && trimmedInput != "0" && trimmedInput != true.ToString() && trimmedInput != false.ToString() )
+			return ValidationError.Invalid();
 
-		return booleanAsString == "1" || booleanAsString == true.ToString();
+		valueSetter( trimmedInput == "1" || trimmedInput == true.ToString() );
+		return null;
 	}
 
 	/// <summary>
@@ -154,22 +146,22 @@ public class Validator {
 	/// Passing an empty string or null will result in ErrorCondition.Empty.
 	/// </summary>
 	public byte GetByte( ValidationErrorHandler errorHandler, string byteAsString, byte min, byte max ) =>
-		executeValidationMethodAndHandleEmptyAndReturnDefaultIfInvalid(
+		executeValidationMethodAndHandleEmptyAndReturnDefaultIfInvalid<byte, string>(
 			errorHandler,
 			byteAsString,
 			false,
-			delegate { return validateGenericIntegerType<byte>( errorHandler, byteAsString, min, max ); } );
+			( valueSetter, trimmedInput ) => validateGenericIntegerType( valueSetter, trimmedInput, min, max ) );
 
 	/// <summary>
 	/// Returns the validated byte type from the given string and validation package.
 	/// If allowEmpty is true and the given string is empty, null will be returned.
 	/// </summary>
 	public byte? GetNullableByte( ValidationErrorHandler errorHandler, string byteAsString, bool allowEmpty ) =>
-		executeValidationMethodAndHandleEmptyAndReturnDefaultIfInvalid<byte?>(
+		executeValidationMethodAndHandleEmptyAndReturnDefaultIfInvalid<byte?, string>(
 			errorHandler,
 			byteAsString,
 			allowEmpty,
-			() => validateGenericIntegerType<byte>( errorHandler, byteAsString, byte.MinValue, byte.MaxValue ) );
+			( valueSetter, trimmedInput ) => validateGenericIntegerType<byte>( value => valueSetter( value ), trimmedInput, byte.MinValue, byte.MaxValue ) );
 
 	/// <summary>
 	/// Returns the validated short type from the given string and validation package.
@@ -182,11 +174,11 @@ public class Validator {
 	/// Passing an empty string or null will result in ErrorCondition.Empty.
 	/// </summary>
 	public short GetShort( ValidationErrorHandler errorHandler, string shortAsString, short min, short max ) =>
-		executeValidationMethodAndHandleEmptyAndReturnDefaultIfInvalid(
+		executeValidationMethodAndHandleEmptyAndReturnDefaultIfInvalid<short, string>(
 			errorHandler,
 			shortAsString,
 			false,
-			() => validateGenericIntegerType<short>( errorHandler, shortAsString, min, max ) );
+			( valueSetter, trimmedInput ) => validateGenericIntegerType( valueSetter, trimmedInput, min, max ) );
 
 	/// <summary>
 	/// Returns the validated short type from the given string and validation package.
@@ -200,11 +192,11 @@ public class Validator {
 	/// If allowEmpty is true and the given string is empty, null will be returned.
 	/// </summary>
 	public short? GetNullableShort( ValidationErrorHandler errorHandler, string shortAsString, bool allowEmpty, short min, short max ) =>
-		executeValidationMethodAndHandleEmptyAndReturnDefaultIfInvalid<short?>(
+		executeValidationMethodAndHandleEmptyAndReturnDefaultIfInvalid<short?, string>(
 			errorHandler,
 			shortAsString,
 			allowEmpty,
-			() => validateGenericIntegerType<short>( errorHandler, shortAsString, min, max ) );
+			( valueSetter, trimmedInput ) => validateGenericIntegerType<short>( value => valueSetter( value ), trimmedInput, min, max ) );
 
 	/// <summary>
 	/// Returns the validated int type from the given string and validation package.
@@ -218,22 +210,22 @@ public class Validator {
 	/// <paramref name="min" /> and <paramref name="max" /> are inclusive.
 	/// </summary>
 	public int GetInt( ValidationErrorHandler errorHandler, string intAsString, int min, int max ) =>
-		executeValidationMethodAndHandleEmptyAndReturnDefaultIfInvalid(
+		executeValidationMethodAndHandleEmptyAndReturnDefaultIfInvalid<int, string>(
 			errorHandler,
 			intAsString,
 			false,
-			() => validateGenericIntegerType<int>( errorHandler, intAsString, min, max ) );
+			( valueSetter, trimmedInput ) => validateGenericIntegerType( valueSetter, trimmedInput, min, max ) );
 
 	/// <summary>
 	/// Returns the validated int type from the given string and validation package.
 	/// If allowEmpty is true and the given string is empty, null will be returned.
 	/// </summary>
 	public int? GetNullableInt( ValidationErrorHandler errorHandler, string intAsString, bool allowEmpty, int min = int.MinValue, int max = int.MaxValue ) =>
-		executeValidationMethodAndHandleEmptyAndReturnDefaultIfInvalid<int?>(
+		executeValidationMethodAndHandleEmptyAndReturnDefaultIfInvalid<int?, string>(
 			errorHandler,
 			intAsString,
 			allowEmpty,
-			() => validateGenericIntegerType<int>( errorHandler, intAsString, min, max ) );
+			( valueSetter, trimmedInput ) => validateGenericIntegerType<int>( value => valueSetter( value ), trimmedInput, min, max ) );
 
 	/// <summary>
 	/// Returns the validated long type from the given string and validation package.
@@ -241,11 +233,11 @@ public class Validator {
 	/// <paramref name="min" /> and <paramref name="max" /> are inclusive.
 	/// </summary>
 	public long GetLong( ValidationErrorHandler errorHandler, string longAsString, long min = long.MinValue, long max = long.MaxValue ) =>
-		executeValidationMethodAndHandleEmptyAndReturnDefaultIfInvalid(
+		executeValidationMethodAndHandleEmptyAndReturnDefaultIfInvalid<long, string>(
 			errorHandler,
 			longAsString,
 			false,
-			() => validateGenericIntegerType<long>( errorHandler, longAsString, min, max ) );
+			( valueSetter, trimmedInput ) => validateGenericIntegerType( valueSetter, trimmedInput, min, max ) );
 
 	/// <summary>
 	/// Returns the validated long type from the given string and validation package.
@@ -253,36 +245,32 @@ public class Validator {
 	/// </summary>
 	public long?
 		GetNullableLong( ValidationErrorHandler errorHandler, string longAsString, bool allowEmpty, long min = long.MinValue, long max = long.MaxValue ) =>
-		executeValidationMethodAndHandleEmptyAndReturnDefaultIfInvalid<long?>(
+		executeValidationMethodAndHandleEmptyAndReturnDefaultIfInvalid<long?, string>(
 			errorHandler,
 			longAsString,
 			allowEmpty,
-			() => validateGenericIntegerType<long>( errorHandler, longAsString, min, max ) );
+			( valueSetter, trimmedInput ) => validateGenericIntegerType<long>( value => valueSetter( value ), trimmedInput, min, max ) );
 
-	private static T validateGenericIntegerType<T>( ValidationErrorHandler errorHandler, string valueAsString, long minValue, long maxValue ) {
-		long intResult = 0;
+	private static ValidationError? validateGenericIntegerType<T>( Action<T> valueSetter, string trimmedInput, long minValue, long maxValue ) {
+		long intResult;
 
-		if( valueAsString.IsNullOrWhiteSpace() )
-			errorHandler.SetValidationResult( ValidationError.Empty() );
-		else
-			try {
-				intResult = Convert.ToInt64( valueAsString );
+		try {
+			intResult = Convert.ToInt64( trimmedInput );
 
-				if( intResult > maxValue )
-					errorHandler.SetValidationResult( ValidationError.TooLarge( minValue, maxValue ) );
-				else if( intResult < minValue )
-					errorHandler.SetValidationResult( ValidationError.TooSmall( minValue, maxValue ) );
-			}
-			catch( FormatException ) {
-				errorHandler.SetValidationResult( ValidationError.Invalid() );
-			}
-			catch( OverflowException ) {
-				errorHandler.SetValidationResult( ValidationError.Invalid() );
-			}
+			if( intResult > maxValue )
+				return ValidationError.TooLarge( minValue, maxValue );
+			if( intResult < minValue )
+				return ValidationError.TooSmall( minValue, maxValue );
+		}
+		catch( FormatException ) {
+			return ValidationError.Invalid();
+		}
+		catch( OverflowException ) {
+			return ValidationError.Invalid();
+		}
 
-		if( errorHandler.LastResult != ErrorCondition.NoError )
-			return default;
-		return (T)Convert.ChangeType( intResult, typeof( T ) );
+		valueSetter( (T)Convert.ChangeType( intResult, typeof( T ) ) );
+		return null;
 	}
 
 	/// <summary>
@@ -290,45 +278,42 @@ public class Validator {
 	/// Passing an empty string or null will result in ErrorCondition.Empty.
 	/// </summary>
 	public float GetFloat( ValidationErrorHandler errorHandler, string floatAsString, float min, float max ) =>
-		executeValidationMethodAndHandleEmptyAndReturnDefaultIfInvalid(
+		executeValidationMethodAndHandleEmptyAndReturnDefaultIfInvalid<float, string>(
 			errorHandler,
 			floatAsString,
 			false,
-			() => validateFloat( floatAsString, errorHandler, min, max ) );
+			( valueSetter, trimmedInput ) => validateFloat( valueSetter, trimmedInput, min, max ) );
 
 	/// <summary>
 	/// Returns a validated float type from the given string, validation package, and min/max restrictions.
 	/// If allowEmpty is true and the given string is empty, null will be returned.
 	/// </summary>
 	public float? GetNullableFloat( ValidationErrorHandler errorHandler, string floatAsString, bool allowEmpty, float min, float max ) =>
-		executeValidationMethodAndHandleEmptyAndReturnDefaultIfInvalid<float?>(
+		executeValidationMethodAndHandleEmptyAndReturnDefaultIfInvalid<float?, string>(
 			errorHandler,
 			floatAsString,
 			allowEmpty,
-			() => validateFloat( floatAsString, errorHandler, min, max ) );
+			( valueSetter, trimmedInput ) => validateFloat( value => valueSetter( value ), trimmedInput, min, max ) );
 
-	private static float validateFloat( string floatAsString, ValidationErrorHandler errorHandler, float min, float max ) {
-		float floatValue = 0;
-		if( floatAsString.IsNullOrWhiteSpace() )
-			errorHandler.SetValidationResult( ValidationError.Empty() );
-		else {
-			try {
-				floatValue = float.Parse( floatAsString );
-			}
-			catch( FormatException ) {
-				errorHandler.SetValidationResult( ValidationError.Invalid() );
-			}
-			catch( OverflowException ) {
-				errorHandler.SetValidationResult( ValidationError.Invalid() );
-			}
-
-			if( floatValue < min )
-				errorHandler.SetValidationResult( ValidationError.TooSmall( min, max ) );
-			else if( floatValue > max )
-				errorHandler.SetValidationResult( ValidationError.TooLarge( min, max ) );
+	private static ValidationError? validateFloat( Action<float> valueSetter, string trimmedInput, float min, float max ) {
+		float floatValue;
+		try {
+			floatValue = float.Parse( trimmedInput );
+		}
+		catch( FormatException ) {
+			return ValidationError.Invalid();
+		}
+		catch( OverflowException ) {
+			return ValidationError.Invalid();
 		}
 
-		return floatValue;
+		if( floatValue < min )
+			return ValidationError.TooSmall( min, max );
+		if( floatValue > max )
+			return ValidationError.TooLarge( min, max );
+
+		valueSetter( floatValue );
+		return null;
 	}
 
 	/// <summary>
@@ -343,11 +328,11 @@ public class Validator {
 	/// Passing an empty string or null will result in ErrorCondition.Empty.
 	/// </summary>
 	public decimal GetDecimal( ValidationErrorHandler errorHandler, string decimalAsString, decimal min, decimal max ) =>
-		executeValidationMethodAndHandleEmptyAndReturnDefaultIfInvalid(
+		executeValidationMethodAndHandleEmptyAndReturnDefaultIfInvalid<decimal, string>(
 			errorHandler,
 			decimalAsString,
 			false,
-			() => validateDecimal( decimalAsString, errorHandler, min, max ) );
+			( valueSetter, trimmedInput ) => validateDecimal( valueSetter, trimmedInput, min, max ) );
 
 	/// <summary>
 	/// Returns a validated decimal type from the given string and validation package.
@@ -361,31 +346,27 @@ public class Validator {
 	/// If allowEmpty is true and the given string is empty, null will be returned.
 	/// </summary>
 	public decimal? GetNullableDecimal( ValidationErrorHandler errorHandler, string decimalAsString, bool allowEmpty, decimal min, decimal max ) =>
-		executeValidationMethodAndHandleEmptyAndReturnDefaultIfInvalid<decimal?>(
+		executeValidationMethodAndHandleEmptyAndReturnDefaultIfInvalid<decimal?, string>(
 			errorHandler,
 			decimalAsString,
 			allowEmpty,
-			() => validateDecimal( decimalAsString, errorHandler, min, max ) );
+			( valueSetter, trimmedInput ) => validateDecimal( value => valueSetter( value ), trimmedInput, min, max ) );
 
-	private static decimal validateDecimal( string decimalAsString, ValidationErrorHandler errorHandler, decimal min, decimal max ) {
-		if( decimalAsString.IsNullOrWhiteSpace() ) {
-			errorHandler.SetValidationResult( ValidationError.Empty() );
-			return 0;
-		}
-
-		decimal decimalVal = 0;
+	private static ValidationError? validateDecimal( Action<decimal> valueSetter, string trimmedInput, decimal min, decimal max ) {
+		decimal decimalVal;
 		try {
-			decimalVal = decimal.Parse( decimalAsString );
+			decimalVal = decimal.Parse( trimmedInput );
 			if( decimalVal < min )
-				errorHandler.SetValidationResult( ValidationError.TooSmall( min, max ) );
-			else if( decimalVal > max )
-				errorHandler.SetValidationResult( ValidationError.TooLarge( min, max ) );
+				return ValidationError.TooSmall( min, max );
+			if( decimalVal > max )
+				return ValidationError.TooLarge( min, max );
 		}
 		catch {
-			errorHandler.SetValidationResult( ValidationError.Invalid() );
+			return ValidationError.Invalid();
 		}
 
-		return decimalVal;
+		valueSetter( decimalVal );
+		return null;
 	}
 
 	/// <summary>
@@ -413,14 +394,15 @@ public class Validator {
 			errorHandler,
 			text,
 			allowEmpty,
-			() => {
+			( valueSetter, trimmedInput ) => {
 				var errorMessage = "The length of the " + errorHandler.Subject + " must be between " + minLength + " and " + maxLength + " characters.";
-				if( text.Length > maxLength )
-					errorHandler.SetValidationResult( ValidationError.Custom( ErrorCondition.TooLong, errorMessage ) );
-				else if( text.Length < minLength )
-					errorHandler.SetValidationResult( ValidationError.Custom( ErrorCondition.TooShort, errorMessage ) );
+				if( trimmedInput.Length > maxLength )
+					return ValidationError.Custom( ErrorCondition.TooLong, errorMessage );
+				if( trimmedInput.Length < minLength )
+					return ValidationError.Custom( ErrorCondition.TooShort, errorMessage );
 
-				return text.Trim();
+				valueSetter( trimmedInput );
+				return null;
 			} );
 
 	/// <summary>
@@ -435,9 +417,9 @@ public class Validator {
 			errorHandler,
 			emailAddress,
 			allowEmpty,
-			() => {
+			( valueSetter, trimmedInput ) => {
 				// Validate as a string with same restrictions - if it fails on that, return
-				emailAddress = GetString( errorHandler, emailAddress, allowEmpty, maxLength );
+				trimmedInput = GetString( errorHandler, trimmedInput, allowEmpty, maxLength );
 				if( errorHandler.LastResult == ErrorCondition.NoError ) {
 					// [^@ \n] means any character but a @ or a newline or a space.  This forces only one @ to exist.
 					//([^@ \n\.]+\.)+ forces any positive number of (anything.)s to exist in a row.  Doesn't allow "..".
@@ -447,16 +429,17 @@ public class Validator {
 					const string domainUnconditionallyPermittedCharacters = "[a-z0-9-]";
 					const string domain = "(" + domainUnconditionallyPermittedCharacters + @"+\.)+" + domainUnconditionallyPermittedCharacters + "+";
 					// The first two conditions are for performance only.
-					if( !emailAddress.Contains( "@" ) || !emailAddress.Contains( "." ) || !Regex.IsMatch(
-						    emailAddress,
+					if( !trimmedInput.Contains( "@" ) || !trimmedInput.Contains( "." ) || !Regex.IsMatch(
+						    trimmedInput,
 						    "^" + localPart + "@" + domain + "$",
 						    RegexOptions.IgnoreCase ) )
-						errorHandler.SetValidationResult( ValidationError.Invalid() );
+						return ValidationError.Invalid();
 					// Max length is already checked by the string validation
 					// NOTE: We should really enforce the max length of the domain portion and the local portion individually as well.
 				}
 
-				return emailAddress;
+				valueSetter( trimmedInput );
+				return null;
 			} );
 
 	/// <summary>
@@ -475,32 +458,32 @@ public class Validator {
 			errorHandler,
 			url,
 			allowEmpty,
-			() => {
+			( valueSetter, trimmedInput ) => {
 				/* If the string is just a number, reject it right out. */
-				if( int.TryParse( url, out _ ) || double.TryParse( url, out _ ) ) {
-					errorHandler.SetValidationResult( ValidationError.Invalid() );
-					return url;
-				}
+				if( int.TryParse( trimmedInput, out _ ) || double.TryParse( trimmedInput, out _ ) )
+					return ValidationError.Invalid();
 
 				/* If it's an email, it's not an URL. */
 				var testingValidator = new Validator();
-				testingValidator.GetEmailAddress( new ValidationErrorHandler( "" ), url, allowEmpty );
-				if( !testingValidator.ErrorsOccurred ) {
-					errorHandler.SetValidationResult( ValidationError.Invalid() );
-					return url;
-				}
+				testingValidator.GetEmailAddress( new ValidationErrorHandler( "" ), trimmedInput, allowEmpty );
+				if( !testingValidator.ErrorsOccurred )
+					return ValidationError.Invalid();
 
 				/* If it doesn't start with one of our whitelisted schemes, add in the best guess. */
-				url = GetString( errorHandler, validSchemes.Any( s => url.StartsWithIgnoreCase( s ) ) ? url : "http://" + url, true, maxUrlLength );
+				trimmedInput = GetString(
+					errorHandler,
+					validSchemes.Any( s => trimmedInput.StartsWithIgnoreCase( s ) ) ? trimmedInput : "http://" + trimmedInput,
+					true,
+					maxUrlLength );
 
 				/* If the getstring didn't fail, keep on keepin keepin on. */
 				if( errorHandler.LastResult == ErrorCondition.NoError )
 					try {
-						if( !Uri.IsWellFormedUriString( url, UriKind.Absolute ) )
+						if( !Uri.IsWellFormedUriString( trimmedInput, UriKind.Absolute ) )
 							throw new UriFormatException();
 
 						// Don't allow relative URLs
-						var uri = new Uri( url, UriKind.Absolute );
+						var uri = new Uri( trimmedInput, UriKind.Absolute );
 
 						// Must be a valid DNS-style hostname or IP address
 						// Must contain at least one '.', to prevent just host names
@@ -510,10 +493,11 @@ public class Validator {
 							throw new UriFormatException();
 					}
 					catch( UriFormatException ) {
-						errorHandler.SetValidationResult( ValidationError.Invalid() );
+						return ValidationError.Invalid();
 					}
 
-				return url;
+				valueSetter( trimmedInput );
+				return null;
 			} );
 
 	/// <summary>
@@ -558,20 +542,20 @@ public class Validator {
 	/// </summary>
 	public string GetPhoneWithLastFiveMapping(
 		ValidationErrorHandler errorHandler, string input, bool allowExtension, bool allowEmpty, bool allowSurroundingGarbage,
-		Dictionary<string, string> firstFives ) =>
+		Dictionary<string, string>? firstFives ) =>
 		GetPhoneNumberAsObject( errorHandler, input, allowExtension, allowEmpty, allowSurroundingGarbage, firstFives ).StandardPhoneString;
 
 	internal PhoneNumber GetPhoneNumberAsObject(
 		ValidationErrorHandler errorHandler, string input, bool allowExtension, bool allowEmpty, bool allowSurroundingGarbage,
-		Dictionary<string, string> firstFives ) {
+		Dictionary<string, string>? firstFives ) {
 		return executeValidationMethodAndHandleEmptyAndReturnDefaultIfInvalid(
 			errorHandler,
 			input,
 			allowEmpty,
-			() => {
-				var invalidPrefix = "The " + errorHandler.Subject + " (" + input + ") is invalid.";
+			( valueSetter, trimmedInput ) => {
+				var invalidPrefix = "The " + errorHandler.Subject + " (" + trimmedInput + ") is invalid.";
 				// Remove all of the valid delimiter characters so we can just deal with numbers and whitespace
-				input = input.RemoveCharacters( '-', '(', ')', '.' ).Trim();
+				trimmedInput = trimmedInput.RemoveCharacters( '-', '(', ')', '.' ).Trim();
 
 				var invalidMessage = invalidPrefix +
 				                     " Phone numbers may be entered in any format, such as or xxx-xxx-xxxx, with an optional extension up to 5 digits long.  International numbers should begin with a '+' sign.";
@@ -580,27 +564,27 @@ public class Validator {
 				// NOTE: AllowSurroundingGarbage does not apply to first five or international numbers.
 
 				// First-five shortcut (intra-org phone numbers)
-				if( firstFives != null && Regex.IsMatch( input, @"^\d{5}$" ) ) {
-					if( firstFives.ContainsKey( input.Substring( 0, 1 ) ) ) {
-						var firstFive = firstFives[ input.Substring( 0, 1 ) ];
-						phoneNumber = PhoneNumber.CreateFromParts( firstFive.Substring( 0, 3 ), firstFive.Substring( 3 ) + input, "" );
+				if( firstFives != null && Regex.IsMatch( trimmedInput, @"^\d{5}$" ) ) {
+					if( firstFives.ContainsKey( trimmedInput.Substring( 0, 1 ) ) ) {
+						var firstFive = firstFives[ trimmedInput.Substring( 0, 1 ) ];
+						phoneNumber = PhoneNumber.CreateFromParts( firstFive.Substring( 0, 3 ), firstFive.Substring( 3 ) + trimmedInput, "" );
 					}
 					else
-						errorHandler.SetValidationResult( ValidationError.Custom( ErrorCondition.Invalid, "The five digit phone number you entered isn't recognized." ) );
+						return ValidationError.Custom( ErrorCondition.Invalid, "The five digit phone number you entered isn't recognized." );
 				}
 				// International phone numbers
 				// We require a country code and then at least 7 digits (but if country code is more than one digit, we require fewer subsequent digits).
 				// We feel this is a reasonable limit to ensure that they are entering an actual phone number, but there is no source for this limit.
 				// We have no idea why we ever began accepting letters, but it's risky to stop accepting them and the consequences of accepting them are small.
-				else if( Regex.IsMatch( input, @"\+\s*[0|2-9]([a-zA-Z,#/ \.\(\)\*]*[0-9]){7}" ) )
-					phoneNumber = PhoneNumber.CreateInternational( input );
+				else if( Regex.IsMatch( trimmedInput, @"\+\s*[0|2-9]([a-zA-Z,#/ \.\(\)\*]*[0-9]){7}" ) )
+					phoneNumber = PhoneNumber.CreateInternational( trimmedInput );
 				// Validated it as a North American Numbering Plan phone number
 				else {
 					var regex = @"(?<lead>\+?1)?\s*(?<ac>\d{3})\s*(?<num1>\d{3})\s*(?<num2>\d{4})\s*?(?:(?:x|\s|ext|ext\.|extension)\s*(?<ext>\d{1,5}))?\s*";
 					if( !allowSurroundingGarbage )
 						regex = "^" + regex + "$";
 
-					var match = Regex.Match( input, regex );
+					var match = Regex.Match( trimmedInput, regex );
 
 					if( match.Success ) {
 						var areaCode = match.Groups[ "ac" ].Value;
@@ -608,18 +592,18 @@ public class Validator {
 						var extension = match.Groups[ "ext" ].Value;
 						phoneNumber = PhoneNumber.CreateFromParts( areaCode, number, extension );
 						if( !allowExtension && phoneNumber.Extension.Length > 0 )
-							errorHandler.SetValidationResult(
-								ValidationError.Custom(
-									ErrorCondition.Invalid,
-									invalidPrefix + " Extensions are not permitted in this field. Use the separate extension field." ) );
+							return ValidationError.Custom(
+								ErrorCondition.Invalid,
+								invalidPrefix + " Extensions are not permitted in this field. Use the separate extension field." );
 					}
 					else
-						errorHandler.SetValidationResult( ValidationError.Custom( ErrorCondition.Invalid, invalidMessage ) );
+						return ValidationError.Custom( ErrorCondition.Invalid, invalidMessage );
 				}
 
-				return phoneNumber;
+				valueSetter( phoneNumber );
+				return null;
 			},
-			PhoneNumber.CreateFromParts( "", "", "" ) );
+			PhoneNumber.CreateFromParts( "", "", "" ) )!;
 	}
 
 	/// <summary>
@@ -631,12 +615,12 @@ public class Validator {
 			errorHandler,
 			extension,
 			allowEmpty,
-			() => {
-				extension = extension.Trim();
-				if( !Regex.IsMatch( extension, @"^ *(?<ext>\d{1,5}) *$" ) )
-					errorHandler.SetValidationResult( ValidationError.Invalid() );
+			( valueSetter, trimmedInput ) => {
+				if( !Regex.IsMatch( trimmedInput, @"^ *(?<ext>\d{1,5}) *$" ) )
+					return ValidationError.Invalid();
 
-				return extension;
+				valueSetter( trimmedInput );
+				return null;
 			} );
 
 	/// <summary>
@@ -656,36 +640,27 @@ public class Validator {
 			errorHandler,
 			text,
 			allowEmpty,
-			delegate {
+			( valueSetter, trimmedInput ) => {
 				foreach( var garbageString in acceptableGarbageStrings )
-					text = text.Replace( garbageString, "" );
-				text = text.Trim();
-				if( !Regex.IsMatch( text, @"^\d{" + numberOfDigits + "}$" ) )
-					errorHandler.SetValidationResult( ValidationError.Invalid() );
-				return text;
+					trimmedInput = trimmedInput.Replace( garbageString, "" );
+				trimmedInput = trimmedInput.Trim();
+				if( !Regex.IsMatch( trimmedInput, @"^\d{" + numberOfDigits + "}$" ) )
+					return ValidationError.Invalid();
+				valueSetter( trimmedInput );
+				return null;
 			} );
 
 	/// <summary>
 	/// Gets a validated United States zip code object given the complete zip code with optional +4 digits.
 	/// </summary>
 	public ZipCode GetZipCode( ValidationErrorHandler errorHandler, string zipCode, bool allowEmpty ) =>
-		executeValidationMethodAndHandleEmptyAndReturnDefaultIfInvalid(
-			errorHandler,
-			zipCode,
-			allowEmpty,
-			() => ZipCode.CreateUsZipCode( errorHandler, zipCode ),
-			new ZipCode() );
+		executeValidationMethodAndHandleEmptyAndReturnDefaultIfInvalid( errorHandler, zipCode, allowEmpty, ZipCode.CreateUsZipCode, new ZipCode() )!;
 
 	/// <summary>
 	/// Gets a validated US or Canadian zip code.
 	/// </summary>
 	public ZipCode GetUsOrCanadianZipCode( ValidationErrorHandler errorHandler, string zipCode, bool allowEmpty ) =>
-		executeValidationMethodAndHandleEmptyAndReturnDefaultIfInvalid(
-			errorHandler,
-			zipCode,
-			allowEmpty,
-			() => ZipCode.CreateUsOrCanadianZipCode( errorHandler, zipCode ),
-			new ZipCode() );
+		executeValidationMethodAndHandleEmptyAndReturnDefaultIfInvalid( errorHandler, zipCode, allowEmpty, ZipCode.CreateUsOrCanadianZipCode, new ZipCode() )!;
 
 	/// <summary>
 	/// Returns the validated DateTime type from the given string and validation package.
@@ -693,11 +668,11 @@ public class Validator {
 	/// Passing an empty string or null will result in ErrorCondition.Empty.
 	/// </summary>
 	public DateTime GetSqlSmallDateTime( ValidationErrorHandler errorHandler, string dateAsString ) =>
-		executeValidationMethodAndHandleEmptyAndReturnDefaultIfInvalid(
+		executeValidationMethodAndHandleEmptyAndReturnDefaultIfInvalid<DateTime, string>(
 			errorHandler,
 			dateAsString,
 			false,
-			delegate { return validateDateTime( errorHandler, dateAsString, null, SqlSmallDateTimeMinValue, SqlSmallDateTimeMaxValue ); } );
+			( valueSetter, trimmedInput ) => validateDateTime( valueSetter, trimmedInput, null, SqlSmallDateTimeMinValue, SqlSmallDateTimeMaxValue ) );
 
 	/// <summary>
 	/// Returns the validated DateTime type from the given string and validation package.
@@ -705,11 +680,16 @@ public class Validator {
 	/// If allowEmpty is true and the given string is empty, null will be returned.
 	/// </summary>
 	public DateTime? GetNullableSqlSmallDateTime( ValidationErrorHandler errorHandler, string dateAsString, bool allowEmpty ) =>
-		executeValidationMethodAndHandleEmptyAndReturnDefaultIfInvalid<DateTime?>(
+		executeValidationMethodAndHandleEmptyAndReturnDefaultIfInvalid<DateTime?, string>(
 			errorHandler,
 			dateAsString,
 			allowEmpty,
-			() => validateDateTime( errorHandler, dateAsString, null, SqlSmallDateTimeMinValue, SqlSmallDateTimeMaxValue ) );
+			( valueSetter, trimmedInput ) => validateDateTime(
+				value => valueSetter( value ),
+				trimmedInput,
+				null,
+				SqlSmallDateTimeMinValue,
+				SqlSmallDateTimeMaxValue ) );
 
 	/// <summary>
 	/// Returns the validated DateTime type from the given date part strings and validation package.
@@ -741,65 +721,68 @@ public class Validator {
 	/// Pattern specifies the date format, such as "MM/dd/yyyy".
 	/// </summary>
 	public DateTime GetSqlSmallDateTimeExact( ValidationErrorHandler errorHandler, string dateAsString, string pattern ) =>
-		executeValidationMethodAndHandleEmptyAndReturnDefaultIfInvalid(
+		executeValidationMethodAndHandleEmptyAndReturnDefaultIfInvalid<DateTime, string>(
 			errorHandler,
 			dateAsString,
 			false,
-			() => validateSqlSmallDateTimeExact( errorHandler, dateAsString, pattern ) );
+			( valueSetter, trimmedInput ) => validateSqlSmallDateTimeExact( valueSetter, trimmedInput, pattern ) );
 
 	/// <summary>
 	/// Returns the validated DateTime type from a date string and an exact match pattern.'
 	/// Pattern specifies the date format, such as "MM/dd/yyyy".
 	/// </summary>
 	public DateTime? GetNullableSqlSmallDateTimeExact( ValidationErrorHandler errorHandler, string dateAsString, string pattern, bool allowEmpty ) =>
-		executeValidationMethodAndHandleEmptyAndReturnDefaultIfInvalid<DateTime?>(
+		executeValidationMethodAndHandleEmptyAndReturnDefaultIfInvalid<DateTime?, string>(
 			errorHandler,
 			dateAsString,
 			allowEmpty,
-			delegate { return validateSqlSmallDateTimeExact( errorHandler, dateAsString, pattern ); } );
+			( valueSetter, trimmedInput ) => validateSqlSmallDateTimeExact( value => valueSetter( value ), trimmedInput, pattern ) );
 
-	private static DateTime validateSqlSmallDateTimeExact( ValidationErrorHandler errorHandler, string dateAsString, string pattern ) {
-		if( !DateTime.TryParseExact( dateAsString, pattern, Cultures.EnglishUnitedStates, DateTimeStyles.None, out var date ) )
-			errorHandler.SetValidationResult( ValidationError.Invalid() );
-		else
-			validateNativeDateTime( errorHandler, date, false, SqlSmallDateTimeMinValue, SqlSmallDateTimeMaxValue );
+	private static ValidationError? validateSqlSmallDateTimeExact( Action<DateTime> valueSetter, string trimmedInput, string pattern ) {
+		if( !DateTime.TryParseExact( trimmedInput, pattern, Cultures.EnglishUnitedStates, DateTimeStyles.None, out var date ) )
+			return ValidationError.Invalid();
+		if( validateNativeDateTime( date, false, SqlSmallDateTimeMinValue, SqlSmallDateTimeMaxValue ) is {} error )
+			return error;
 
-		return date;
+		valueSetter( date );
+		return null;
 	}
 
-	private static DateTime validateDateTime( ValidationErrorHandler errorHandler, string dateAsString, string[]? formats, DateTime min, DateTime max ) {
-		var date = DateTime.Now;
+	private static ValidationError? validateDateTime( Action<DateTime> valueSetter, string trimmedInput, string[]? formats, DateTime min, DateTime max ) {
+		DateTime date;
 		try {
 			date = formats is not null
-				       ? DateTime.ParseExact( dateAsString, formats, null, DateTimeStyles.None )
-				       : DateTime.Parse( dateAsString, Cultures.EnglishUnitedStates );
-			validateNativeDateTime( errorHandler, date, false, min, max );
+				       ? DateTime.ParseExact( trimmedInput, formats, null, DateTimeStyles.None )
+				       : DateTime.Parse( trimmedInput, Cultures.EnglishUnitedStates );
+			if( validateNativeDateTime( date, false, min, max ) is {} error )
+				return error;
 		}
 		catch( FormatException ) {
-			errorHandler.SetValidationResult( ValidationError.Invalid() );
+			return ValidationError.Invalid();
 		}
 		catch( ArgumentOutOfRangeException ) {
 			// Undocumented exception that there are reports of being thrown
-			errorHandler.SetValidationResult( ValidationError.Invalid() );
+			return ValidationError.Invalid();
 		}
 		catch( ArgumentNullException ) {
-			errorHandler.SetValidationResult( ValidationError.Empty() );
+			return ValidationError.Empty();
 		}
 
-		return date;
+		valueSetter( date );
+		return null;
 	}
 
-	private static void validateNativeDateTime( ValidationErrorHandler errorHandler, DateTime? date, bool allowEmpty, DateTime minDate, DateTime maxDate ) {
-		if( date == null && !allowEmpty )
-			errorHandler.SetValidationResult( ValidationError.Empty() );
-		else if( date.HasValue ) {
+	private static ValidationError? validateNativeDateTime( DateTime? date, bool allowEmpty, DateTime minDate, DateTime maxDate ) {
+		if( date is null && !allowEmpty )
+			return ValidationError.Empty();
+		if( date.HasValue ) {
 			var minMaxMessage = " It must be between " + minDate.ToDayMonthYearString( false ) + " and " + maxDate.ToDayMonthYearString( false ) + ".";
 			if( date < minDate )
-				errorHandler.SetValidationResult(
-					ValidationError.Custom( ErrorCondition.TooEarly, "The " + errorHandler.Subject + " is too early." + minMaxMessage ) );
-			else if( date >= maxDate )
-				errorHandler.SetValidationResult( ValidationError.Custom( ErrorCondition.TooLate, "The " + errorHandler.Subject + " is too late." + minMaxMessage ) );
+				return ValidationError.Custom( ErrorCondition.TooEarly, "The {0} is too early." + minMaxMessage );
+			if( date >= maxDate )
+				return ValidationError.Custom( ErrorCondition.TooLate, "The {0} is too late." + minMaxMessage );
 		}
+		return null;
 	}
 
 	/// <summary>
@@ -807,59 +790,88 @@ public class Validator {
 	/// </summary>
 	public DateTime? GetNullableDateTime(
 		ValidationErrorHandler handler, string dateAsString, string[]? formats, bool allowEmpty, DateTime minDate, DateTime maxDate ) =>
-		executeValidationMethodAndHandleEmptyAndReturnDefaultIfInvalid<DateTime?>(
+		executeValidationMethodAndHandleEmptyAndReturnDefaultIfInvalid<DateTime?, string>(
 			handler,
 			dateAsString,
 			allowEmpty,
-			() => validateDateTime( handler, dateAsString, formats, minDate, maxDate ) );
+			( valueSetter, trimmedInput ) => validateDateTime( value => valueSetter( value ), trimmedInput, formats, minDate, maxDate ) );
 
 	/// <summary>
 	/// Validates the date using given min and max constraints.
 	/// </summary>
 	public DateTime GetDateTime( ValidationErrorHandler handler, string dateAsString, string[]? formats, DateTime minDate, DateTime maxDate ) =>
-		executeValidationMethodAndHandleEmptyAndReturnDefaultIfInvalid(
+		executeValidationMethodAndHandleEmptyAndReturnDefaultIfInvalid<DateTime, string>(
 			handler,
 			dateAsString,
 			false,
-			() => validateDateTime( handler, dateAsString, formats, minDate, maxDate ) );
+			( valueSetter, trimmedInput ) => validateDateTime( valueSetter, trimmedInput, formats, minDate, maxDate ) );
 
 	/// <summary>
 	/// Validates the given time span.
 	/// </summary>
 	public TimeSpan? GetNullableTimeSpan( ValidationErrorHandler handler, TimeSpan? timeSpan, bool allowEmpty ) =>
-		executeValidationMethodAndHandleEmptyAndReturnDefaultIfInvalid( handler, timeSpan, allowEmpty, () => timeSpan );
+		executeValidationMethodAndHandleEmptyAndReturnDefaultIfInvalid<TimeSpan?, TimeSpan?>(
+			handler,
+			timeSpan,
+			allowEmpty,
+			( valueSetter, trimmedInput ) => {
+				valueSetter( trimmedInput!.Value );
+				return null;
+			} );
 
 	/// <summary>
 	/// Validates the given time span.
 	/// </summary>
 	public TimeSpan GetTimeSpan( ValidationErrorHandler handler, TimeSpan? timeSpan ) =>
-		executeValidationMethodAndHandleEmptyAndReturnDefaultIfInvalid( handler, timeSpan, false, () => timeSpan ?? default );
+		executeValidationMethodAndHandleEmptyAndReturnDefaultIfInvalid<TimeSpan, TimeSpan?>(
+			handler,
+			timeSpan,
+			false,
+			( valueSetter, trimmedInput ) => {
+				valueSetter( trimmedInput!.Value );
+				return null;
+			} );
 
 	/// <summary>
 	/// Validates the given time span.
 	/// </summary>
 	public TimeSpan? GetNullableTimeOfDayTimeSpan( ValidationErrorHandler handler, string timeSpanAsString, string[]? formats, bool allowEmpty ) =>
-		executeValidationMethodAndHandleEmptyAndReturnDefaultIfInvalid<TimeSpan?>(
+		executeValidationMethodAndHandleEmptyAndReturnDefaultIfInvalid<TimeSpan?, string>(
 			handler,
 			timeSpanAsString,
 			allowEmpty,
-			() => validateDateTime( handler, timeSpanAsString, formats, DateTime.MinValue, DateTime.MaxValue ).TimeOfDay );
+			( valueSetter, trimmedInput ) => validateDateTime(
+				value => valueSetter( value.TimeOfDay ),
+				trimmedInput,
+				formats,
+				DateTime.MinValue,
+				DateTime.MaxValue ) );
 
 	/// <summary>
 	/// Validates the given time span.
 	/// </summary>
 	public TimeSpan GetTimeOfDayTimeSpan( ValidationErrorHandler handler, string timeSpanAsString, string[]? formats ) =>
-		executeValidationMethodAndHandleEmptyAndReturnDefaultIfInvalid(
+		executeValidationMethodAndHandleEmptyAndReturnDefaultIfInvalid<TimeSpan, string>(
 			handler,
 			timeSpanAsString,
 			false,
-			() => validateDateTime( handler, timeSpanAsString, formats, DateTime.MinValue, DateTime.MaxValue ).TimeOfDay );
+			( valueSetter, trimmedInput ) => validateDateTime(
+				value => valueSetter( value.TimeOfDay ),
+				trimmedInput,
+				formats,
+				DateTime.MinValue,
+				DateTime.MaxValue ) );
 
-	private T executeValidationMethodAndHandleEmptyAndReturnDefaultIfInvalid<T>(
-		ValidationErrorHandler handler, object valueAsObject, bool allowEmpty, ValidationMethod<T> method, T customDefaultReturnValue = default ) {
+	private ValType? executeValidationMethodAndHandleEmptyAndReturnDefaultIfInvalid<ValType, InputType>(
+		ValidationErrorHandler handler, InputType input, bool allowEmpty, Func<Action<ValType>, InputType, ValidationError?> method,
+		ValType? customDefaultReturnValue = default ) {
 		var result = customDefaultReturnValue;
-		if( !isEmpty( handler, valueAsObject, allowEmpty ) )
-			result = method();
+		if( !isEmpty( handler, input, allowEmpty ) ) {
+			// IMPORTANT: Pass trimmed input here.
+			var error = method( value => result = value, input );
+			if( error is not null )
+				handler.SetValidationResult( error );
+		}
 
 		// If there was an error of any kind, the result becomes the default value
 		if( handler.LastResult != ErrorCondition.NoError )
@@ -869,9 +881,9 @@ public class Validator {
 		return result;
 	}
 
-	private string handleEmptyAndReturnEmptyStringIfInvalid(
-		ValidationErrorHandler handler, object valueAsObject, bool allowEmpty, ValidationMethod<string> method ) =>
-		executeValidationMethodAndHandleEmptyAndReturnDefaultIfInvalid( handler, valueAsObject, allowEmpty, method, "" );
+	private string handleEmptyAndReturnEmptyStringIfInvalid<InputType>(
+		ValidationErrorHandler handler, InputType valueAsObject, bool allowEmpty, Func<Action<string>, InputType, ValidationError?> method ) =>
+		executeValidationMethodAndHandleEmptyAndReturnDefaultIfInvalid( handler, valueAsObject, allowEmpty, method, "" )!;
 
 	/// <summary>
 	/// Determines if the given field is empty, and if it is empty, it
@@ -881,8 +893,8 @@ public class Validator {
 	/// if value is not empty and validation should continue.  Validation methods should
 	/// return immediately with no further action if this method returns true.
 	/// </summary>
-	private static bool isEmpty( ValidationErrorHandler errorHandler, object valueAsObject, bool allowEmpty ) {
-		var isEmpty = valueAsObject.ObjectToString( true ).Trim().Length == 0;
+	private static bool isEmpty<InputType>( ValidationErrorHandler errorHandler, InputType input, bool allowEmpty ) {
+		var isEmpty = input.ObjectToString( true )!.Trim().Length == 0;
 
 		if( !allowEmpty && isEmpty )
 			errorHandler.SetValidationResult( ValidationError.Empty() );
