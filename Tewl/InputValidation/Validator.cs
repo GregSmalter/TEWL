@@ -1,4 +1,4 @@
-using System.Globalization;
+﻿using System.Globalization;
 using System.Text.RegularExpressions;
 
 namespace Tewl.InputValidation;
@@ -879,7 +879,7 @@ public class Validator {
 	/// <summary>
 	/// Executes a validation and returns the result.
 	/// </summary>
-	/// <param name="handler"></param>
+	/// <param name="handler">Pass null if you’re only validating a single value and don’t need to distinguish it from others in error messages.</param>
 	/// <param name="input"></param>
 	/// <param name="allowEmpty"></param>
 	/// <param name="validationMethod"></param>
