@@ -27,6 +27,19 @@ public class Validator {
 	/// </summary>
 	public const decimal SqlDecimalDefaultMax = 9999999.99m;
 
+	private static bool isEmpty<InputType>( InputType input, out InputType trimmedInput ) {
+		var type = typeof( InputType );
+
+		if( type == typeof( string ) ) {
+			var trimmedString = ( (string)(object)input! ).Trim();
+			trimmedInput = (InputType)(object)trimmedString;
+			return trimmedString.Length == 0;
+		}
+
+		trimmedInput = input;
+		return input is null;
+	}
+
 	private readonly List<Error> errors = new List<Error>();
 
 	/// <summary>
@@ -860,41 +873,25 @@ public class Validator {
 
 	private ValType? executeValidationMethodAndHandleEmptyAndReturnDefaultIfInvalid<ValType, InputType>(
 		ValidationErrorHandler handler, InputType input, bool allowEmpty, Func<Action<ValType>, InputType, ValidationError?> method,
-		ValType? customDefaultReturnValue = default ) {
-		var result = customDefaultReturnValue;
-		if( !isEmpty( handler, input, allowEmpty ) ) {
-			// IMPORTANT: Pass trimmed input here.
-			var error = method( value => result = value, input );
-			if( error is not null )
-				handler.SetValidationResult( error );
+		ValType? emptyValue = default ) {
+		if( isEmpty( input, out var trimmedInput ) ) {
+			if( !allowEmpty )
+				handler.SetValidationResult( ValidationError.Empty() );
+			handler.HandleResult( this, !allowEmpty );
+			return emptyValue;
 		}
 
-		// If there was an error of any kind, the result becomes the default value
-		if( handler.LastResult != ErrorCondition.NoError )
-			result = customDefaultReturnValue;
+		var result = emptyValue;
+		if( method( value => result = value, trimmedInput ) is {} error ) {
+			handler.SetValidationResult( error );
+			handler.HandleResult( this, !allowEmpty );
+			return emptyValue;
+		}
 
-		handler.HandleResult( this, !allowEmpty );
 		return result;
 	}
 
 	private string handleEmptyAndReturnEmptyStringIfInvalid<InputType>(
 		ValidationErrorHandler handler, InputType valueAsObject, bool allowEmpty, Func<Action<string>, InputType, ValidationError?> method ) =>
 		executeValidationMethodAndHandleEmptyAndReturnDefaultIfInvalid( handler, valueAsObject, allowEmpty, method, "" )!;
-
-	/// <summary>
-	/// Determines if the given field is empty, and if it is empty, it
-	/// assigns the correct ErrorCondition to the validation package's ValidationResult
-	/// and adds an error message to the errors collection.
-	/// Returns true if val is empty and should not be validated further.  Returns false
-	/// if value is not empty and validation should continue.  Validation methods should
-	/// return immediately with no further action if this method returns true.
-	/// </summary>
-	private static bool isEmpty<InputType>( ValidationErrorHandler errorHandler, InputType input, bool allowEmpty ) {
-		var isEmpty = input.ObjectToString( true )!.Trim().Length == 0;
-
-		if( !allowEmpty && isEmpty )
-			errorHandler.SetValidationResult( ValidationError.Empty() );
-
-		return isEmpty;
-	}
 }
