@@ -4,27 +4,27 @@
 /// A validation error.
 /// </summary>
 public class ValidationError {
-	internal static ValidationError Custom( ErrorCondition errorCondition, string errorMessage ) => new( errorCondition, errorMessage );
+	internal static ValidationError Custom( ValidationErrorType errorType, string errorMessage ) => new( errorType, errorMessage );
 
-	internal static ValidationError Invalid() => new( ErrorCondition.Invalid, "Please enter a valid {0}." );
+	internal static ValidationError Invalid() => new( ValidationErrorType.Invalid, "Please enter a valid {0}." );
 
-	internal static ValidationError Empty() => new( ErrorCondition.Empty, "Please enter the {0}." );
+	internal static ValidationError Empty() => new( ValidationErrorType.Empty, "Please enter the {0}." );
 
 	internal static ValidationError TooSmall( object min, object max ) =>
-		new( ErrorCondition.TooLong, "The {0} must be between " + min + " and " + max + " (inclusive)." );
+		new( ValidationErrorType.TooLong, "The {0} must be between " + min + " and " + max + " (inclusive)." );
 
 	internal static ValidationError TooLarge( object min, object max ) =>
-		new( ErrorCondition.TooLarge, "The {0} must be between " + min + " and " + max + " (inclusive)." );
+		new( ValidationErrorType.TooLarge, "The {0} must be between " + min + " and " + max + " (inclusive)." );
 
 	/// <summary>
 	/// Gets the error type.
 	/// </summary>
-	public ErrorCondition ErrorCondition { get; }
+	public ValidationErrorType Type { get; }
 
 	private readonly string errorMessage;
 
-	private ValidationError( ErrorCondition type, string message ) {
-		ErrorCondition = type;
+	private ValidationError( ValidationErrorType type, string message ) {
+		Type = type;
 		errorMessage = message;
 	}
 

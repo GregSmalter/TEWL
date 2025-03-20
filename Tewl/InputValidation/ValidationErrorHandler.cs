@@ -8,10 +8,10 @@ namespace Tewl.InputValidation {
 		/// <summary>
 		/// Method that handles errors instead of the default handling mechanism.
 		/// </summary>
-		public delegate void CustomHandler( ErrorCondition errorCondition );
+		public delegate void CustomHandler( ValidationErrorType errorType );
 
 		private readonly CustomHandler? customHandler;
-		private readonly Dictionary<ErrorCondition, string> customMessages = new();
+		private readonly Dictionary<ValidationErrorType, string> customMessages = new();
 
 		/// <summary>
 		/// Creates an error handler that adds standard error messages, based on the specified subject, to the validator. If the
@@ -29,16 +29,15 @@ namespace Tewl.InputValidation {
 		public ValidationErrorHandler( CustomHandler customHandler ) => this.customHandler = customHandler;
 
 		/// <summary>
-		/// Modifies this error handler to use a custom message if any errors occur with the specified conditions. If no error
-		/// conditions are passed, the message
-		/// will be used for all errors. This method has no effect if a custom handler has been specified.
+		/// Modifies this error handler to use a custom message if any errors occur with the specified types. If no error types are passed, the message will be used
+		/// for all errors. This method has no effect if a custom handler has been specified.
 		/// </summary>
-		public void AddCustomErrorMessage( string message, params ErrorCondition[] errorConditions ) {
-			if( errorConditions.Length > 0 )
-				foreach( var e in errorConditions )
+		public void AddCustomErrorMessage( string message, params ValidationErrorType[] errorTypes ) {
+			if( errorTypes.Length > 0 )
+				foreach( var e in errorTypes )
 					customMessages.Add( e, message );
 			else
-				foreach( var e in EnumTools.GetValues<ErrorCondition>() )
+				foreach( var e in EnumTools.GetValues<ValidationErrorType>() )
 					customMessages.Add( e, message );
 		}
 
@@ -53,12 +52,12 @@ namespace Tewl.InputValidation {
 		internal string HandleError( ValidationError error ) {
 			// if there is a custom handler, run it and do nothing else
 			if( customHandler is not null ) {
-				customHandler( error.ErrorCondition );
+				customHandler( error.Type );
 				return "";
 			}
 
 			// build the error message
-			if( !customMessages.TryGetValue( error.ErrorCondition, out var message ) )
+			if( !customMessages.TryGetValue( error.Type, out var message ) )
 				// NOTE: Do we really need custom message, or can the custom handler manage that?
 				message = error.GetMessage( Subject );
 

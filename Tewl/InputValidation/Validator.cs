@@ -405,9 +405,9 @@ public class Validator {
 			( valueSetter, trimmedInput ) => {
 				var errorMessage = "The length of the " + errorHandler.Subject + " must be between " + minLength + " and " + maxLength + " characters.";
 				if( trimmedInput.Length > maxLength )
-					return ValidationError.Custom( ErrorCondition.TooLong, errorMessage );
+					return ValidationError.Custom( ValidationErrorType.TooLong, errorMessage );
 				if( trimmedInput.Length < minLength )
-					return ValidationError.Custom( ErrorCondition.TooShort, errorMessage );
+					return ValidationError.Custom( ValidationErrorType.TooShort, errorMessage );
 
 				valueSetter( trimmedInput );
 				return null;
@@ -582,7 +582,7 @@ public class Validator {
 						phoneNumber = PhoneNumber.CreateFromParts( firstFive.Substring( 0, 3 ), firstFive.Substring( 3 ) + trimmedInput, "" );
 					}
 					else
-						return ValidationError.Custom( ErrorCondition.Invalid, "The five digit phone number you entered isn't recognized." );
+						return ValidationError.Custom( ValidationErrorType.Invalid, "The five digit phone number you entered isn't recognized." );
 				}
 				// International phone numbers
 				// We require a country code and then at least 7 digits (but if country code is more than one digit, we require fewer subsequent digits).
@@ -605,11 +605,11 @@ public class Validator {
 						phoneNumber = PhoneNumber.CreateFromParts( areaCode, number, extension );
 						if( !allowExtension && phoneNumber.Extension.Length > 0 )
 							return ValidationError.Custom(
-								ErrorCondition.Invalid,
+								ValidationErrorType.Invalid,
 								invalidPrefix + " Extensions are not permitted in this field. Use the separate extension field." );
 					}
 					else
-						return ValidationError.Custom( ErrorCondition.Invalid, invalidMessage );
+						return ValidationError.Custom( ValidationErrorType.Invalid, invalidMessage );
 				}
 
 				valueSetter( phoneNumber );
@@ -792,9 +792,9 @@ public class Validator {
 		if( date.HasValue ) {
 			var minMaxMessage = " It must be between " + minDate.ToDayMonthYearString( false ) + " and " + maxDate.ToDayMonthYearString( false ) + ".";
 			if( date < minDate )
-				return ValidationError.Custom( ErrorCondition.TooEarly, "The {0} is too early." + minMaxMessage );
+				return ValidationError.Custom( ValidationErrorType.TooEarly, "The {0} is too early." + minMaxMessage );
 			if( date >= maxDate )
-				return ValidationError.Custom( ErrorCondition.TooLate, "The {0} is too late." + minMaxMessage );
+				return ValidationError.Custom( ValidationErrorType.TooLate, "The {0} is too late." + minMaxMessage );
 		}
 		return null;
 	}

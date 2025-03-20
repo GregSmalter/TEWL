@@ -4,7 +4,7 @@ namespace Tewl.InputValidation;
 /// The list of possible error types.
 /// </summary>
 [ PublicAPI ]
-public enum ErrorCondition {
+public enum ValidationErrorType {
 	/// <summary>
 	/// Empty
 	/// </summary>
