@@ -624,7 +624,7 @@ public class Validator {
 				valueSetter( phoneNumber );
 				return null;
 			},
-			PhoneNumber.CreateFromParts( "", "", "" ) )!;
+			emptyValue: PhoneNumber.CreateFromParts( "", "", "" ) )!;
 	}
 
 	/// <summary>
@@ -676,13 +676,13 @@ public class Validator {
 	/// Gets a validated United States zip code object given the complete zip code with optional +4 digits.
 	/// </summary>
 	public ValidationResult<ZipCode> GetZipCode( ValidationErrorHandler errorHandler, string input, bool allowEmpty ) =>
-		ExecuteValidation( errorHandler, input, allowEmpty, ZipCode.CreateUsZipCode, new ZipCode() )!;
+		ExecuteValidation( errorHandler, input, allowEmpty, ZipCode.CreateUsZipCode, emptyValue: new ZipCode() )!;
 
 	/// <summary>
 	/// Gets a validated US or Canadian zip code.
 	/// </summary>
 	public ValidationResult<ZipCode> GetUsOrCanadianZipCode( ValidationErrorHandler errorHandler, string input, bool allowEmpty ) =>
-		ExecuteValidation( errorHandler, input, allowEmpty, ZipCode.CreateUsOrCanadianZipCode, new ZipCode() )!;
+		ExecuteValidation( errorHandler, input, allowEmpty, ZipCode.CreateUsOrCanadianZipCode, emptyValue: new ZipCode() )!;
 
 	/// <summary>
 	/// Returns the validated DateTime type from the given string and validation package.
@@ -915,5 +915,5 @@ public class Validator {
 
 	private ValidationResult<string> handleEmptyAndReturnEmptyStringIfInvalid<InputType>(
 		ValidationErrorHandler handler, InputType valueAsObject, bool allowEmpty, ValidationMethod<string, InputType> method ) =>
-		ExecuteValidation( handler, valueAsObject, allowEmpty, method, "" )!;
+		ExecuteValidation( handler, valueAsObject, allowEmpty, method, emptyValue: "" )!;
 }
