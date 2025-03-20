@@ -873,26 +873,35 @@ public class Validator {
 				DateTime.MinValue,
 				DateTime.MaxValue ) );
 
-	private ValType? executeValidationMethodAndHandleEmptyAndReturnDefaultIfInvalid<ValType, InputType>(
-		ValidationErrorHandler handler, InputType input, bool allowEmpty, ValidationMethod<ValType, InputType> method, ValType? emptyValue = default ) {
+	/// <summary>
+	/// Executes a validation and returns the result.
+	/// </summary>
+	/// <param name="handler"></param>
+	/// <param name="input"></param>
+	/// <param name="allowEmpty"></param>
+	/// <param name="validationMethod"></param>
+	/// <param name="emptyValue">The result value that will be used if the input value is empty or if there is a validation error.</param>
+	internal ValidationResult<ValType?> ExecuteValidation<ValType, InputType>(
+		ValidationErrorHandler handler, InputType input, bool allowEmpty, ValidationMethod<ValType, InputType> validationMethod, ValType? emptyValue = default ) {
 		if( isEmpty( input, out var trimmedInput ) ) {
-			if( !allowEmpty )
+			if( !allowEmpty ) {
 				handler.SetValidationResult( ValidationError.Empty() );
-			handler.HandleResult( this, !allowEmpty );
-			return emptyValue;
+				handler.HandleResult( this, !allowEmpty );
+			}
+			return new ValidationResult<ValType?>( emptyValue, allowEmpty ? null : ValidationError.Empty() );
 		}
 
 		var result = emptyValue;
-		if( method( value => result = value, trimmedInput ) is {} error ) {
+		if( validationMethod( value => result = value, trimmedInput ) is {} error ) {
 			handler.SetValidationResult( error );
 			handler.HandleResult( this, !allowEmpty );
-			return emptyValue;
+			return new ValidationResult<ValType?>( emptyValue, error );
 		}
 
-		return result;
+		return new ValidationResult<ValType?>( result, null );
 	}
 
-	private string handleEmptyAndReturnEmptyStringIfInvalid<InputType>(
+	private ValidationResult<string> handleEmptyAndReturnEmptyStringIfInvalid<InputType>(
 		ValidationErrorHandler handler, InputType valueAsObject, bool allowEmpty, ValidationMethod<string, InputType> method ) =>
-		executeValidationMethodAndHandleEmptyAndReturnDefaultIfInvalid( handler, valueAsObject, allowEmpty, method, "" )!;
+		ExecuteValidation( handler, valueAsObject, allowEmpty, method, "" )!;
 }
