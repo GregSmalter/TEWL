@@ -27,6 +27,8 @@ public class Validator {
 	/// </summary>
 	public const decimal SqlDecimalDefaultMax = 9999999.99m;
 
+	internal delegate ValidationError? ValidationMethod<out ValType, in InputType>( Action<ValType> valueSetter, InputType trimmedInput );
+
 	private static bool isEmpty<InputType>( InputType input, out InputType trimmedInput ) {
 		var type = typeof( InputType );
 
@@ -872,8 +874,7 @@ public class Validator {
 				DateTime.MaxValue ) );
 
 	private ValType? executeValidationMethodAndHandleEmptyAndReturnDefaultIfInvalid<ValType, InputType>(
-		ValidationErrorHandler handler, InputType input, bool allowEmpty, Func<Action<ValType>, InputType, ValidationError?> method,
-		ValType? emptyValue = default ) {
+		ValidationErrorHandler handler, InputType input, bool allowEmpty, ValidationMethod<ValType, InputType> method, ValType? emptyValue = default ) {
 		if( isEmpty( input, out var trimmedInput ) ) {
 			if( !allowEmpty )
 				handler.SetValidationResult( ValidationError.Empty() );
@@ -892,6 +893,6 @@ public class Validator {
 	}
 
 	private string handleEmptyAndReturnEmptyStringIfInvalid<InputType>(
-		ValidationErrorHandler handler, InputType valueAsObject, bool allowEmpty, Func<Action<string>, InputType, ValidationError?> method ) =>
+		ValidationErrorHandler handler, InputType valueAsObject, bool allowEmpty, ValidationMethod<string, InputType> method ) =>
 		executeValidationMethodAndHandleEmptyAndReturnDefaultIfInvalid( handler, valueAsObject, allowEmpty, method, "" )!;
 }
