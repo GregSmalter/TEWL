@@ -885,7 +885,9 @@ public class Validator {
 	/// <param name="validationMethod"></param>
 	/// <param name="emptyValue">The result value that will be used if the input value is empty or if there is a validation error.</param>
 	internal ValidationResult<ValType?> ExecuteValidation<ValType, InputType>(
-		ValidationErrorHandler handler, InputType input, bool allowEmpty, ValidationMethod<ValType, InputType> validationMethod, ValType? emptyValue = default ) {
+		ValidationErrorHandler? handler, InputType input, bool allowEmpty, ValidationMethod<ValType, InputType> validationMethod, ValType? emptyValue = default ) {
+		handler ??= new ValidationErrorHandler( "value" );
+
 		if( isEmpty( input, out var trimmedInput ) )
 			return allowEmpty ? new ValidationResult<ValType?>( emptyValue, null ) : handleError( ValidationError.Empty() );
 
@@ -907,6 +909,6 @@ public class Validator {
 	}
 
 	private ValidationResult<string> handleEmptyAndReturnEmptyStringIfInvalid<InputType>(
-		ValidationErrorHandler handler, InputType valueAsObject, bool allowEmpty, ValidationMethod<string, InputType> method ) =>
+		ValidationErrorHandler? handler, InputType valueAsObject, bool allowEmpty, ValidationMethod<string, InputType> method ) =>
 		ExecuteValidation( handler, valueAsObject, allowEmpty, method, emptyValue: "" )!;
 }
