@@ -7,8 +7,6 @@ public class ValidationError {
 	internal static ValidationError Custom( ErrorCondition errorCondition, string errorMessage ) =>
 		new() { ErrorCondition = errorCondition, errorMessage = errorMessage };
 
-	internal static ValidationError NoError() => new();
-
 	internal static ValidationError Invalid() => new() { ErrorCondition = ErrorCondition.Invalid, errorMessage = "Please enter a valid {0}." };
 
 	internal static ValidationError Empty() => new() { ErrorCondition = ErrorCondition.Empty, errorMessage = "Please enter the {0}." };
