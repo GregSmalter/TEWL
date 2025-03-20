@@ -105,7 +105,10 @@ public class Validator {
 	/// message to the same collection
 	/// that the error handlers use.
 	/// </summary>
-	public void NoteErrorAndAddMessage( string message ) => AddError( new Error( message, false ) );
+	public void NoteErrorAndAddMessage( string message ) {
+		NoteError();
+		errors.Add( new Error( message, false ) );
+	}
 
 	/// <summary>
 	/// Sets the ErrorsOccurred flag and add the given error messages to this validator. Use this if you want to add your own
@@ -115,11 +118,6 @@ public class Validator {
 	public void NoteErrorAndAddMessages( params string[] messages ) {
 		foreach( var message in messages )
 			NoteErrorAndAddMessage( message );
-	}
-
-	internal void AddError( Error error ) {
-		NoteError();
-		errors.Add( error );
 	}
 
 	/// <summary>
@@ -429,7 +427,7 @@ public class Validator {
 			allowEmpty,
 			( valueSetter, trimmedInput ) => {
 				// Validate as a string with same restrictions - if it fails on that, return
-				if( GetString( errorHandler, trimmedInput, allowEmpty, maxLength ).Error( out _ ) is {} error )
+				if( new Validator().GetString( null, trimmedInput, allowEmpty, maxLength ).Error( out _ ) is {} error )
 					return error;
 
 				// [^@ \n] means any character but a @ or a newline or a space.  This forces only one @ to exist.
@@ -475,12 +473,12 @@ public class Validator {
 					return ValidationError.Invalid();
 
 				/* If it's an email, it's not an URL. */
-				if( new Validator().GetEmailAddress( new ValidationErrorHandler( "" ), trimmedInput, allowEmpty ).Error( out _ ) is null )
+				if( new Validator().GetEmailAddress( null, trimmedInput, allowEmpty ).Error( out _ ) is null )
 					return ValidationError.Invalid();
 
 				/* If it doesn't start with one of our whitelisted schemes, add in the best guess. */
-				if( GetString(
-						    errorHandler,
+				if( new Validator().GetString(
+						    null,
 						    validSchemes.Any( s => trimmedInput.StartsWithIgnoreCase( s ) ) ? trimmedInput : "http://" + trimmedInput,
 						    true,
 						    maxUrlLength )
@@ -516,18 +514,11 @@ public class Validator {
 	/// </summary>
 	public ValidationResult<string> GetPhoneNumberWithDefaultAreaCode(
 		ValidationErrorHandler errorHandler, string input, bool allowExtension, bool allowEmpty, bool allowSurroundingGarbage, string defaultAreaCode ) {
-		var validator = new Validator(); // We need to use a separate one so that erroneous error messages don't get left in the collection
-		var fakeHandler = new ValidationErrorHandler( "" );
-
-		validator.GetPhoneNumber( fakeHandler, input, allowExtension, allowEmpty, allowSurroundingGarbage );
-		if( fakeHandler.LastResult != ErrorCondition.NoError ) {
-			fakeHandler = new ValidationErrorHandler( "" );
-			validator.GetPhoneNumber( fakeHandler, defaultAreaCode + input, allowExtension, allowEmpty, allowSurroundingGarbage );
+		if( new Validator().GetPhoneNumber( null, input, allowExtension, allowEmpty, allowSurroundingGarbage ).Error( out _ ) is not null )
 			// If the phone number was invalid without the area code, but is valid with the area code, we really validate using the default
 			// area code and then return.  In all other cases, we return what would have happened without tacking on the default area code.
-			if( fakeHandler.LastResult == ErrorCondition.NoError )
+			if( new Validator().GetPhoneNumber( null, defaultAreaCode + input, allowExtension, allowEmpty, allowSurroundingGarbage ).Error( out _ ) is null )
 				return GetPhoneNumber( errorHandler, defaultAreaCode + input, allowExtension, allowEmpty, allowSurroundingGarbage );
-		}
 
 		return GetPhoneNumber( errorHandler, input, allowExtension, allowEmpty, allowSurroundingGarbage );
 	}
@@ -557,8 +548,8 @@ public class Validator {
 			input,
 			allowEmpty,
 			( valueSetter, trimmedInput ) => {
-				if( GetPhoneNumberAsObject( errorHandler, trimmedInput, allowExtension, allowEmpty, allowSurroundingGarbage, firstFives ).Error( out var value ) is
-					    {} error )
+				if( new Validator().GetPhoneNumberAsObject( null, trimmedInput, allowExtension, allowEmpty, allowSurroundingGarbage, firstFives )
+					    .Error( out var value ) is {} error )
 					return error;
 
 				valueSetter( value.StandardPhoneString );
@@ -895,22 +886,24 @@ public class Validator {
 	/// <param name="emptyValue">The result value that will be used if the input value is empty or if there is a validation error.</param>
 	internal ValidationResult<ValType?> ExecuteValidation<ValType, InputType>(
 		ValidationErrorHandler handler, InputType input, bool allowEmpty, ValidationMethod<ValType, InputType> validationMethod, ValType? emptyValue = default ) {
-		if( isEmpty( input, out var trimmedInput ) ) {
-			if( !allowEmpty ) {
-				handler.SetValidationResult( ValidationError.Empty() );
-				handler.HandleResult( this, !allowEmpty );
-			}
-			return new ValidationResult<ValType?>( emptyValue, allowEmpty ? null : ValidationError.Empty() );
-		}
+		if( isEmpty( input, out var trimmedInput ) )
+			return allowEmpty ? new ValidationResult<ValType?>( emptyValue, null ) : handleError( ValidationError.Empty() );
 
 		var result = emptyValue;
-		if( validationMethod( value => result = value, trimmedInput ) is {} error ) {
-			handler.SetValidationResult( error );
-			handler.HandleResult( this, !allowEmpty );
-			return new ValidationResult<ValType?>( emptyValue, error );
-		}
+		if( validationMethod( value => result = value, trimmedInput ) is {} validationMethodError )
+			return handleError( validationMethodError );
 
 		return new ValidationResult<ValType?>( result, null );
+
+		ValidationResult<ValType?> handleError( ValidationError error ) {
+			NoteError();
+
+			var message = handler.HandleError( error );
+			if( message.Length > 0 )
+				errors.Add( new Error( message, !allowEmpty ) );
+
+			return new ValidationResult<ValType?>( emptyValue, error );
+		}
 	}
 
 	private ValidationResult<string> handleEmptyAndReturnEmptyStringIfInvalid<InputType>(

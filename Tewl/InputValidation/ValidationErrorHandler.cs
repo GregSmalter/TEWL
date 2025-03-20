@@ -1,20 +1,17 @@
 namespace Tewl.InputValidation {
 	/// <summary>
-	/// This class allows you to control what happens when a validation method generates an error. Every validation method
-	/// takes a ValidationErrorHandler object
-	/// as the first parameter. Currently you can't re-use these objects for more than one validation call since most
-	/// validation methods don't reset LastResult.
+	/// This class allows you to control what happens when a validation method generates an error. Every validation method takes a ValidationErrorHandler object
+	/// as the first parameter.
 	/// </summary>
 	[ PublicAPI ]
 	public class ValidationErrorHandler {
 		/// <summary>
 		/// Method that handles errors instead of the default handling mechanism.
 		/// </summary>
-		public delegate void CustomHandler( Validator validator, ErrorCondition errorCondition );
+		public delegate void CustomHandler( ErrorCondition errorCondition );
 
-		private readonly CustomHandler customHandler;
-		private readonly Dictionary<ErrorCondition, string> customMessages = new Dictionary<ErrorCondition, string>();
-		private ValidationError validationResult = ValidationError.NoError();
+		private readonly CustomHandler? customHandler;
+		private readonly Dictionary<ErrorCondition, string> customMessages = new();
 
 		/// <summary>
 		/// Creates an error handler that adds standard error messages, based on the specified subject, to the validator. If the
@@ -50,41 +47,22 @@ namespace Tewl.InputValidation {
 		/// </summary>
 		internal string Subject { get; } = "field";
 
-		private bool used;
-
-		internal void SetValidationResult( ValidationError validationResult ) {
-			if( used )
-				throw new ApplicationException( "Validation error handlers cannot be re-used." );
-			used = true;
-			this.validationResult = validationResult;
-		}
-
 		/// <summary>
-		/// Returns the ErrorCondition resulting from the validation of the data associated with this package.
+		/// Invokes the appropriate behavior according to how this error handler was created.
 		/// </summary>
-		public ErrorCondition LastResult => validationResult.ErrorCondition;
-
-		/// <summary>
-		/// If LastResult is not NoError, this method invokes the appropriate behavior according to how this error handler was
-		/// created.
-		/// </summary>
-		internal void HandleResult( Validator validator, bool errorWouldResultInUnusableReturnValue ) {
-			if( validationResult.ErrorCondition == ErrorCondition.NoError )
-				return;
-
+		internal string HandleError( ValidationError error ) {
 			// if there is a custom handler, run it and do nothing else
-			if( customHandler != null ) {
-				validator.NoteError();
-				customHandler( validator, validationResult.ErrorCondition );
-				return;
+			if( customHandler is not null ) {
+				customHandler( error.ErrorCondition );
+				return "";
 			}
 
 			// build the error message
-			if( !customMessages.TryGetValue( validationResult.ErrorCondition, out var message ) )
+			if( !customMessages.TryGetValue( error.ErrorCondition, out var message ) )
 				// NOTE: Do we really need custom message, or can the custom handler manage that?
-				message = validationResult.GetMessage( Subject );
+				message = error.GetMessage( Subject );
 
-			validator.AddError( new Error( message, errorWouldResultInUnusableReturnValue ) );
+			return message;
 		}
 	}
 }
