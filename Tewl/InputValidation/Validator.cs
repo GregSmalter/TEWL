@@ -114,34 +114,6 @@ public class Validator {
 	}
 
 	/// <summary>
-	/// Accepts either true/false (case-sensitive) or 1/0.
-	/// Returns the validated boolean type from the given string and validation package.
-	/// Passing an empty string or null will result in ErrorCondition.Empty.
-	/// </summary>
-	public ValidationResult<bool> GetBoolean( ValidationErrorHandler? errorHandler, string input ) =>
-		ExecuteValidation<bool, string>( errorHandler, input, false, validateBoolean );
-
-	/// <summary>
-	/// Accepts either true/false (case-sensitive) or 1/0.
-	/// Returns the validated boolean type from the given string and validation package.
-	/// If allowEmpty is true and the given string is empty, null will be returned.
-	/// </summary>
-	public ValidationResult<bool?> GetNullableBoolean( ValidationErrorHandler? errorHandler, string input, bool allowEmpty ) =>
-		ExecuteValidation<bool?, string>(
-			errorHandler,
-			input,
-			allowEmpty,
-			( valueSetter, trimmedInput ) => validateBoolean( value => valueSetter( value ), trimmedInput ) );
-
-	private static ValidationError? validateBoolean( Action<bool> valueSetter, string trimmedInput ) {
-		if( trimmedInput != "1" && trimmedInput != "0" && trimmedInput != true.ToString() && trimmedInput != false.ToString() )
-			return ValidationError.Invalid();
-
-		valueSetter( trimmedInput == "1" || trimmedInput == true.ToString() );
-		return null;
-	}
-
-	/// <summary>
 	/// Gets a validated United States zip code object given the complete zip code with optional +4 digits.
 	/// </summary>
 	public ValidationResult<ZipCode> GetZipCode( ValidationErrorHandler? errorHandler, string input, bool allowEmpty ) =>
