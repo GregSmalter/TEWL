@@ -19,6 +19,13 @@ public class Validator {
 	/// </summary>
 	public const decimal SqlDecimalDefaultMax = 9999999.99m;
 
+	/// <summary>
+	/// An error in a <see cref="Validator"/>.
+	/// </summary>
+	/// <param name="Message">The error message.</param>
+	/// <param name="UnusableValueReturned">Whether the error resulted in an unusable value being returned.</param>
+	public record Error( string Message, bool UnusableValueReturned );
+
 	internal delegate ValidationError? ValidationMethod<out ValType, in InputType>( Action<ValType> valueSetter, InputType trimmedInput );
 
 	private static bool isEmpty<InputType>( InputType input, out InputType trimmedInput ) {
