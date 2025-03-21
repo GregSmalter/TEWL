@@ -114,18 +114,6 @@ public class Validator {
 	}
 
 	/// <summary>
-	/// Gets a validated United States zip code object given the complete zip code with optional +4 digits.
-	/// </summary>
-	public ValidationResult<ZipCode> GetZipCode( ValidationErrorHandler? errorHandler, string input, bool allowEmpty ) =>
-		ExecuteValidation( errorHandler, input, allowEmpty, ZipCode.CreateUsZipCode, emptyValue: new ZipCode() )!;
-
-	/// <summary>
-	/// Gets a validated US or Canadian zip code.
-	/// </summary>
-	public ValidationResult<ZipCode> GetUsOrCanadianZipCode( ValidationErrorHandler? errorHandler, string input, bool allowEmpty ) =>
-		ExecuteValidation( errorHandler, input, allowEmpty, ZipCode.CreateUsOrCanadianZipCode, emptyValue: new ZipCode() )!;
-
-	/// <summary>
 	/// Returns the validated DateTime type from the given string and validation package.
 	/// It is restricted to the Sql SmallDateTime range of 1/1/1900 up to 6/6/2079.
 	/// Passing an empty string or null will result in ErrorCondition.Empty.
