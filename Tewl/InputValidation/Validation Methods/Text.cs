@@ -144,14 +144,14 @@ partial class ValidatorExtensions {
 	/// </summary>
 	public static ValidationResult<string> GetSocialSecurityNumber(
 		this Validator validator, ValidationErrorHandler? errorHandler, string input, bool allowEmpty ) =>
-		validator.GetNumber( errorHandler, input, 9, allowEmpty, "-" );
+		validator.GetNumericString( errorHandler, input, 9, allowEmpty, "-" );
 
 	/// <summary>
 	/// Gets a string of the given length whose characters are only numeric values, after throwing out all acceptable garbage
 	/// characters.
 	/// Example: A social security number (987-65-4321) would be GetNumber( errorHandler, ssn, 9, true, "-" ).
 	/// </summary>
-	public static ValidationResult<string> GetNumber(
+	public static ValidationResult<string> GetNumericString(
 		this Validator validator, ValidationErrorHandler? errorHandler, string input, int numberOfDigits, bool allowEmpty,
 		params string[] acceptableGarbageStrings ) =>
 		validator.executeStringValidation(
