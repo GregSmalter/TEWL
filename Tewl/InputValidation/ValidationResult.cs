@@ -6,8 +6,8 @@
 [ PublicAPI ]
 public class ValidationResult<T> {
 	/// <summary>
-	/// Gets the validated value. This is sometimes unusable if there was a validation error, and in that case the <see cref="Validator.UnusableValuesReturned"/>
-	/// will be true.
+	/// Gets the validated value. This is sometimes unusable if there was a validation error, and in that case <see cref="Validator.UnusableValuesReturned"/> will
+	/// be true.
 	/// </summary>
 	public T Value { get; }
 
