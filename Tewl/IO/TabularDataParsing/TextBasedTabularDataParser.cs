@@ -11,7 +11,7 @@ internal abstract class TextBasedTabularDataParser: TabularDataParser {
 	protected abstract IReadOnlyList<string> parseLine( string? line );
 
 	public override void ParseAndProcessAllLines(
-		LineProcessingMethod lineHandler, ICollection<ValidationError> validationErrors, bool disableLineProcessingErrorAccumulation = false ) {
+		LineProcessingMethod lineHandler, ICollection<DataValidationError> validationErrors, bool disableLineProcessingErrorAccumulation = false ) {
 		fileReader!.ExecuteInStreamReader(
 			reader => {
 				IReadOnlyDictionary<string, int>? columnIndicesByName = null;
@@ -24,7 +24,7 @@ internal abstract class TextBasedTabularDataParser: TabularDataParser {
 						var columnList = StringTools.GetEnglishListPhrase( missingColumns.Select( i => $"“{i}”" ), true );
 						var singularize = missingColumns.Count == 1;
 						validationErrors.Add(
-							new ValidationError(
+							new DataValidationError(
 								"Header line",
 								false,
 								$"The required {( singularize ? "column" : "columns" )} {columnList} {( singularize ? "is" : "are" )} missing." +
@@ -51,7 +51,7 @@ internal abstract class TextBasedTabularDataParser: TabularDataParser {
 							RowsWithoutValidationErrors++;
 						else if( !disableLineProcessingErrorAccumulation )
 							foreach( var error in validator.Errors )
-								validationErrors.Add( new ValidationError( "Line " + lineNumber, error.UnusableValueReturned, error.Message ) );
+								validationErrors.Add( new DataValidationError( "Line " + lineNumber, error.UnusableValueReturned, error.Message ) );
 					}
 				}
 			} );

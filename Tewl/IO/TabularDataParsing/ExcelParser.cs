@@ -11,7 +11,7 @@ internal class ExcelParser: TabularDataParser {
 	public ExcelParser( Stream fileStream ) => workbook = new XLWorkbook( fileStream );
 
 	public override void ParseAndProcessAllLines(
-		LineProcessingMethod lineHandler, ICollection<ValidationError> validationErrors, bool disableLineProcessingErrorAccumulation = false ) {
+		LineProcessingMethod lineHandler, ICollection<DataValidationError> validationErrors, bool disableLineProcessingErrorAccumulation = false ) {
 		var ws1 = workbook.Worksheets.First();
 		var rows = ws1.RangeUsed().RowsUsed().ToList();
 		rows = rows.Where( r => !r.IsEmpty() ).ToList();
@@ -24,7 +24,7 @@ internal class ExcelParser: TabularDataParser {
 			var columnList = StringTools.GetEnglishListPhrase( missingColumns.Select( i => $"“{i}”" ), true );
 			var singularize = missingColumns.Count == 1;
 			validationErrors.Add(
-				new ValidationError(
+				new DataValidationError(
 					"Header row",
 					false,
 					$"The required {( singularize ? "column" : "columns" )} {columnList} {( singularize ? "is" : "are" )} missing." ) );
@@ -42,7 +42,7 @@ internal class ExcelParser: TabularDataParser {
 					RowsWithoutValidationErrors++;
 				else if( !disableLineProcessingErrorAccumulation )
 					foreach( var error in validator.Errors )
-						validationErrors.Add( new ValidationError( "Row " + parsedLine.LineNumber, error.UnusableValueReturned, error.Message ) );
+						validationErrors.Add( new DataValidationError( "Row " + parsedLine.LineNumber, error.UnusableValueReturned, error.Message ) );
 			}
 		}
 	}

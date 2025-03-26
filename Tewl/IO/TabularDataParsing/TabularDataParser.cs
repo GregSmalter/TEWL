@@ -123,5 +123,5 @@ public abstract class TabularDataParser {
 	/// <param name="disableLineProcessingErrorAccumulation">Pass true to only use the error collection for missing columns. This is useful when processing
 	/// extremely large data sets, since accumulating all line-processing errors in one collection may result in high memory usage.</param>
 	public abstract void ParseAndProcessAllLines(
-		LineProcessingMethod lineHandler, ICollection<ValidationError> validationErrors, bool disableLineProcessingErrorAccumulation = false );
+		LineProcessingMethod lineHandler, ICollection<DataValidationError> validationErrors, bool disableLineProcessingErrorAccumulation = false );
 }

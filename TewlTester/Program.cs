@@ -53,7 +53,7 @@ internal class Program {
 
 	private static void testCsv() {
 		var csvParser = TabularDataParser.CreateForCsvFile( @"..\..\..\TestFiles\TewlTestBook.csv", [ ] );
-		var validationErrors = new List<ValidationError>();
+		var validationErrors = new List<DataValidationError>();
 
 		csvParser.ParseAndProcessAllLines( importThing, validationErrors );
 
@@ -62,7 +62,7 @@ internal class Program {
 
 	private static void testXls() {
 		var xlsParser = TabularDataParser.CreateForExcelFile( @"..\..\..\TestFiles\TewlTestBook.xlsx", [ ] );
-		var validationErrors = new List<ValidationError>();
+		var validationErrors = new List<DataValidationError>();
 
 		xlsParser.ParseAndProcessAllLines( importThing, validationErrors );
 
