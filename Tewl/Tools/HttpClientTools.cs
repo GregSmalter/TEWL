@@ -3,7 +3,6 @@ using System.Net.Http;
 using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
-using JetBrains.Annotations;
 using Polly;
 using StackExchange.Profiling;
 using Tewl.IO;
@@ -38,17 +37,23 @@ public static class HttpClientTools {
 	/// Makes a GET request for a text-based resource and returns its representation, retrying several times with exponential back-off in the event of network
 	/// problems or transient failures on the server. Use only from a background process that can tolerate a long delay.
 	/// </summary>
-	public static string? GetTextWithRetry( this HttpClient client, string url, bool returnNullIfNotFound = false, string additionalHandledMessage = "" ) =>
-		ExecuteRequestWithRetry(
-			true,
-			async () => {
-				using var response = await client.GetAsync( url, HttpCompletionOption.ResponseHeadersRead );
-				if( returnNullIfNotFound && response.StatusCode == HttpStatusCode.NotFound )
-					return null;
-				response.EnsureSuccessStatusCode();
-				return await response.Content.ReadAsStringAsync();
-			},
-			additionalHandledMessage: additionalHandledMessage );
+	public static string? GetTextWithRetry( this HttpClient client, string url, bool returnNullIfNotFound = false, string additionalHandledMessage = "" ) {
+		try {
+			return ExecuteRequestWithRetry(
+				true,
+				async () => {
+					using var response = await client.GetAsync( url, HttpCompletionOption.ResponseHeadersRead );
+					if( returnNullIfNotFound && response.StatusCode == HttpStatusCode.NotFound )
+						return null;
+					response.EnsureSuccessStatusCode();
+					return await response.Content.ReadAsStringAsync();
+				},
+				additionalHandledMessage: additionalHandledMessage );
+		}
+		catch( Exception e ) {
+			throw new Exception( $"A GET request for {url} failed.", e );
+		}
+	}
 
 	/// <summary>
 	/// Makes a GET request for a resource and writes its representation to a file at the specified path, retrying several times with exponential back-off in the
