@@ -164,7 +164,10 @@ public static class HttpClientTools {
 			if( exception.InnerException is {} e ) {
 				if( preRequestProcessingFailureOccurred( e ) )
 					return new Result( new Failure( e.Message, false ) );
-				if( possibleRequestProcessingFailureOccurred( e ) || e is HttpRequestException { StatusCode: HttpStatusCode.TooManyRequests } )
+				if( possibleRequestProcessingFailureOccurred( e ) || e is HttpRequestException
+					   {
+						   StatusCode: HttpStatusCode.TooManyRequests or HttpStatusCode.ServiceUnavailable
+					   } )
 					return new Result( new Failure( e.Message, true ) );
 			}
 			throw;
