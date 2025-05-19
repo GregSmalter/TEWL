@@ -4,6 +4,7 @@ using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
 using Polly;
+using Polly.Retry;
 using StackExchange.Profiling;
 using Tewl.IO;
 
@@ -79,35 +80,47 @@ public static class HttpClientTools {
 	/// </summary>
 	public static void ExecuteRequestWithRetry(
 		bool requestIsIdempotent, Func<Task> method, string additionalHandledMessage = "", Action? persistentFailureHandler = null ) {
-		var policyBuilder = Policy.HandleInner<HttpRequestException>(
-			e => e.InnerException is SocketException { SocketErrorCode: SocketError.HostNotFound or SocketError.NoData } );
+		bool isHandled( Exception e ) {
+			if( e is HttpRequestException { InnerException: SocketException { SocketErrorCode: SocketError.HostNotFound or SocketError.NoData } } )
+				return true;
+			if( !requestIsIdempotent )
+				return false;
 
-		if( requestIsIdempotent ) {
-			policyBuilder.OrInner<TaskCanceledException>() // timeout
-				.OrInner<HttpRequestException>( e => e.InnerException is SocketException { SocketErrorCode: SocketError.ConnectionRefused } )
-				.OrInner<HttpRequestException>( e => e.StatusCode is HttpStatusCode.InternalServerError )
-				.OrInner<HttpRequestException>( e => e.StatusCode is HttpStatusCode.BadGateway );
+			if( e is TaskCanceledException ) // timeout
+				return true;
+			if( e is HttpRequestException { InnerException: SocketException { SocketErrorCode: SocketError.ConnectionRefused } } )
+				return true;
+			if( e is HttpRequestException { StatusCode: HttpStatusCode.InternalServerError or HttpStatusCode.BadGateway } )
+				return true;
 
-			if( additionalHandledMessage.Length > 0 )
-				policyBuilder = policyBuilder.OrInner<HttpRequestException>( e => e.Message.Contains( additionalHandledMessage ) );
+			return additionalHandledMessage.Length > 0 && e is HttpRequestException && e.Message.Contains( additionalHandledMessage );
 		}
 
-		var result = MiniProfiler.Current.Inline(
-			() => policyBuilder.WaitAndRetry( 7, attemptNumber => TimeSpan.FromSeconds( Math.Pow( 2, attemptNumber ) ) )
-				.ExecuteAndCapture(
-					() => Policy.HandleInner<HttpRequestException>( e => e.StatusCode is HttpStatusCode.ServiceUnavailable )
-						.WaitAndRetry( 11, attemptNumber => TimeSpan.FromSeconds( Math.Pow( 2, attemptNumber ) ) )
-						.Execute( () => Task.Run( method ).Wait() ) ),
-			"TEWL - Execute HTTP request with retry" );
-
-		if( result.Outcome == OutcomeType.Successful )
-			return;
-
-		if( persistentFailureHandler is not null && result.ExceptionType == ExceptionType.HandledByThisPolicy )
+		try {
+			using( MiniProfiler.Current.Step( "TEWL - Execute HTTP request with retry" ) )
+				new ResiliencePipelineBuilder().AddRetry( getRetryOptions( e => isHandled( e.InnerException! ), 7 ) )
+					.Build()
+					.Execute(
+						() => new ResiliencePipelineBuilder()
+							.AddRetry( getRetryOptions( e => e.InnerException is HttpRequestException { StatusCode: HttpStatusCode.ServiceUnavailable }, 11 ) )
+							.Build()
+							.Execute( () => Task.Run( method ).Wait() ) );
+		}
+		catch( Exception e ) {
+			if( persistentFailureHandler is null || !isHandled( e.InnerException! ) )
+				throw;
 			persistentFailureHandler();
-		else
-			throw result.FinalException;
+		}
 	}
+
+	private static RetryStrategyOptions getRetryOptions( Func<Exception, bool> predicate, int attemptCount ) =>
+		new()
+			{
+				ShouldHandle = predicateArguments => ValueTask.FromResult( predicateArguments.Outcome.Exception is {} exception && predicate( exception ) ),
+				BackoffType = DelayBackoffType.Exponential,
+				Delay = TimeSpan.FromSeconds( 2 ),
+				MaxRetryAttempts = attemptCount
+			};
 
 	/// <summary>
 	/// Executes a method that makes a request using <see cref="HttpClient"/>, retrying several times with exponential back-off in the event of network problems
