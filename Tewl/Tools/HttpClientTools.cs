@@ -1,6 +1,7 @@
 ﻿using System.Net;
 using System.Net.Http;
 using System.Net.Sockets;
+using System.Runtime.ExceptionServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Polly;
@@ -169,6 +170,10 @@ public static class HttpClientTools {
 						   StatusCode: HttpStatusCode.TooManyRequests or HttpStatusCode.ServiceUnavailable
 					   } )
 					return new Result( new Failure( e.Message, true ) );
+
+				// Remove the AggregateException from the Task.Run line above.
+				if( exception is AggregateException )
+					ExceptionDispatchInfo.Capture( e ).Throw();
 			}
 			throw;
 		}
