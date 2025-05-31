@@ -1,4 +1,5 @@
 using System.Net;
+using System.Text;
 using System.Threading;
 
 namespace Tewl.IO;
@@ -152,7 +153,7 @@ public static class IoMethods {
 	/// is used as the root path.
 	/// Caller is responsible for properly disposing the stream.
 	/// </summary>
-	public static TextWriter GetTextWriterForWrite( string filePath ) => new StreamWriter( GetFileStreamForWrite( filePath ) );
+	public static TextWriter GetTextWriterForWrite( string filePath ) => new StreamWriter( GetFileStreamForWrite( filePath ), Encoding.UTF8 );
 
 	/// <summary>
 	/// Returns a file stream for writing a new file or overwriting an existing file.
