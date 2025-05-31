@@ -46,7 +46,7 @@ internal abstract class TextBasedTabularDataParser: TabularDataParser {
 					if( parsedLine.ContainsData ) {
 						RowsContainingData++;
 						var validator = new Validator();
-						lineHandler( validator, parsedLine );
+						lineHandler( parsedLine, validator );
 						if( !validator.ErrorsOccurred )
 							RowsWithoutValidationErrors++;
 						else if( !disableLineProcessingErrorAccumulation )

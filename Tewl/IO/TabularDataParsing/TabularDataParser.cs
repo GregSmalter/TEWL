@@ -11,7 +11,7 @@ public abstract class TabularDataParser {
 	/// Method that knows how to process a line from a particular file.  The validator is new for each row and has no errors,
 	/// initially.
 	/// </summary>
-	public delegate void LineProcessingMethod( Validator validator, ParsedLine line );
+	public delegate void LineProcessingMethod( ParsedLine line, Validator validator );
 
 	/// <summary>
 	/// Header rows to skip, shared by all parsers.

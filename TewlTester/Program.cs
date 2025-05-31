@@ -69,7 +69,7 @@ internal class Program {
 		Console.WriteLine( $"Excel test: {xlsParser.RowsWithoutValidationErrors} rows imported without error." );
 	}
 
-	private static void importThing( Validator validator, ParsedLine line ) {
+	private static void importThing( ParsedLine line, Validator validator ) {
 		var value = line[ "dATe" ];
 		var email = line[ "email" ];
 		var website = line[ "website" ];
