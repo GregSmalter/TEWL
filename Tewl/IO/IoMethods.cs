@@ -147,13 +147,16 @@ public static class IoMethods {
 		File.Exists( path ) ? new FileInfo( path ).Length : Directory.GetFileSystemEntries( path ).Sum( filePath => GetFolderSize( filePath ) );
 
 	/// <summary>
-	/// Returns a text writer for writing a new file or overwriting an existing file.
-	/// Automatically creates any folders needed in the given path, if necessary.
-	/// We recommend passing an absolute path. If a relative path is passed, the working folder
-	/// is used as the root path.
-	/// Caller is responsible for properly disposing the stream.
+	/// Returns a text writer for writing a new file or overwriting an existing file, using UTF-8 encoding. Automatically creates any folders needed in the given
+	/// path, if necessary. We recommend passing an absolute path. If a relative path is passed, the working folder is used as the root path. Caller is
+	/// responsible for properly disposing the stream.
 	/// </summary>
-	public static TextWriter GetTextWriterForWrite( string filePath ) => new StreamWriter( GetFileStreamForWrite( filePath ), Encoding.UTF8 );
+	/// <param name="filePath"></param>
+	/// <param name="includeBom">Pass true to include a byte-order mark (BOM) indicating that the file is encoded with UTF-8. This helps avoid misinterpreted
+	/// characters when reading the file, especially if it is plain text. Pass false for XML files or any other format that has its own encoding declaration.
+	/// </param>
+	public static TextWriter GetTextWriterForWrite( string filePath, bool includeBom ) =>
+		new StreamWriter( GetFileStreamForWrite( filePath ), new UTF8Encoding( includeBom, true ) );
 
 	/// <summary>
 	/// Returns a file stream for writing a new file or overwriting an existing file.
