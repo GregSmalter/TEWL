@@ -22,6 +22,6 @@ public static class EnumTools {
 	/// </summary>
 	public static string ToEnglish( this Enum e ) {
 		var name = e.GetAttribute<EnglishAttribute>();
-		return name != null ? name.English : Enum.GetName( e.GetType(), e ).CamelToEnglish();
+		return name != null ? name.English : e.ToString().CamelToEnglish();
 	}
 }
