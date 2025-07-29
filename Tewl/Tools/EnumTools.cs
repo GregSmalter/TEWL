@@ -7,14 +7,18 @@
 public static class EnumTools {
 	/// <summary>
 	/// Converts this string to a given Enum value. Case sensitive.
-	/// This method does not enforce valid Enum values.
 	/// </summary>
-	public static T ToEnum<T>( this string s ) where T: Enum => (T)Enum.Parse( typeof( T ), s );
+	public static T ToEnum<T>( this string s ) where T: struct, Enum {
+		var e = (T)Enum.Parse( typeof( T ), s );
+		if( !Enum.IsDefined( e ) )
+			throw new ArgumentException( $"{s} does not exist in the enumeration" );
+		return e;
+	}
 
 	/// <summary>
 	/// Gets the values of the specified enumeration type.
 	/// </summary>
-	public static IEnumerable<T> GetValues<T>() where T: Enum => Enum.GetValues( typeof( T ) ).Cast<T>();
+	public static IEnumerable<T> GetValues<T>() where T: struct, Enum => Enum.GetValues( typeof( T ) ).Cast<T>();
 
 	/// <summary>
 	/// Looks for <see cref="EnglishAttribute" /> and if available, returns its value.
