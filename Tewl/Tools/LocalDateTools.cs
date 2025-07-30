@@ -52,4 +52,9 @@ public static class LocalDateTools {
 	/// Formats this date in "01/01/2001" style.
 	/// </summary>
 	public static string ToMonthDayYearString( this LocalDate date ) => date.ToDateTimeUnspecified().ToMonthDayYearString();
+
+	/// <summary>
+	/// Formats this date in "month year" style, e.g. April 2008.
+	/// </summary>
+	public static string ToMonthYearString( this LocalDate date ) => new DateTimeOffset( date.ToDateTimeUnspecified() ).ToMonthYearString();
 }
