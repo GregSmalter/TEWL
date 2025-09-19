@@ -445,6 +445,8 @@ public static class StringTools {
 	/// If true, the pattern "ge" will match "General Mills". Otherwise, only "general mills"
 	/// will match.
 	/// </param>
+	[ Obsolete(
+		"Please use PatternString.Matches instead. If you were relying on ignoreSurroundingWhitespace, please call Trim yourself on the pattern and/or the text as needed. Do not pass null for text." ) ]
 	public static bool IsLike( this string s, string pattern, bool ignoreSurroundingWhitespace = true, bool allowPartialMatches = true ) {
 		s ??= "";
 		if( ignoreSurroundingWhitespace ) {
@@ -468,7 +470,7 @@ public static class StringTools {
 	/// <param name="searchTerms"></param>
 	public static bool MatchesSearch( this string text, string searchTerms ) {
 		var terms = searchTerms.Separate();
-		return terms.All( term => text.IsLike( term, ignoreSurroundingWhitespace: false ) );
+		return terms.All( term => new PatternString( term ).Matches( text ) );
 	}
 
 	/// <summary>
