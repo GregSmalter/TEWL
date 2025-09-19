@@ -126,8 +126,8 @@ partial class ValidatorExtensions {
 				// Must be a valid DNS-style hostname or IP address
 				// Must contain at least one '.', to prevent just host names
 				// Must be one of the common web browser-accessible schemes
-				if( uri.HostNameType != UriHostNameType.Dns && uri.HostNameType != UriHostNameType.IPv4 && uri.HostNameType != UriHostNameType.IPv6 ||
-				    uri.Host.All( c => c != '.' ) || validSchemes.All( s => s != uri.Scheme ) )
+				if( ( uri.HostNameType != UriHostNameType.Dns && uri.HostNameType != UriHostNameType.IPv4 && uri.HostNameType != UriHostNameType.IPv6 ) ||
+				    ( !uri.Host.Contains( '.' ) && !uri.Host.Equals( "localhost", StringComparison.Ordinal ) ) || validSchemes.All( s => s != uri.Scheme ) )
 					return ValidationError.Invalid();
 
 				valueSetter( trimmedInput );
