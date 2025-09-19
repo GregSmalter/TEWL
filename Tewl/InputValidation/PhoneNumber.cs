@@ -1,6 +1,3 @@
-using System;
-using JetBrains.Annotations;
-
 namespace Tewl.InputValidation {
 	/// <summary>
 	/// Represents a phone number consisting of area code, number, and optional extension.
@@ -8,7 +5,7 @@ namespace Tewl.InputValidation {
 	/// </summary>
 	[ PublicAPI ]
 	public class PhoneNumber {
-		private PhoneNumber() { }
+		private PhoneNumber() {}
 
 		/// <summary>
 		/// Creates a phone number object from the individual parts. Strings are trimmed in case they came from SQL Server char
@@ -59,15 +56,7 @@ namespace Tewl.InputValidation {
 		public static PhoneNumber CreateFromStandardPhoneString( string phoneString ) {
 			var v = new Validator();
 			// NOTE: I don't like how this method is called, which calls a method in validator, which then calls one of the static constructors back here (but not this one! otherwise you are screwed)
-			var p = v.GetPhoneNumberAsObject(
-				new ValidationErrorHandler( "" ),
-				phoneString,
-				true,
-				true,
-				false,
-				null );
-			// pass "" for the error message subject because we should never get errors
-			if( v.ErrorsOccurred )
+			if( v.GetPhoneNumberAsObject( null, phoneString, true, true, false, null ).Error( out var p ) is not null )
 				throw new ApplicationException( "Unparsable standard phone number string encountered." );
 			return p;
 		}

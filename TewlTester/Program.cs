@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using Tewl.InputValidation;
 using Tewl.IO;
 using Tewl.IO.TabularDataParsing;
 
@@ -69,7 +68,7 @@ internal class Program {
 		Console.WriteLine( $"Excel test: {xlsParser.RowsWithoutValidationErrors} rows imported without error." );
 	}
 
-	private static void importThing( ParsedLine line, Validator validator ) {
+	private static void importThing( ParsedLine line, Tewl.InputValidation.Validator validator ) {
 		var value = line[ "dATe" ];
 		var email = line[ "email" ];
 		var website = line[ "website" ];

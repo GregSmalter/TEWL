@@ -83,31 +83,26 @@ public class ExcelWorksheet {
 	}
 
 	private void putRowValueInCell( IXLCell cell, string value ) {
-		var v = new Validator();
-		var detectedDate = v.GetNullableDateTime(
-			new ValidationErrorHandler( "" ),
-			value,
-			DateTimeTools.DayMonthYearFormats.Concat( DateTimeTools.MonthDayYearFormats ).ToArray(),
-			false,
-			DateTime.MinValue,
-			DateTime.MaxValue );
-		if( !v.ErrorsOccurred ) {
+		if( new Validator().GetNullableDateTime(
+				    new ValidationErrorHandler( "" ),
+				    value,
+				    DateTimeTools.DayMonthYearFormats.Concat( DateTimeTools.MonthDayYearFormats ).ToArray(),
+				    false,
+				    DateTime.MinValue,
+				    DateTime.MaxValue )
+			    .Error( out var detectedDate ) is null ) {
 			setOrAddCellStyle( cell, date: true );
 			cell.Value = detectedDate;
 			return;
 		}
 
-		v = new Validator();
-		v.GetEmailAddress( new ValidationErrorHandler( "" ), value, false );
-		if( !v.ErrorsOccurred ) {
+		if( new Validator().GetEmailAddress( new ValidationErrorHandler( "" ), value, false ).Error( out _ ) is null ) {
 			cell.Value = value;
 			cell.SetHyperlink( new XLHyperlink( "mailto:" + value ) );
 			return;
 		}
 
-		v = new Validator();
-		var validatedUrl = v.GetUrl( new ValidationErrorHandler( "" ), value, false );
-		if( !v.ErrorsOccurred ) {
+		if( new Validator().GetUrl( new ValidationErrorHandler( "" ), value, false ).Error( out var validatedUrl ) is null ) {
 			cell.Value = value;
 			cell.SetHyperlink( new XLHyperlink( validatedUrl ) );
 			return;

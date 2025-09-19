@@ -1,23 +1,32 @@
-namespace Tewl.InputValidation {
-	internal class ValidationResult {
-		private string errorMessage = "";
+﻿namespace Tewl.InputValidation;
 
-		private ValidationResult() { }
+/// <summary>
+/// The result of a validation.
+/// </summary>
+[ PublicAPI ]
+public class ValidationResult<T> {
+	/// <summary>
+	/// Gets the validated value. This is sometimes unusable if there was a validation error, and in that case <see cref="Validator.UnusableValuesReturned"/> will
+	/// be true.
+	/// </summary>
+	public T Value { get; }
 
-		public string GetErrorMessage( string subject ) => string.Format( errorMessage, subject );
+	private readonly ValidationError? error;
 
-		public ErrorCondition ErrorCondition { get; private set; } = ErrorCondition.NoError;
+	/// <summary>
+	/// Validator.ExecuteValidation use only.
+	/// </summary>
+	internal ValidationResult( T value, ValidationError? error ) {
+		Value = value;
+		this.error = error;
+	}
 
-		public static ValidationResult Custom( ErrorCondition errorCondition, string errorMessage ) => new ValidationResult { ErrorCondition = errorCondition, errorMessage = errorMessage };
-
-		public static ValidationResult NoError() => new ValidationResult();
-
-		public static ValidationResult Invalid() => new ValidationResult { ErrorCondition = ErrorCondition.Invalid, errorMessage = "Please enter a valid {0}." };
-
-		public static ValidationResult Empty() => new ValidationResult { ErrorCondition = ErrorCondition.Empty, errorMessage = "Please enter the {0}." };
-
-		public static ValidationResult TooSmall( object min, object max ) => new ValidationResult { ErrorCondition = ErrorCondition.TooLong, errorMessage = "The {0} must be between " + min + " and " + max + " (inclusive)." };
-
-		public static ValidationResult TooLarge( object min, object max ) => new ValidationResult { ErrorCondition = ErrorCondition.TooLarge, errorMessage = "The {0} must be between " + min + " and " + max + " (inclusive)." };
+	/// <summary>
+	/// Returns the validation error, or null if validation was successful.
+	/// </summary>
+	/// <param name="value">The validated value.</param>
+	public ValidationError? Error( out T value ) {
+		value = Value;
+		return error;
 	}
 }
