@@ -1,5 +1,5 @@
-﻿using JetBrains.Annotations;
-using NodaTime;
+﻿using NodaTime;
+using NodaTime.Text;
 
 namespace Tewl.Tools;
 
@@ -8,6 +8,11 @@ namespace Tewl.Tools;
 /// </summary>
 [ PublicAPI ]
 public static class LocalTimeTools {
+	/// <summary>
+	/// The format pattern for the hour:minute style with a 12-hour clock, e.g. 2:30p.
+	/// </summary>
+	public const string HourAndMinuteFormat = "h:mmt";
+
 	/// <summary>
 	/// Returns whether this time is within the specified range, inclusive on both ends.
 	/// </summary>
@@ -51,4 +56,15 @@ public static class LocalTimeTools {
 		}
 		return times;
 	}
+
+	/// <summary>
+	/// Formats this time in hour:minute style followed by a single lowercase letter indicating AM or PM. Returns stringIfNull if the time is null.
+	/// </summary>
+	public static string ToHourAndMinuteString( this LocalTime? time, string stringIfNull ) => time?.ToHourAndMinuteString() ?? stringIfNull;
+
+	/// <summary>
+	/// Formats this time in hour:minute style followed by a single lowercase letter indicating AM or PM.
+	/// </summary>
+	public static string ToHourAndMinuteString( this LocalTime time ) =>
+		LocalTimePattern.Create( HourAndMinuteFormat, Cultures.EnglishUnitedStates ).Format( time ).ToLower();
 }

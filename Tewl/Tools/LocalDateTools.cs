@@ -1,4 +1,5 @@
 ﻿using NodaTime;
+using NodaTime.Text;
 
 namespace Tewl.Tools;
 
@@ -7,6 +8,21 @@ namespace Tewl.Tools;
 /// </summary>
 [ PublicAPI ]
 public static class LocalDateTools {
+	/// <summary>
+	/// Format patterns for the “day month year” style, e.g. 5 Apr 2008.
+	/// </summary>
+	public static readonly string[] DayMonthYearFormats = [ dayMonthYearFormatLz, dayMonthYearFormat ];
+
+	/// <summary>
+	/// Format patterns for the month/day/year style.
+	/// </summary>
+	public static readonly string[] MonthDayYearFormats = [ monthDayYearFormat, "M/d/yyyy", "MM/dd/yy" ];
+
+	private const string dayMonthYearFormatLz = "dd MMM yyyy";
+	private const string dayMonthYearFormat = "d MMM yyyy";
+	private const string monthDayYearFormat = "MM/dd/yyyy";
+	private const string monthYearFormat = "MMMM yyyy";
+
 	/// <summary>
 	/// Returns whether this date is between (inclusive) the specified dates. Passing null for either of the two dates is considered to be infinity in that
 	/// direction. Therefore, passing null for both dates will always return true.
@@ -35,26 +51,31 @@ public static class LocalDateTools {
 	/// Formats this date in "day month year" style, e.g. 5 Apr 2008. Returns stringIfNull if the date is null.
 	/// </summary>
 	public static string ToDayMonthYearString( this LocalDate? date, string stringIfNull, bool useLeadingZero, bool includeDayOfWeek = false ) =>
-		date.HasValue ? date.Value.ToDayMonthYearString( useLeadingZero, includeDayOfWeek: includeDayOfWeek ) : stringIfNull;
+		date?.ToDayMonthYearString( useLeadingZero, includeDayOfWeek: includeDayOfWeek ) ?? stringIfNull;
 
 	/// <summary>
 	/// Formats this date in "day month year" style, e.g. 5 Apr 2008.
 	/// </summary>
 	public static string ToDayMonthYearString( this LocalDate date, bool useLeadingZero, bool includeDayOfWeek = false ) =>
-		date.ToDateTimeUnspecified().ToDayMonthYearString( useLeadingZero, includeDayOfWeek: includeDayOfWeek );
+		LocalDatePattern.Create(
+				( includeDayOfWeek ? "ddd, " : "" ) + ( useLeadingZero ? dayMonthYearFormatLz : dayMonthYearFormat ),
+				Cultures.EnglishUnitedStates )
+			.Format( date );
 
 	/// <summary>
 	/// Formats this date in "01/01/2001" style. Returns stringIfNull if the date is null.
 	/// </summary>
-	public static string ToMonthDayYearString( this LocalDate? date, string stringIfNull ) => date.HasValue ? date.Value.ToMonthDayYearString() : stringIfNull;
+	public static string ToMonthDayYearString( this LocalDate? date, string stringIfNull ) => date?.ToMonthDayYearString() ?? stringIfNull;
 
 	/// <summary>
 	/// Formats this date in "01/01/2001" style.
 	/// </summary>
-	public static string ToMonthDayYearString( this LocalDate date ) => date.ToDateTimeUnspecified().ToMonthDayYearString();
+	public static string ToMonthDayYearString( this LocalDate date ) =>
+		LocalDatePattern.Create( monthDayYearFormat, Cultures.EnglishUnitedStates ).Format( date );
 
 	/// <summary>
 	/// Formats this date in "month year" style, e.g. April 2008.
 	/// </summary>
-	public static string ToMonthYearString( this LocalDate date ) => new DateTimeOffset( date.ToDateTimeUnspecified() ).ToMonthYearString();
+	public static string ToMonthYearString( this LocalDate date ) =>
+		YearMonthPattern.Create( monthYearFormat, Cultures.EnglishUnitedStates ).Format( date.ToYearMonth() );
 }

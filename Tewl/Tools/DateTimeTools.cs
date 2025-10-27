@@ -1,30 +1,13 @@
-﻿namespace Tewl.Tools;
+﻿using NodaTime;
+using NodaTime.Extensions;
+
+namespace Tewl.Tools;
 
 /// <summary>
 /// Provides helpful DateTime methods.
 /// </summary>
 [ PublicAPI ]
 public static class DateTimeTools {
-	/// <summary>
-	/// Format strings for the “day month year” date style, e.g. 5 Apr 2008.
-	/// </summary>
-	public static readonly string[] DayMonthYearFormats = [ dayMonthYearFormatLz, dayMonthYearFormat ];
-
-	/// <summary>
-	/// Format strings for the month/day/year date style.
-	/// </summary>
-	public static readonly string[] MonthDayYearFormats = [ monthDayYearFormat, "M/d/yyyy", "MM/dd/yy" ];
-
-	/// <summary>
-	/// The format string for the hour:minute time style with a 12-hour clock, e.g. 2:30p.
-	/// </summary>
-	public const string HourAndMinuteFormat = "h:mmt";
-
-	private const string dayMonthYearFormatLz = "dd MMM yyyy";
-	private const string dayMonthYearFormat = "d MMM yyyy";
-	private const string monthDayYearFormat = "MM/dd/yyyy";
-	private const string monthYearFormat = "MMMM yyyy";
-
 	/// <summary>
 	/// Formats the date portion of the specified date/time in "day month year" style, e.g. 5 Apr 2008. Returns stringIfNull if
 	/// the
@@ -37,7 +20,7 @@ public static class DateTimeTools {
 	/// Formats the date portion of the specified date/time in "day month year" style, e.g. 5 Apr 2008.
 	/// </summary>
 	public static string ToDayMonthYearString( this DateTime dateTime, bool useLeadingZero, bool includeDayOfWeek = false ) =>
-		dateTime.ToString( ( includeDayOfWeek ? "ddd, " : "" ) + ( useLeadingZero ? dayMonthYearFormatLz : dayMonthYearFormat ), Cultures.EnglishUnitedStates );
+		LocalDate.FromDateTime( dateTime ).ToDayMonthYearString( useLeadingZero, includeDayOfWeek: includeDayOfWeek );
 
 	/// <summary>
 	/// Formats the date portion of the specified date/time in "01/01/2001" style. Returns stringIfNull if the
@@ -49,12 +32,12 @@ public static class DateTimeTools {
 	/// <summary>
 	/// Formats the date portion of the specified date/time in "01/01/2001" style.
 	/// </summary>
-	public static string ToMonthDayYearString( this DateTime dateTime ) => dateTime.ToString( monthDayYearFormat, Cultures.EnglishUnitedStates );
+	public static string ToMonthDayYearString( this DateTime dateTime ) => LocalDate.FromDateTime( dateTime ).ToMonthDayYearString();
 
 	/// <summary>
 	/// Formats the date portion of the specified date/time in "month year" style, e.g. April 2008.
 	/// </summary>
-	public static string ToMonthYearString( this DateTimeOffset dateTime ) => dateTime.ToString( monthYearFormat, Cultures.EnglishUnitedStates );
+	public static string ToMonthYearString( this DateTimeOffset dateTime ) => dateTime.ToOffsetDateTime().Date.ToMonthYearString();
 
 	/// <summary>
 	/// Formats the time portion of the specified date/time in hour:minute style followed by a single lowercase letter
@@ -68,7 +51,8 @@ public static class DateTimeTools {
 	/// Formats the time portion of the specified date/time in hour:minute style followed by a single lowercase letter
 	/// indicating AM or PM.
 	/// </summary>
-	public static string ToHourAndMinuteString( this DateTime dateTime ) => dateTime.ToString( HourAndMinuteFormat, Cultures.EnglishUnitedStates ).ToLower();
+	public static string ToHourAndMinuteString( this DateTime dateTime ) =>
+		dateTime.ToString( LocalTimeTools.HourAndMinuteFormat, Cultures.EnglishUnitedStates ).ToLower();
 
 	/// <summary>
 	/// Returns the begin date of the specified date's month.
