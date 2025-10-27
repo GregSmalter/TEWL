@@ -86,7 +86,7 @@ public class ExcelWorksheet {
 		if( new Validator().GetNullableDateTime(
 				    new ValidationErrorHandler( "" ),
 				    value,
-				    DateTimeTools.DayMonthYearFormats.Concat( DateTimeTools.MonthDayYearFormats ).ToArray(),
+				    LocalDateTools.DayMonthYearFormats.Concat( LocalDateTools.MonthDayYearFormats ).ToArray(),
 				    false,
 				    DateTime.MinValue,
 				    DateTime.MaxValue )
