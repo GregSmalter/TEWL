@@ -130,7 +130,6 @@ public static class DateTimeTools {
 	/// Throws an exception if the date range contains time information. Use .Date if you have to.
 	/// See documentation for IsBetweenDates for more information on the date range.
 	/// </summary>
-	[ Obsolete( "Please use DateRangesOverlap instead by calling .Date on the date/time range endpoints." ) ]
 	public static bool DateTimeRangeOverlapsDateRange(
 		DateTime? dateTimeRangeBegin, DateTime? dateTimeRangeEnd, DateTime? dateRangeBegin, DateTime? dateRangeEnd ) {
 		assertDateTimeHasNoTime( dateRangeBegin, "date range begin" );

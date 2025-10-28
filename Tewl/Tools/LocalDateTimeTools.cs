@@ -29,4 +29,22 @@ public static class LocalDateTimeTools {
 
 		return oneBeginsBeforeTwoEnds && twoBeginsBeforeOneEnds;
 	}
+
+	/// <summary>
+	/// Returns whether the specified date/time range overlaps the specified date range. Passing null for any endpoint means infinity in that direction. The end
+	/// of the date/time range is considered exclusive, so if it falls on the beginning of the date range at midnight, the ranges will not overlap.
+	/// </summary>
+	public static bool RangeOverlapsDateRange( LocalDateTime? begin, LocalDateTime? end, LocalDate? dateRangeBegin, LocalDate? dateRangeEnd ) {
+		if( end < begin )
+			throw new ArgumentException( "Date/time range ends before it begins." );
+		if( dateRangeEnd < dateRangeBegin )
+			throw new ArgumentException( "Date range ends before it begins." );
+
+		var dateTimeRangeBeginsBeforeDateRangeEnds = begin is not {} timeBegin || timeBegin.Date.IsBetween( null, dateRangeEnd );
+
+		// It is important to call IsBetween on the beginning here because of the way it handles the beginning and end of the range differently.
+		var dateRangeBeginsBeforeDateTimeRangeEnds = dateRangeBegin is not {} dateBegin || dateBegin.AtMidnight().IsBetween( null, end );
+
+		return dateTimeRangeBeginsBeforeDateRangeEnds && dateRangeBeginsBeforeDateTimeRangeEnds;
+	}
 }
