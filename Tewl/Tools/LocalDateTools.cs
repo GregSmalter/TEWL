@@ -27,8 +27,7 @@ public static class LocalDateTools {
 	/// Returns whether this date is between (inclusive) the specified dates. Passing null for either of the two dates is considered to be infinity in that
 	/// direction. Therefore, passing null for both dates will always return true.
 	/// </summary>
-	public static bool IsBetween( this LocalDate date, LocalDate? begin, LocalDate? end ) =>
-		new DateInterval( begin ?? LocalDate.MinIsoValue, end ?? LocalDate.MaxIsoValue ).Contains( date );
+	public static bool IsBetween( this LocalDate date, LocalDate? begin, LocalDate? end ) => getInterval( begin, end ).Contains( date );
 
 	/// <summary>
 	/// Returns whether this date is between (inclusive) the specified dates. Passing null for either of the two dates is considered to be infinity in that
@@ -36,6 +35,14 @@ public static class LocalDateTools {
 	/// </summary>
 	[ Obsolete( "Please use IsBetween instead, which has exactly the same behavior." ) ]
 	public static bool IsBetweenDates( this LocalDate date, LocalDate? begin, LocalDate? end ) => date.IsBetween( begin, end );
+
+	/// <summary>
+	/// Returns whether two date ranges overlap. Passing null for any date means infinity in that direction.
+	/// </summary>
+	public static bool RangesOverlap( LocalDate? rangeOneBegin, LocalDate? rangeOneEnd, LocalDate? rangeTwoBegin, LocalDate? rangeTwoEnd ) =>
+		getInterval( rangeOneBegin, rangeOneEnd ).Intersection( getInterval( rangeTwoBegin, rangeTwoEnd ) ) is not null;
+
+	private static DateInterval getInterval( LocalDate? begin, LocalDate? end ) => new( begin ?? LocalDate.MinIsoValue, end ?? LocalDate.MaxIsoValue );
 
 	/// <summary>
 	/// Returns the first date in this date’s month.
@@ -46,6 +53,35 @@ public static class LocalDateTools {
 	/// Returns the first date in this date’s week.
 	/// </summary>
 	public static LocalDate WeekBeginDate( this LocalDate date, IsoDayOfWeek firstDayOfWeek ) => date.PlusDays( 1 ).Previous( firstDayOfWeek );
+
+	/// <summary>
+	/// Returns the number of weeks from the first occurrence of this date’s day of the week in the month to this date.
+	/// </summary>
+	public static int WeeksFromFirstOccurrenceOfDayOfWeekInMonth( this LocalDate date, bool countBackwardFromFirstOccurrenceInNextMonth ) =>
+		countBackwardFromFirstOccurrenceInNextMonth ? ( date.Day - CalendarSystem.Iso.GetDaysInMonth( date.Year, date.Month ) ) / 7 - 1 : ( date.Day - 1 ) / 7;
+
+	/// <summary>
+	/// Returns the date of the specified day of the week in this month.
+	/// </summary>
+	/// <param name="yearAndMonth"></param>
+	/// <param name="dayOfWeek">The day of the week.</param>
+	/// <param name="weeksFromFirst">The number of weeks from the first occurrence of the specified day of the week in the month. Pass a negative value to count
+	/// backward from the first occurrence in the next month.</param>
+	// Based on http://stackoverflow.com/a/5422046/35349.
+	public static LocalDate OnDayOfWeek( this YearMonth yearAndMonth, IsoDayOfWeek dayOfWeek, int weeksFromFirst ) {
+		var date = yearAndMonth.OnDayOfMonth( 1 );
+
+		if( weeksFromFirst < 0 )
+			date = date.PlusMonths( 1 );
+
+		var offset = dayOfWeek - date.DayOfWeek;
+		if( offset < 0 )
+			offset += 7;
+
+		date = date.PlusDays( offset + weeksFromFirst * 7 );
+
+		return date.ToYearMonth().Equals( yearAndMonth ) ? date : throw new Exception( "nonexistent date" );
+	}
 
 	/// <summary>
 	/// Formats this date in "day month year" style, e.g. 5 Apr 2008. Returns stringIfNull if the date is null.
