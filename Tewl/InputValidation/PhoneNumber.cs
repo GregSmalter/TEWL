@@ -1,4 +1,4 @@
-namespace Tewl.InputValidation {
+﻿namespace Tewl.InputValidation {
 	/// <summary>
 	/// Represents a phone number consisting of area code, number, and optional extension.
 	/// Also supports international numbers.  If IsInternational is true, area code, number, and extension are irrelevant.

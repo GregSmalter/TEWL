@@ -1,4 +1,4 @@
-namespace Tewl.IO.TabularDataParsing;
+ï»¿namespace Tewl.IO.TabularDataParsing;
 
 /// <summary>
 /// Represents a line of text from a CSV file that has been parsed into fields that
@@ -50,7 +50,7 @@ internal class TextBasedParsedLine: ParsedLine {
 			return columnIndicesByName.TryGetValue( columnName, out var index )
 				       ? this[ index ]
 				       : throw new ArgumentException(
-					         $"Column “{columnName}” does not exist. The columns are {StringTools.GetEnglishListPhrase( columnIndicesByName.Keys.Select( i => $"“{i}”" ), true )}." );
+					         $"Column â€œ{columnName}â€ does not exist. The columns are {StringTools.GetEnglishListPhrase( columnIndicesByName.Keys.Select( i => $"â€œ{i}â€" ), true )}." );
 		}
 	}
 
