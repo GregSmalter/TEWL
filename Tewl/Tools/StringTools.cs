@@ -1,4 +1,5 @@
-﻿using System.Globalization;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Globalization;
 using System.Text;
 using System.Text.RegularExpressions;
 using AvsAnLib;
@@ -249,7 +250,7 @@ public static class StringTools {
 	/// unless you understand its
 	/// appropriate and inappropriate uses as documented in coding standards.
 	/// </summary>
-	public static bool IsNullOrWhiteSpace( this string text ) => text == null || text.IsWhitespace();
+	public static bool IsNullOrWhiteSpace( [ NotNullWhen( false ) ] this string? text ) => text is null || text.IsWhitespace();
 
 	/// <summary>
 	/// Returns true if the string is empty or made up entirely of whitespace characters (as defined by the Trim method).

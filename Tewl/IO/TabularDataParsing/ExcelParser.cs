@@ -1,47 +1,48 @@
-﻿using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using ClosedXML.Excel;
+﻿using ClosedXML.Excel;
 using Tewl.InputValidation;
 
-namespace Tewl.IO.TabularDataParsing {
-	internal class ExcelParser: TabularDataParser {
-		readonly XLWorkbook workbook;
+namespace Tewl.IO.TabularDataParsing;
 
-		public ExcelParser( string filePath ) => workbook = new XLWorkbook( filePath );
+internal class ExcelParser: TabularDataParser {
+	private readonly XLWorkbook workbook;
 
-		public ExcelParser( Stream fileStream ) => workbook = new XLWorkbook( fileStream );
+	public ExcelParser( string filePath ) => workbook = new XLWorkbook( filePath );
 
-		/// <summary>
-		/// For every line (after headerRowsToSkip) in the file with the given path, calls the line handling method you pass.
-		/// The validationErrors collection will hold all validation errors encountered during the processing of all lines.
-		/// When processing extremely large data sets, accumulating validationErrors in one collection may result in high memory
-		/// usage. To avoid
-		/// this, use the overload without this collection.
-		/// Each line handler method will be given a fresh validator to do its work with.
-		/// </summary>
-		public override void ParseAndProcessAllLines( LineProcessingMethod lineHandler, ICollection<ValidationError> validationErrors ) {
-			var ws1 = workbook.Worksheets.First();
-			var rows = ws1.RangeUsed().RowsUsed().ToList();
-			rows = rows.Where( r => !r.IsEmpty() ).ToList();
-			var header = rows.First();
-			var headerFields = header.Cells().ToList().Select( c => c.Value.ToString().ToLower() ).ToList();
-			foreach( var row in rows.Skip( HeaderRows ) ) {
-				var parsedLine = new ExcelParsedLine( headerFields, row );
-				NonHeaderRows++;
-				if( parsedLine.ContainsData ) {
-					RowsContainingData++;
-					var validator = new Validator();
-					lineHandler( validator, parsedLine );
-					if( validator.ErrorsOccurred ) {
-						if( validationErrors != null ) {
-							foreach( var error in validator.Errors )
-								validationErrors.Add( new ValidationError( "Line " + parsedLine.LineNumber, error.UnusableValueReturned, error.Message ) );
-						}
-					}
-					else
-						RowsWithoutValidationErrors++;
-				}
+	public ExcelParser( Stream fileStream ) => workbook = new XLWorkbook( fileStream );
+
+	public override void ParseAndProcessAllLines(
+		LineProcessingMethod lineHandler, ICollection<DataValidationError> validationErrors, bool disableLineProcessingErrorAccumulation = false ) {
+		var ws1 = workbook.Worksheets.First();
+		var rows = ws1.RangeUsed().RowsUsed().ToList();
+		rows = rows.Where( r => !r.IsEmpty() ).ToList();
+		var header = rows.First();
+
+		var columnIndicesByName = header.Cells().Select( ( cell, index ) => ( cell.Value.ToString(), index ) ).ToDictionary( StringComparer.OrdinalIgnoreCase );
+
+		var missingColumns = requiredColumns!.Where( i => !columnIndicesByName.ContainsKey( i ) ).Materialize();
+		if( missingColumns.Any() ) {
+			var columnList = StringTools.GetEnglishListPhrase( missingColumns.Select( i => $"“{i}”" ), true );
+			var singularize = missingColumns.Count == 1;
+			validationErrors.Add(
+				new DataValidationError(
+					"Header row",
+					false,
+					$"The required {( singularize ? "column" : "columns" )} {columnList} {( singularize ? "is" : "are" )} missing." ) );
+			return;
+		}
+
+		foreach( var row in rows.Skip( HeaderRows ) ) {
+			ParsedLine parsedLine = new ExcelParsedLine( columnIndicesByName, row );
+			NonHeaderRows++;
+			if( parsedLine.ContainsData ) {
+				RowsContainingData++;
+				var validator = new Validator();
+				lineHandler( parsedLine, validator );
+				if( !validator.ErrorsOccurred )
+					RowsWithoutValidationErrors++;
+				else if( !disableLineProcessingErrorAccumulation )
+					foreach( var error in validator.Errors )
+						validationErrors.Add( new DataValidationError( "Row " + parsedLine.LineNumber, error.UnusableValueReturned, error.Message ) );
 			}
 		}
 	}
