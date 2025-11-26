@@ -78,6 +78,7 @@ public static class DateTimeTools {
 	/// <summary>
 	/// Returns the date that the given week starts on.
 	/// </summary>
+	[ Obsolete( "Please use LocalDate.WeekBeginDate, which does not assume a first day of the week." ) ]
 	public static DateTime WeekBeginDate( this DateTime dateTime ) => dateTime.AddDays( -(int)dateTime.DayOfWeek ).Date;
 
 	/// <summary>
