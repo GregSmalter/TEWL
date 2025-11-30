@@ -1,7 +1,4 @@
-using System;
 using System.Text.RegularExpressions;
-using JetBrains.Annotations;
-using Tewl.Tools;
 
 namespace Tewl.InputValidation {
 	/// <summary>
@@ -27,31 +24,32 @@ namespace Tewl.InputValidation {
 		/// </summary>
 		public string FullZipCode => StringTools.ConcatenateWithDelimiter( "-", Zip, Plus4 );
 
-		internal ZipCode() { }
+		internal ZipCode() {}
 
-		internal static ZipCode CreateUsZipCode( ValidationErrorHandler errorHandler, string entireZipCode ) {
-			var match = Regex.Match( entireZipCode, usPattern );
-			if( match.Success )
-				return getZipCodeFromValidUsMatch( match );
+		internal static ValidationError? CreateUsZipCode( Action<ZipCode> valueSetter, string trimmedInput ) {
+			var match = Regex.Match( trimmedInput, usPattern );
+			if( match.Success ) {
+				valueSetter( getZipCodeFromValidUsMatch( match ) );
+				return null;
+			}
 
-			return getZipCodeForFailure( errorHandler );
+			return ValidationError.Invalid();
 		}
 
-		internal static ZipCode CreateUsOrCanadianZipCode( ValidationErrorHandler errorHandler, string entireZipCode ) {
-			var match = Regex.Match( entireZipCode, usPattern );
-			if( match.Success )
-				return getZipCodeFromValidUsMatch( match );
-			if( ( match = Regex.Match( entireZipCode, canadianPattern, RegexOptions.IgnoreCase ) ).Success )
-				return new ZipCode { Zip = match.Groups[ "caZip" ].Value };
+		internal static ValidationError? CreateUsOrCanadianZipCode( Action<ZipCode> valueSetter, string trimmedInput ) {
+			var match = Regex.Match( trimmedInput, usPattern );
+			if( match.Success ) {
+				valueSetter( getZipCodeFromValidUsMatch( match ) );
+				return null;
+			}
+			if( ( match = Regex.Match( trimmedInput, canadianPattern, RegexOptions.IgnoreCase ) ).Success ) {
+				valueSetter( new ZipCode { Zip = match.Groups[ "caZip" ].Value } );
+				return null;
+			}
 
-			return getZipCodeForFailure( errorHandler );
+			return ValidationError.Invalid();
 		}
 
-		private static ZipCode getZipCodeForFailure( ValidationErrorHandler errorHandler ) {
-			errorHandler.SetValidationResult( ValidationResult.Invalid() );
-			return new ZipCode();
-		}
-
-		private static ZipCode getZipCodeFromValidUsMatch( Match match ) => new ZipCode { Zip = match.Groups[ "zip" ].Value, Plus4 = match.Groups[ "plus4" ].Value };
+		private static ZipCode getZipCodeFromValidUsMatch( Match match ) => new() { Zip = match.Groups[ "zip" ].Value, Plus4 = match.Groups[ "plus4" ].Value };
 	}
 }
