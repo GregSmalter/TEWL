@@ -1,13 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using Tewl.IO;
+﻿using Tewl.IO;
 using Tewl.IO.TabularDataParsing;
 
-namespace TewlTester;
+namespace Tests;
 
 [ TestFixture ]
-internal class Program {
+class Program {
 	[ Test ]
 	public static void OldMain() {
 		testExcelWriting();
@@ -23,22 +20,22 @@ internal class Program {
 		excelFile.DefaultWorksheet.AddRowToWorksheet( "123", "Greg", "1/1/2012", "greg.smalter@gmail.com", "https://www.google.com" );
 		excelFile.DefaultWorksheet.AddRowToWorksheet( "321", "", "12/19/2020", "", "https://microsoft.com" );
 
-		using( var stream = File.OpenWrite( "tewlTestTabularWrite.xlsx" ) )
-			excelFile.SaveToStream( stream );
+		using var stream = File.OpenWrite( "tewlTestTabularWrite.xlsx" );
+		excelFile.SaveToStream( stream );
 	}
 
 	private static void testCsvWriting() {
 		var csvFile = new CsvFileWriter();
 
-		using( var stream = new StreamWriter( File.OpenWrite( "tewlTestTabularWrite.csv" ) ) )
-			writeData( csvFile, stream );
+		using var stream = new StreamWriter( File.OpenWrite( "tewlTestTabularWrite.csv" ) );
+		writeData( csvFile, stream );
 	}
 
 	private static void testTabDelimitedWriting() {
 		var csvFile = new TabDelimitedFileWriter();
 
-		using( var stream = new StreamWriter( File.OpenWrite( "tewlTestTabularWrite.txt" ) ) )
-			writeData( csvFile, stream );
+		using var stream = new StreamWriter( File.OpenWrite( "tewlTestTabularWrite.txt" ) );
+		writeData( csvFile, stream );
 	}
 
 	// It's sort of a failure that the Excel writer cannot be passed here. But between there being more than one worksheet and other problems, it's hard to
@@ -53,7 +50,7 @@ internal class Program {
 	}
 
 	private static void testCsv() {
-		var csvParser = TabularDataParser.CreateForCsvFile( @"..\..\..\TestFiles\TewlTestBook.csv", [ ] );
+		var csvParser = TabularDataParser.CreateForCsvFile( @"..\..\..\..\TestFiles\TewlTestBook.csv", [ ] );
 		var validationErrors = new List<DataValidationError>();
 
 		csvParser.ParseAndProcessAllLines( importThing, validationErrors );
@@ -62,7 +59,7 @@ internal class Program {
 	}
 
 	private static void testXls() {
-		var xlsParser = TabularDataParser.CreateForExcelFile( @"..\..\..\TestFiles\TewlTestBook.xlsx", [ ] );
+		var xlsParser = TabularDataParser.CreateForExcelFile( @"..\..\..\..\TestFiles\TewlTestBook.xlsx", [ ] );
 		var validationErrors = new List<DataValidationError>();
 
 		xlsParser.ParseAndProcessAllLines( importThing, validationErrors );
