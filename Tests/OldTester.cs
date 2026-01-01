@@ -6,8 +6,10 @@ using Tewl.IO.TabularDataParsing;
 
 namespace TewlTester;
 
+[ TestFixture ]
 internal class Program {
-	private static void Main( string[] args ) {
+	[ Test ]
+	public static void OldMain() {
 		testExcelWriting();
 		testCsvWriting();
 		testCsv();
