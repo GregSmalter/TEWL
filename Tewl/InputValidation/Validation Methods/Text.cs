@@ -116,23 +116,19 @@ partial class ValidatorExtensions {
 					return error;
 
 				/* If the getstring didn't fail, keep on keepin keepin on. */
-				try {
-					if( !Uri.IsWellFormedUriString( trimmedInput, UriKind.Absolute ) )
-						throw new UriFormatException();
-
-					// Don't allow relative URLs
-					var uri = new Uri( trimmedInput, UriKind.Absolute );
-
-					// Must be a valid DNS-style hostname or IP address
-					// Must contain at least one '.', to prevent just host names
-					// Must be one of the common web browser-accessible schemes
-					if( uri.HostNameType != UriHostNameType.Dns && uri.HostNameType != UriHostNameType.IPv4 && uri.HostNameType != UriHostNameType.IPv6 ||
-					    uri.Host.All( c => c != '.' ) || validSchemes.All( s => s != uri.Scheme ) )
-						throw new UriFormatException();
-				}
-				catch( UriFormatException ) {
+				if( !Uri.IsWellFormedUriString( trimmedInput, UriKind.Absolute ) )
 					return ValidationError.Invalid();
-				}
+
+				// Don't allow relative URLs
+				if( !Uri.TryCreate( trimmedInput, UriKind.Absolute, out var uri ) )
+					return ValidationError.Invalid();
+
+				// Must be a valid DNS-style hostname or IP address
+				// Must contain at least one '.', to prevent just host names
+				// Must be one of the common web browser-accessible schemes
+				if( ( uri.HostNameType != UriHostNameType.Dns && uri.HostNameType != UriHostNameType.IPv4 && uri.HostNameType != UriHostNameType.IPv6 ) ||
+				    ( !uri.Host.Contains( '.' ) && !uri.Host.Equals( "localhost", StringComparison.Ordinal ) ) || validSchemes.All( s => s != uri.Scheme ) )
+					return ValidationError.Invalid();
 
 				valueSetter( trimmedInput );
 				return null;
