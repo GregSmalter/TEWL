@@ -173,7 +173,7 @@ public static class StringTools {
 		if( word.Length == 0 )
 			return null;
 
-		return StringToBool( word );
+		return word.StringToBool();
 	}
 
 	/// <summary>
