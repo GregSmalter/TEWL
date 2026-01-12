@@ -740,4 +740,12 @@ public static class StringTools {
 	// ReSharper restore GrammarMistakeInComment
 	public static string AddIndefiniteArticle( this string word, bool capitalizeWord = false ) =>
 		AvsAn.Query( word ).Article + " " + ( capitalizeWord ? word.Capitalize() : word );
+
+	/// <summary>
+	/// Throws an exception if this string has leading or trailing whitespace. Otherwise, returns the string to enable method chaining.
+	/// </summary>
+	public static string EnsureTrimmed( this string text ) =>
+		( text.Length > 0 && char.IsWhiteSpace( text[ 0 ] ) ) || ( text.Length > 1 && char.IsWhiteSpace( text[ ^1 ] ) )
+			? throw new Exception( "The string has leading or trailing whitespace." )
+			: text;
 }
