@@ -1,4 +1,4 @@
-namespace Tewl.InputValidation;
+﻿namespace Tewl.InputValidation;
 
 /// <summary>
 /// The list of possible error types.

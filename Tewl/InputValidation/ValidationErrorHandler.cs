@@ -1,4 +1,4 @@
-namespace Tewl.InputValidation;
+﻿namespace Tewl.InputValidation;
 
 /// <summary>
 /// This class allows you to control what happens when a validation method generates an error. Every validation method takes a ValidationErrorHandler object

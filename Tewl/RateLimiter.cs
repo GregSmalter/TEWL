@@ -1,4 +1,5 @@
-﻿using NodaTime;
+﻿using System.Threading;
+using NodaTime;
 
 namespace Tewl;
 
@@ -16,7 +17,7 @@ public class RateLimiter {
 	private readonly Duration interval;
 	private readonly uint maxBurstSize;
 	private readonly Func<Instant> timeGetter;
-	private readonly object actionLock = new();
+	private readonly Lock actionLock = new();
 
 	private uint count;
 	private Instant lastDecrementTime;

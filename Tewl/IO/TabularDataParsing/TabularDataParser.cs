@@ -1,4 +1,4 @@
-using Tewl.InputValidation;
+﻿using Tewl.InputValidation;
 
 namespace Tewl.IO.TabularDataParsing;
 
