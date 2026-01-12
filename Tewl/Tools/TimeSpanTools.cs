@@ -1,53 +1,44 @@
-﻿using System;
-using Humanizer;
-using JetBrains.Annotations;
+﻿using Humanizer;
 
-namespace Tewl.Tools {
+namespace Tewl.Tools;
+
+/// <summary>
+/// Provides helpful TimeSpan methods.
+/// </summary>
+[ PublicAPI ]
+public static class TimeSpanTools {
 	/// <summary>
-	/// Provides helpful TimeSpan methods.
+	/// Returns the given timespan in the form "3:24" for three hours and twenty-four minutes.
 	/// </summary>
-	[ PublicAPI ]
-	public static class TimeSpanTools {
-		/// <summary>
-		/// Returns the given timespan in the form "3:24" for three hours and twenty-four minutes.
-		/// </summary>
-		public static string ToHourMinuteString( this TimeSpan timeSpan ) {
-			var hours = (int)timeSpan.TotalHours;
-			timeSpan -= TimeSpan.FromHours( hours );
-			var minutes = (int)Math.Round( timeSpan.TotalMinutes );
-			return hours + ":" + minutes.ToString( "D2" );
-		}
+	public static string ToHourMinuteString( this TimeSpan timeSpan ) {
+		var hours = (int)timeSpan.TotalHours;
+		timeSpan -= TimeSpan.FromHours( hours );
+		var minutes = (int)Math.Round( timeSpan.TotalMinutes );
+		return hours + ":" + minutes.ToString( "D2" );
+	}
 
-		/// <summary>
-		/// Returns the given timespan in the form "3:24:02" for three hours, twenty-four minutes and two seconds.
-		/// </summary>
-		public static string ToHourMinuteSecondString( this TimeSpan timeSpan ) {
-			var hours = (int)timeSpan.TotalHours;
-			timeSpan -= TimeSpan.FromHours( hours );
-			var minutes = (int)timeSpan.TotalMinutes;
-			timeSpan -= TimeSpan.FromMinutes( minutes );
-			return hours + ":" + minutes.ToString( "D2" ) + ":" + ( (int)Math.Round( timeSpan.TotalSeconds ) ).ToString( "D2" );
-		}
+	/// <summary>
+	/// Returns the given timespan in the form "3:24:02" for three hours, twenty-four minutes and two seconds.
+	/// </summary>
+	public static string ToHourMinuteSecondString( this TimeSpan timeSpan ) {
+		var hours = (int)timeSpan.TotalHours;
+		timeSpan -= TimeSpan.FromHours( hours );
+		var minutes = (int)timeSpan.TotalMinutes;
+		timeSpan -= TimeSpan.FromMinutes( minutes );
+		return hours + ":" + minutes.ToString( "D2" ) + ":" + ( (int)Math.Round( timeSpan.TotalSeconds ) ).ToString( "D2" );
+	}
 
-		/// <summary>
-		/// Returns a string such as "52 seconds" or "1 minute, 3 seconds" or "4 days, 6 hours".
-		/// </summary>
-		public static string ToConciseString( this TimeSpan timeSpan ) => timeSpan.Humanize( precision: 2 );
+	/// <summary>
+	/// Returns a string such as "52 seconds" or "1 minute, 3 seconds" or "4 days, 6 hours".
+	/// </summary>
+	public static string ToConciseString( this TimeSpan timeSpan ) => timeSpan.Humanize( precision: 2 );
 
-		/// <summary>
-		/// Formats the specified time span as a time of day in hour:minute style followed by a single lowercase letter indicating
-		/// AM or PM.
-		/// </summary>
-		public static string ToTimeOfDayHourAndMinuteString( this TimeSpan timeSpan ) {
-			var now = DateTime.Now;
-			return new DateTime(
-				now.Year,
-				now.Month,
-				now.Day,
-				timeSpan.Hours,
-				timeSpan.Minutes,
-				timeSpan.Seconds,
-				timeSpan.Milliseconds ).ToHourAndMinuteString();
-		}
+	/// <summary>
+	/// Formats the specified time span as a time of day in hour:minute style followed by a single lowercase letter indicating
+	/// AM or PM.
+	/// </summary>
+	public static string ToTimeOfDayHourAndMinuteString( this TimeSpan timeSpan ) {
+		var now = DateTime.Now;
+		return new DateTime( now.Year, now.Month, now.Day, timeSpan.Hours, timeSpan.Minutes, timeSpan.Seconds, timeSpan.Milliseconds ).ToHourAndMinuteString();
 	}
 }
