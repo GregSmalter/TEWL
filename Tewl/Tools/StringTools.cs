@@ -173,7 +173,7 @@ public static class StringTools {
 		if( word.Length == 0 )
 			return null;
 
-		return StringToBool( word );
+		return word.StringToBool();
 	}
 
 	/// <summary>
@@ -727,7 +727,7 @@ public static class StringTools {
 	/// </summary>
 	/// <param name="s"></param>
 	/// <returns></returns>
-	public static bool IsNullOrEmpty( this string s ) => string.IsNullOrEmpty( s );
+	public static bool IsNullOrEmpty( this string? s ) => string.IsNullOrEmpty( s );
 
 	// ReSharper disable GrammarMistakeInComment
 	/// <summary>
