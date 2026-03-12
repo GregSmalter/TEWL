@@ -92,7 +92,7 @@ namespace Tewl.IO {
 			if( validationErrors.Count > 0 ) {
 				var errorMessage = "";
 				foreach( var error in validationErrors )
-					errorMessage += Environment.NewLine + error;
+					errorMessage += Newline + error;
 				throw new InvalidDataContractException( "One or more XML validation errors occurred:" + errorMessage );
 			}
 

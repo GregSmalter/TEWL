@@ -92,7 +92,7 @@ public static class FormattingMethods {
 			addOnCode = "";
 
 		return StringTools.ConcatenateWithDelimiter(
-			Environment.NewLine,
+			Newline,
 			deliveryAddress,
 			StringTools.ConcatenateWithDelimiter(
 				" ",
@@ -104,7 +104,7 @@ public static class FormattingMethods {
 	/// Formats the specified address in a single-line format. Do not pass null for any parameters.
 	/// </summary>
 	public static string GetAddressOneLine( string deliveryAddress, string city, string stateAbbreviation, string zipCode, string addOnCode ) =>
-		GetAddressWithNewLines( deliveryAddress, city, stateAbbreviation, zipCode, addOnCode ).Replace( Environment.NewLine, ", " );
+		GetAddressWithNewLines( deliveryAddress, city, stateAbbreviation, zipCode, addOnCode ).Replace( Newline, ", " );
 
 	/// <summary>
 	/// Uses GetFormattedBytes to return a string in the form "60.1 GiB/s".
