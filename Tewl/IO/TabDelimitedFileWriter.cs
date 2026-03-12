@@ -18,15 +18,15 @@ public class TabDelimitedFileWriter: TextBasedTabularDataFileWriter {
 	/// Adds the given value as a column on the current line.  Value may be null.  If
 	/// it is not null, val.ToString() determines what is added to the line.
 	/// </summary>
-	public void AddValueToLine( object val ) {
+	public void AddValueToLine( object? val ) {
 		if( val == null || val.ToString() == "" )
 			line += delimiter;
 		else {
-			var s = val.ToString();
+			var s = val.ToString()!;
 
 			if( s.Contains(
 				    delimiter.ToString() /*This ToString is unnecessary, but is here for the accidental reason of forcing the correct overload to be selected. An intrusive extension method was introduced in ClosedXML version 102. Once we get beyond 103 we should remove this.*/ ) ||
-			    s.Contains( Environment.NewLine ) )
+			    s.Contains( Newline ) )
 				throw new ApplicationException( "The tab-separated values format does not support tabs or newline sequences in a value." );
 			line += s + delimiter;
 		}
