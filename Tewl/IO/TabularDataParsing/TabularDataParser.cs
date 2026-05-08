@@ -13,6 +13,12 @@ public abstract class TabularDataParser {
 	/// </summary>
 	public delegate void LineProcessingMethod( ParsedLine line, Validator validator );
 
+	private protected static IReadOnlyDictionary<string, int> GetColumnIndicesByName( IEnumerable<( string name, int index )> columns ) =>
+		// Exclude duplicated column names.
+		columns.GroupBy( i => i.name, StringComparer.OrdinalIgnoreCase )
+			.Where( i => i.Count() == 1 )
+			.ToDictionary( i => i.Key, i => i.Single().index, StringComparer.OrdinalIgnoreCase );
+
 	/// <summary>
 	/// Header rows to skip, shared by all parsers.
 	/// </summary>

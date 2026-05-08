@@ -13,11 +13,10 @@ internal class ExcelParser: TabularDataParser {
 	public override void ParseAndProcessAllLines(
 		LineProcessingMethod lineHandler, ICollection<DataValidationError> validationErrors, bool disableLineProcessingErrorAccumulation = false ) {
 		var ws1 = workbook.Worksheets.First();
-		var rows = ws1.RangeUsed().RowsUsed().ToList();
-		rows = rows.Where( r => !r.IsEmpty() ).ToList();
+		var rows = ws1.RangeUsed().RowsUsed().Where( r => !r.IsEmpty() ).Materialize();
 		var header = rows.First();
 
-		var columnIndicesByName = header.Cells().Select( ( cell, index ) => ( cell.Value.ToString(), index ) ).ToDictionary( StringComparer.OrdinalIgnoreCase );
+		var columnIndicesByName = GetColumnIndicesByName( header.Cells().Select( ( cell, index ) => ( cell.Value.ToString(), index ) ) );
 
 		var missingColumns = requiredColumns!.Where( i => !columnIndicesByName.ContainsKey( i ) ).Materialize();
 		if( missingColumns.Any() ) {
