@@ -174,7 +174,7 @@ public static class DateTimeTools {
 
 	private static void assertDateTimeHasNoTime( DateTime? dateTime, string name ) {
 		if( dateTime.HasTime() )
-			throw new ApplicationException( "{0} contains time information.".FormatWith( name.Capitalize() ) );
+			throw new ApplicationException( $"{name.Capitalize()} contains time information." );
 	}
 
 	/// <summary>

@@ -75,7 +75,7 @@ public class ExcelWorksheet {
 				putRowValueInCell( cell, cellValue );
 			}
 			catch( Exception e ) {
-				throw new Exception( "Failed to put the value \"{0}\" into a cell.".FormatWith( cellValue ), e );
+				throw new Exception( $"Failed to put the value \"{cellValue}\" into a cell.", e );
 			}
 		}
 
