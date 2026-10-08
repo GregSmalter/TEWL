@@ -13,6 +13,12 @@ public abstract class TabularDataParser {
 	/// </summary>
 	public delegate void LineProcessingMethod( ParsedLine line, Validator validator );
 
+	private protected static IReadOnlyDictionary<string, int> GetColumnIndicesByName( IEnumerable<( string name, int index )> columns ) =>
+		// Exclude duplicated column names.
+		columns.GroupBy( i => i.name, StringComparer.OrdinalIgnoreCase )
+			.Where( i => i.Count() == 1 )
+			.ToDictionary( i => i.Key, i => i.Single().index, StringComparer.OrdinalIgnoreCase );
+
 	/// <summary>
 	/// Header rows to skip, shared by all parsers.
 	/// </summary>
@@ -101,8 +107,9 @@ public abstract class TabularDataParser {
 	/// <param name="stream"></param>
 	/// <param name="requiredColumns">If any of the columns specified in this collection are missing, ParseAndProcessAllLines will generate validation errors and
 	/// return without processing any lines.</param>
-	public static TabularDataParser CreateForExcelFile( Stream stream, IReadOnlyCollection<string> requiredColumns ) =>
-		new ExcelParser( stream ) { requiredColumns = requiredColumns };
+	/// <param name="worksheet">The worksheet. Pass the empty string for the first one in the file.</param>
+	public static TabularDataParser CreateForExcelFile( Stream stream, IReadOnlyCollection<string> requiredColumns, string worksheet = "" ) =>
+		new ExcelParser( stream, worksheet ) { requiredColumns = requiredColumns };
 
 	/// <summary>
 	/// Assumes header row. Fields will always be accessible by name.
@@ -110,8 +117,9 @@ public abstract class TabularDataParser {
 	/// <param name="filePath"></param>
 	/// <param name="requiredColumns">If any of the columns specified in this collection are missing, ParseAndProcessAllLines will generate validation errors and
 	/// return without processing any lines.</param>
-	public static TabularDataParser CreateForExcelFile( string filePath, IReadOnlyCollection<string> requiredColumns ) =>
-		new ExcelParser( filePath ) { requiredColumns = requiredColumns };
+	/// <param name="worksheet">The worksheet. Pass the empty string for the first one in the file.</param>
+	public static TabularDataParser CreateForExcelFile( string filePath, IReadOnlyCollection<string> requiredColumns, string worksheet = "" ) =>
+		new ExcelParser( filePath, worksheet ) { requiredColumns = requiredColumns };
 
 	/// <summary>
 	/// For every line (after headerRowsToSkip) in the file with the given path, calls the line handling method you pass.
