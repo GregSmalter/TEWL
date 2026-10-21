@@ -653,8 +653,7 @@ public static class StringTools {
 			.Normalize( NormalizationForm.FormC );
 
 	/// <summary>
-	/// Returns the index of <paramref name="numWords" /> before <paramref name="matchIndex" /> in string
-	/// <paramref name="str" />, or the beginning of the string.
+	/// Returns the index of <paramref name="numWords"/> before <paramref name="matchIndex"/> in string <paramref name="str"/>, or the beginning of the string.
 	/// </summary>
 	/// <param name="str">The string to search.</param>
 	/// <param name="numWords">The number of words</param>
@@ -683,8 +682,7 @@ public static class StringTools {
 	}
 
 	/// <summary>
-	/// Returns the index of <paramref name="numWords" /> after <paramref name="matchIndex" /> in string
-	/// <paramref name="str" />, or the end of the string.
+	/// Returns the index of <paramref name="numWords"/> after <paramref name="matchIndex"/> in string <paramref name="str"/>, or the end of the string.
 	/// </summary>
 	/// <param name="str">The string to search.</param>
 	/// <param name="numWords">The number of words</param>
@@ -723,7 +721,7 @@ public static class StringTools {
 	public static string GetCommaDelimitedString( this IEnumerable<string> strs ) => ConcatenateWithDelimiter( ", ", strs );
 
 	/// <summary>
-	/// Extension method for <see cref="string.IsNullOrEmpty" />
+	/// Extension method for <see cref="string.IsNullOrEmpty"/>
 	/// </summary>
 	/// <param name="s"></param>
 	/// <returns></returns>
@@ -748,4 +746,11 @@ public static class StringTools {
 		( text.Length > 0 && char.IsWhiteSpace( text[ 0 ] ) ) || ( text.Length > 1 && char.IsWhiteSpace( text[ ^1 ] ) )
 			? throw new Exception( "The string has leading or trailing whitespace." )
 			: text;
+
+	/// <summary>
+	/// Throws an exception if this string contains characters outside printable ASCII (U+0020 through U+007E). Otherwise, returns the string to enable method
+	/// chaining.
+	/// </summary>
+	public static string EnsurePrintableAscii( this string text ) =>
+		text.AsSpan().IndexOfAnyExceptInRange( ' ', '~' ) >= 0 ? throw new Exception( "The string contains characters outside printable ASCII." ) : text;
 }
