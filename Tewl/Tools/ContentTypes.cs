@@ -1,5 +1,4 @@
 ﻿using System.Net.Mime;
-using JetBrains.Annotations;
 
 namespace Tewl.Tools;
 
@@ -52,6 +51,11 @@ public static class ContentTypes {
 	/// Content type to be used by plain text files (.txt, etc.).
 	/// </summary>
 	public const string PlainText = MediaTypeNames.Text.Plain;
+
+	/// <summary>
+	/// Content type to be used by Markdown files.
+	/// </summary>
+	public const string Markdown = MediaTypeNames.Text.Markdown;
 
 	/// <summary>
 	/// Content type to be used for tab-separated values files.
@@ -118,6 +122,8 @@ public static class ContentTypes {
 
 		var fileExtension = fileName.Substring( beginExtensionIndex );
 		switch( fileExtension ) {
+			case FileExtensions.Markdown:
+				return Markdown;
 			case FileExtensions.Apk:
 				return ApplicationPackageFile;
 			case FileExtensions.Css:
